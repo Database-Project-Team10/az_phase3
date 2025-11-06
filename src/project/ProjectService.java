@@ -17,18 +17,18 @@ public class ProjectService {
     Scanner scanner = new Scanner(System.in);
 
     public void showProjectList(int cnt) {
-        List<String> projectList = projectRepository.findProjects(cnt);
+        List<Project> projectList = projectRepository.findProjects(cnt);
         System.out.println("---------- 프로젝트 목록 ----------");
-        for (int i = 0; i < projectList.size(); i++) {
-            System.out.println(i+1 + ". " + projectList.get(i));
+        for (Project project : projectList) {
+            System.out.println(project.getId() + ". " + project.getTitle());
         }
     }
 
     public void showMyProjectList(Member currentMember) {
-        List<String> projectList = projectRepository.findProjectsByMemberId(currentMember.getId());
-        System.out.println("---------- 프로젝트 목록 ----------");
-        for (int i = 0; i < projectList.size(); i++) {
-            System.out.println(i+1 + ". " + projectList.get(i));
+        List<Project> projectList = projectRepository.findProjectsByMemberId(currentMember.getId());
+        System.out.println("---------- 내 프로젝트 목록 ----------");
+        for (Project project : projectList) {
+            System.out.println(project.getId() + ". " + project.getTitle());
         }
     }
 

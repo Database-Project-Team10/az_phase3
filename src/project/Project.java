@@ -9,11 +9,23 @@ public class Project {
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
+    public Project(Long id, String title, String description, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
+
     public Project(String title, String description) {
         this.title = title;
         this.description = description;
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getTitle() {
