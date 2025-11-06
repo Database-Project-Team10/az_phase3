@@ -1,6 +1,7 @@
 package src.member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Member {
 
@@ -9,7 +10,16 @@ public class Member {
     String password;
     String name;
     LocalDate birthDate;
-    LocalDate createdAt;
+    LocalDateTime createdAt;
+
+    public Member(Long id, String email, String password, String name, LocalDate birthDate,  LocalDateTime createdAt) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.birthDate = birthDate;
+        this.createdAt = createdAt;
+    }
 
     public Member(String email, String password) {
         this.email = email;
@@ -21,7 +31,11 @@ public class Member {
         this.password = password;
         this.name = name;
         this.birthDate = birthDate;
-        this.createdAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -40,7 +54,7 @@ public class Member {
         return birthDate;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 

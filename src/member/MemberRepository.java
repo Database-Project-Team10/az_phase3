@@ -3,6 +3,8 @@ package src.member;
 import src.utils.Azconnection;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class MemberRepository {
 
@@ -18,10 +20,15 @@ public class MemberRepository {
             try (ResultSet rs = pstmt.executeQuery()) {
                 // 결과가 있다면 (rs.next())
                 if (rs.next()) {
-                    String foundEmail = rs.getString("email");
-                    String foundPassword = rs.getString("password");
                     // 찾은 정보로 Member 객체를 생성하여 반환
-                    return new Member(foundEmail, foundPassword);
+                    return new Member(
+                            rs.getLong("id"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getObject("birth_date", LocalDate.class),
+                            rs.getObject("created_at", LocalDateTime.class)
+                    );
                 }
             }
         } catch (SQLException e) {
@@ -44,8 +51,8 @@ public class MemberRepository {
         pstmt.setString(1, member.getEmail());
         pstmt.setString(2, member.getPassword());
         pstmt.setString(3, member.getName());
-        pstmt.setDate(4, Date.valueOf(member.getBirthDate()));
-        pstmt.setDate(5, Date.valueOf(member.getCreatedAt()));
+        pstmt.setObject(4, member.getBirthDate());
+        pstmt.setObject(5, member.getCreatedAt());
 
 
         // 쿼리 실행
