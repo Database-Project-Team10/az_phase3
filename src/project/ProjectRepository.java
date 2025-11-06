@@ -32,4 +32,22 @@ public class ProjectRepository {
 
         return projectList;
     }
+
+    public void save(Project project) throws SQLException {
+        String sql = "INSERT INTO project (title, description, created_at, updated_at) VALUES (?, ?, ?, ?)";
+
+        Connection conn = Azconnection.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        pstmt.setString(1, project.getTitle());
+        pstmt.setString(2, project.getDescription());
+        pstmt.setObject(3, project.getCreatedAt());
+        pstmt.setObject(4, project.getModifiedAt());
+
+        int  affectedRows = pstmt.executeUpdate();
+        if (affectedRows > 0) {
+            System.out.println("[Debug] Repository: DB에 " + project.getTitle() + " 저장됨.");
+        }
+
+    }
 }
