@@ -53,6 +53,43 @@ public class MemberService {
         System.out.println("'" + email + "'님, 회원가입이 완료되었습니다!");
     }
 
+    public void login() {
+        if (isLoggedIn()) {
+            System.out.println("이미 로그인되어 있습니다.");
+            return;
+        }
+
+        System.out.println("----- 로그인 -----");
+        System.out.print("이메일: ");
+        String email = sc.nextLine();
+        System.out.print("비밀번호: ");
+        String password = sc.nextLine();
+
+        // [비즈니스 로직 3] 사용자 조회
+        Member member = memberRepository.findByEmail(email);
+
+        // [비즈니스 로직 4] 비밀번호 검증
+        if (member != null && member.getPassword().equals(password)) {
+            // 로그인 성공
+            loggedInUser = member; // static 변수에 현재 로그인한 사용자 정보 저장
+            System.out.println("로그인 성공! '" + loggedInUser.getEmail() + "'님, 환영합니다.");
+        } else {
+            // 로그인 실패
+            System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
+    }
+
+    /**
+     * 로그아웃 로직
+     */
+    public void logout() {
+        if (!isLoggedIn()) {
+            System.out.println("로그인 상태가 아닙니다.");
+            return;
+        }
+        System.out.println("'" + loggedInUser.getEmail() + "'님이 로그아웃하셨습니다.");
+        loggedInUser = null; // 로그인 정보 제거
+    }
 
     // 로그인 상태 확인
     public boolean isLoggedIn() {

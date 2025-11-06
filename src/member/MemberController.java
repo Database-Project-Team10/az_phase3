@@ -8,26 +8,51 @@ public class MemberController {
 
     public void showMemberMenu() {
         while (true) {
-            System.out.println("----- Member -----");
-            System.out.println("1. 회원 가입");
-            System.out.println("2. 로그인");
-            System.out.println("b. 뒤로 가기");
+            System.out.println("\n----- Member -----");
+
+            // [수정] 로그인 상태에 따라 다른 메뉴 표시
+            if (memberService.isLoggedIn()) {
+                System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
+                System.out.println("1. 로그아웃");
+                System.out.println("2. 회원 정보 수정");
+                System.out.println("3. 뒤로 가기");
+            } else {
+                System.out.println("1. 회원 가입");
+                System.out.println("2. 로그인");
+                System.out.println("3. 뒤로 가기");
+            }
+
             System.out.print("입력: ");
             String choice = scanner.nextLine();
 
-            switch (choice) {
-                case "1":
-                    memberService.signUp();
-                    break;
-                case "2":
-                    // sad
-                    break;
-                case "b":
-                    // 뒤로 가기
-                    return;
-                default:
-                    System.out.println("잘못된 입력입니다. 1, 2, b 중에서 선택해주세요.");
-                    break;
+            if (memberService.isLoggedIn()) {
+                // 로그인 상태일 때
+                switch (choice) {
+                    case "1":
+                        memberService.logout();
+                        break;
+                    case "2":
+                        // memberService.editMemberInfo();
+                        break;
+                    case "3":
+                        return; // 메인 메뉴로
+                    default:
+                        System.out.println("잘못된 입력입니다.");
+                }
+            } else {
+                // 로그아웃 상태일 때
+                switch (choice) {
+                    case "1":
+                        memberService.signUp();
+                        break;
+                    case "2":
+                        memberService.login();
+                        break;
+                    case "3":
+                        return; // 메인 메뉴로
+                    default:
+                        System.out.println("잘못된 입력입니다.");
+                }
             }
         }
     }
