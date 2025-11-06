@@ -1,5 +1,6 @@
 package src.member;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -48,9 +49,18 @@ public class MemberService {
 
         Member newMember = new Member(email, password, name, localBirthDate);
         // 2. Repository를 통해 저장
-        memberRepository.save(newMember);
+        try {
+            memberRepository.save(newMember);
+            System.out.println("'" + email + "'님, 회원가입이 완료되었습니다!");
+            
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1) { // ORA-00001: unique constraint violated
+                System.err.println("저장 실패: 아이디 중복 (DB)");
+            } else {
+                System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+            }
+        }
 
-        System.out.println("'" + email + "'님, 회원가입이 완료되었습니다!");
     }
 
     public void login() {
