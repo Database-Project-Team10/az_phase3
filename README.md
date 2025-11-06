@@ -21,6 +21,7 @@
 ## 주의 사항
 - jdbc 드라이버의 경우 직접 설치하여 적용해야합니다.
 - [oracle jdbc 드라이버 설치 링크](https://www.oracle.com/kr/database/technologies/appdev/jdbc-downloads.html)
+- 소스 코드를 제외한 모든 생성된 파일들은 .gitignore에 포함시켜 리포지토리에 push하지 않습니다.
 
 ## 📊 D to B
 | <img src="https://avatars.githubusercontent.com/u/108778962?v=4" width="150" height="150"/> |<img src="https://avatars.githubusercontent.com/u/130034324?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/172799476?v=4" width="150" height="150"/>|
