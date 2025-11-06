@@ -37,7 +37,7 @@ public class ProjectController {
                         projectService.showProjectList(cnt);
                         break;
                     case "2":
-                        projectService.createProject();
+                        projectService.createProject(memberService.getCurrentUser());
                         break;
                     case "b":
                         return;

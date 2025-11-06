@@ -33,11 +33,12 @@ public class ProjectRepository {
         return projectList;
     }
 
-    public void save(Project project) throws SQLException {
+    public Long save(Connection conn, Project project) throws SQLException {
         String sql = "INSERT INTO project (title, description, created_at, updated_at) VALUES (?, ?, ?, ?)";
 
-        Connection conn = Azconnection.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        String[] generatedColumns = {"id"};
+
+        PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns);
 
         pstmt.setString(1, project.getTitle());
         pstmt.setString(2, project.getDescription());
@@ -45,8 +46,16 @@ public class ProjectRepository {
         pstmt.setObject(4, project.getModifiedAt());
 
         int  affectedRows = pstmt.executeUpdate();
-        if (affectedRows > 0) {
-            System.out.println("[Debug] Repository: DB에 " + project.getTitle() + " 저장됨.");
+        if (affectedRows == 0) {
+            throw new SQLException("프로젝트 생성 실패: 영향받은 행이 없습니다.");
+        }
+        // [핵심] 2. 생성된 ID(PK)를 반환
+        try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                return generatedKeys.getLong(1); // 1번째 컬럼(생성된 ID) 반환
+            } else {
+                throw new SQLException("프로젝트 생성 실패: ID를 가져오지 못했습니다.");
+            }
         }
 
     }
