@@ -18,6 +18,7 @@ public class ProjectController {
                 System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
                 System.out.println("1. 프로젝트 목록 보기");
                 System.out.println("2. 프로젝트 생성");
+                System.out.println("3. 내가 참여 중인 프로젝트 보기");
                 System.out.println("b. 뒤로 가기");
             }
             else {
@@ -38,6 +39,9 @@ public class ProjectController {
                         break;
                     case "2":
                         projectService.createProject(memberService.getCurrentUser());
+                        break;
+                    case "3":
+                        projectService.showMyProjectList(memberService.getCurrentUser());
                         break;
                     case "b":
                         return;

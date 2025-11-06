@@ -33,6 +33,32 @@ public class ProjectRepository {
         return projectList;
     }
 
+    public List<String> findProjectsByMemberId(Long memberId) {
+        List<String> projectList = new ArrayList<>();
+        String sql = "SELECT p.title " +
+                "FROM project p " +
+                "JOIN participant pa ON p.id = pa.project_id " +
+                "WHERE pa.member_id = ? " +
+                "ORDER BY p.updated_at DESC";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, memberId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String title = rs.getString("title");
+                    projectList.add(title);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+
+        return projectList;
+    }
+
     public Long save(Connection conn, Project project) throws SQLException {
         String sql = "INSERT INTO project (title, description, created_at, updated_at) VALUES (?, ?, ?, ?)";
 

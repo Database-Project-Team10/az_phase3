@@ -22,7 +22,14 @@ public class ProjectService {
         for (int i = 0; i < projectList.size(); i++) {
             System.out.println(i+1 + ". " + projectList.get(i));
         }
-        System.out.println("q 키를 누르면 나가집니다.");
+    }
+
+    public void showMyProjectList(Member currentMember) {
+        List<String> projectList = projectRepository.findProjectsByMemberId(currentMember.getId());
+        System.out.println("---------- 프로젝트 목록 ----------");
+        for (int i = 0; i < projectList.size(); i++) {
+            System.out.println(i+1 + ". " + projectList.get(i));
+        }
     }
 
     public void createProject(Member currentMember) {
