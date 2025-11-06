@@ -11,8 +11,6 @@ public class Member {
     LocalDate birthDate;
     LocalDate createdAt;
 
-    public Member() {}
-
     public Member(String email, String password) {
         this.email = email;
         this.password = password;
@@ -24,10 +22,6 @@ public class Member {
         this.name = name;
         this.birthDate = birthDate;
         this.createdAt = LocalDate.now();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getEmail() {
