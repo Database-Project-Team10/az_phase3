@@ -19,7 +19,7 @@ public class MainController {
      */
     public void run() {
         while (true) {
-            System.out.println("\n---------- Main ----------");
+            System.out.println("\n---------- 메인 메뉴 ----------");
             System.out.println("1. 회원 기능");
             System.out.println("2. 프로젝트 기능");
             System.out.println("q. 나가기");

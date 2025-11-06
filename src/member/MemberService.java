@@ -18,7 +18,7 @@ public class MemberService {
             return;
         }
 
-        System.out.println("----- 회원 가입 -----");
+        System.out.println("---------- 회원 가입 ----------");
         System.out.print("사용할 이메일: ");
         String email = sc.nextLine();
 
@@ -59,7 +59,7 @@ public class MemberService {
             return;
         }
 
-        System.out.println("----- 로그인 -----");
+        System.out.println("---------- 로그인 ----------");
         System.out.print("이메일: ");
         String email = sc.nextLine();
         System.out.print("비밀번호: ");
