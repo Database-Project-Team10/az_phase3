@@ -1,16 +1,19 @@
 package src.main;
 
 import src.member.MemberController;
+import src.project.ProjectController;
 
 import java.util.Scanner;
 
 public class MainController {
     private final MemberController memberController;
+    private final ProjectController projectController;
     private final Scanner sc;
 
     // 2. 생성자에서 필요한 객체들을 초기화합니다.
     public MainController() {
         this.memberController = new MemberController();
+        this.projectController = new ProjectController();
         this.sc = new Scanner(System.in);
     }
 
@@ -32,6 +35,7 @@ public class MainController {
                     memberController.showMemberMenu();
                     break;
                 case "2":
+                    projectController.showProjectMenu();
                     break;
                 case "q":
                     return;
