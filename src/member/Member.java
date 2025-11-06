@@ -43,4 +43,8 @@ public class Member {
     public LocalDate getCreatedAt() {
         return createdAt;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

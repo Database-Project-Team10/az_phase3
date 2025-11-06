@@ -32,7 +32,7 @@ public class MemberController {
                         memberService.logout();
                         break;
                     case "2":
-                        // memberService.editMemberInfo();
+                        memberService.editMemberInfo();
                         break;
                     case "b":
                         return; // 메인 메뉴로
