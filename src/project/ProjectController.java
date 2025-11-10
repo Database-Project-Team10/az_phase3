@@ -49,6 +49,12 @@ public class ProjectController {
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
+                    case "4":
+                        projectService.showMyProjectList(memberService.getCurrentUser());
+                        System.out.print("수정할 프로젝트의 번호를 입력해주세요: ");
+                        Long projectId = scanner.nextLong();
+                        projectService.showProjectDetail(projectId);
+                        projectService.updateProject(projectId);
                     case "b":
                         return;
                     default:

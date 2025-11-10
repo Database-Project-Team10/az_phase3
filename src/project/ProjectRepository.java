@@ -12,6 +12,34 @@ import java.util.List;
 
 public class ProjectRepository {
 
+    public Project findById(Long projectId) {
+        String sql = "select * from project where id=?";
+
+        Project project = null;
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, projectId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    project = new Project(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("updated_at", LocalDateTime.class)
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+        return project;
+    }
+
     public List<Project> findProjects(int cnt) {
         List<Project> projectList = new ArrayList<>();
         String sql = "SELECT * FROM project ORDER BY created_at DESC FETCH FIRST ? ROWS ONLY";

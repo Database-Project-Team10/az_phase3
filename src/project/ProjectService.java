@@ -32,13 +32,20 @@ public class ProjectService {
         }
     }
 
+    public void showProjectDetail(Long projectId) {
+        Project project = projectRepository.findById(projectId);
+        System.out.println("\n---------- 프로젝트 상세 정보 ----------");
+        System.out.println("프로젝트명: " +  project.getTitle());
+        System.out.println("\n프로젝트 설명");
+        System.out.println(project.getDescription());
+    }
+
     public void createProject(Member currentMember) {
         System.out.println("---------- 프로젝트 생성 ----------");
         System.out.print("프로젝트 제목: ");
         String title = scanner.nextLine();
         System.out.print("프로젝트 설명: ");
         String description = scanner.nextLine();
-
 
         Connection conn = null;
         try {
@@ -82,6 +89,10 @@ public class ProjectService {
                 System.err.println("Connection 종료 실패: " + e.getMessage());
             }
         }
+
+    }
+
+    public void updateProject(Long projectId) {
 
     }
 }
