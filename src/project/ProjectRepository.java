@@ -125,4 +125,29 @@ public class ProjectRepository {
         }
 
     }
+
+    public boolean updateProject(Long projectId, Project project) {
+        String sql = "UPDATE project SET title = ?, description = ? WHERE id = ?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, project.getTitle());
+            pstmt.setString(2, project.getDescription());
+            pstmt.setLong(3, projectId);
+
+            // 쿼리 실행 (영향받은 행의 수 반환)
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + projectId + "수정됨.");
+                return true; // 1개 이상의 행이 변경되었으면 성공
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
+        return false;
+    }
 }

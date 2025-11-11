@@ -54,7 +54,16 @@ public class ProjectController {
                         System.out.print("수정할 프로젝트의 번호를 입력해주세요: ");
                         Long projectId = scanner.nextLong();
                         projectService.showProjectDetail(projectId);
-                        projectService.updateProject(projectId);
+
+                        if (projectService.updateProject(projectId)){
+                            System.out.println("수정 완료!");
+                        }
+                        else {
+                            System.out.println("수정에 실패했습니다.");
+                        }
+                        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
+                        scanner.nextLine();
+                        break;
                     case "b":
                         return;
                     default:

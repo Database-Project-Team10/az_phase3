@@ -92,7 +92,49 @@ public class ProjectService {
 
     }
 
-    public void updateProject(Long projectId) {
+    public boolean updateProject(Long projectId) {
+        Project project = projectRepository.findById(projectId);
+        System.out.println("---------- 프로젝트 수정 ----------");
+
+        String newTitle = project.getTitle();
+        String newDescription = project.getDescription();
+
+        while (true){
+            System.out.print("제목을 수정하시겠습니까? (Y/N) ");
+            String choice = scanner.nextLine();
+
+            if (choice.equalsIgnoreCase("Y")) {
+                System.out.print("제목을 입력해주세요: ");
+                newTitle = scanner.nextLine();
+                break;
+            }
+            else if (choice.equalsIgnoreCase("N")) {
+                break;
+            }
+            else{
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+
+        while (true){
+            System.out.print("설명을 수정하시겠습니까? (Y/N) ");
+            String choice = scanner.nextLine();
+
+            if (choice.equalsIgnoreCase("Y")) {
+                System.out.print("설명을 입력해주세요: ");
+                newDescription = scanner.nextLine();
+                break;
+            }
+            else if (choice.equalsIgnoreCase("N")) {
+                break;
+            }
+            else{
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+
+        Project newProject = new Project(newTitle, newDescription);
+        return projectRepository.updateProject(projectId, newProject);
 
     }
 }
