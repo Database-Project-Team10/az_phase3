@@ -150,4 +150,27 @@ public class ProjectRepository {
 
         return false;
     }
+
+    public boolean deleteProject(Long projectId) {
+        String sql = "DELETE project WHERE id = ?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, projectId);
+
+            // 쿼리 실행 (영향받은 행의 수 반환)
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + projectId + "삭제됨.");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
+        return false;
+    }
 }

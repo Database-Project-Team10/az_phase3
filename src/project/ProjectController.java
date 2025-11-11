@@ -30,6 +30,7 @@ public class ProjectController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
+            Long projectId = null;
 
             if (memberService.isLoggedIn()) {
                 switch (choice) {
@@ -52,7 +53,7 @@ public class ProjectController {
                     case "4":
                         projectService.showMyProjectList(memberService.getCurrentUser());
                         System.out.print("수정할 프로젝트의 번호를 입력해주세요: ");
-                        Long projectId = scanner.nextLong();
+                        projectId = scanner.nextLong();
                         projectService.showProjectDetail(projectId);
 
                         if (projectService.updateProject(projectId)){
@@ -60,6 +61,20 @@ public class ProjectController {
                         }
                         else {
                             System.out.println("수정에 실패했습니다.");
+                        }
+                        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
+                        scanner.nextLine();
+                        break;
+                    case "5":
+                        projectService.showMyProjectList(memberService.getCurrentUser());
+                        System.out.print("삭제할 프로젝트의 번호를 입력해주세요: ");
+                        projectId = scanner.nextLong();
+
+                        if (projectService.deleteProject(projectId)){
+                            System.out.println("삭제 완료!");
+                        }
+                        else {
+                            System.out.println("삭제에 실패했습니다.");
                         }
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();

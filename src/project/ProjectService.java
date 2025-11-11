@@ -137,4 +137,22 @@ public class ProjectService {
         return projectRepository.updateProject(projectId, newProject);
 
     }
+
+    public boolean deleteProject(Long projectId) {
+        while (true){
+            System.out.print("정말로 삭제하시겠습니까? (Y/N) ");
+            String choice = scanner.nextLine();
+
+            if (choice.equalsIgnoreCase("Y")) {
+                return projectRepository.deleteProject(projectId);
+            }
+            else if (choice.equalsIgnoreCase("N")) {
+                break;
+            }
+            else{
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+        return false;
+    }
 }
