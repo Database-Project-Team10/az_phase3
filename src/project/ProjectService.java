@@ -40,7 +40,7 @@ public class ProjectService {
         System.out.println(project.getDescription());
     }
 
-    public void createProject(Member currentMember) {
+    public boolean createProject(Member currentMember) {
         System.out.println("---------- 프로젝트 생성 ----------");
         System.out.print("프로젝트 제목: ");
         String title = scanner.nextLine();
@@ -69,6 +69,7 @@ public class ProjectService {
 
             System.out.println("'" + title + "' 프로젝트가 생성되었으며, "
                     + currentMember.getEmail() + "님이 리더로 지정되었습니다.");
+            return true;
 
         } catch (SQLException e) {
             // 6. [핵심] 작업 중 오류 발생 시 Rollback
@@ -89,7 +90,7 @@ public class ProjectService {
                 System.err.println("Connection 종료 실패: " + e.getMessage());
             }
         }
-
+        return false;
     }
 
     public boolean updateProject(Long projectId) {
