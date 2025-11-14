@@ -105,7 +105,7 @@ public class MemberService {
         System.out.println("현재 이메일: " + loggedInUser.getEmail());
 
         System.out.print("새 비밀번호: ");
-        String newPassword = sc.nextLine(); // (scanner로 변경)
+        String newPassword = sc.nextLine();
         System.out.print("새 비밀번호 확인: ");
         String confirmPassword = sc.nextLine();
 
@@ -204,6 +204,27 @@ public class MemberService {
             }
         }
     }
+    public boolean deleteMember() {
+        if (!isLoggedIn()) {
+            System.out.println("로그인이 필요합니다.");
+            return false;
+        }
+        System.out.print("정말로 탈퇴하시겠습니까? (Y/N) ");
+        String choice = sc.nextLine();
+        if (choice.equalsIgnoreCase("Y")) {
+            Long deleteUserId = loggedInUser.getId();
+            logout();
+            return memberRepository.delete(deleteUserId);
+        }
+        else if (choice.equalsIgnoreCase("N")) {
+            return false;
+        }
+        else {
+            System.out.println("잘못된 입력입니다.");
+        }
+        return false;
+    }
+
     /**
      * 로그아웃 로직
      */

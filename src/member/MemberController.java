@@ -16,6 +16,7 @@ public class MemberController {
                 System.out.println("1. 로그아웃");
                 System.out.println("2. 회원 정보 수정");
                 System.out.println("3. 내 MBTI 입력/수정");
+                System.out.println("4. 회원 탈퇴");
                 System.out.println("b. 뒤로 가기");
             } else {
                 System.out.println("1. 회원 가입");
@@ -37,6 +38,14 @@ public class MemberController {
                         break;
                     case "3":
                         memberService.manageMyMbti();
+                         break;
+                    case "4":
+                        if (memberService.deleteMember()){
+                          System.out.println("탈퇴가 완료되었습니다.");
+                        }
+                        else {
+                          System.out.println("탈퇴에 실패했습니다.");
+                        }
                         break;
                     case "b":
                         return; // 메인 메뉴로

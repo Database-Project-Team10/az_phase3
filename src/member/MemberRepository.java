@@ -194,5 +194,25 @@ public class MemberRepository {
         }
         // Service가 conn.commit() 이나 conn.rollback()을 호출할 것이므로
         // 이 메서드는 여기서 끝납니다.
+
+    public boolean delete(Long id){
+        String sql = "DELETE FROM member WHERE id = ?";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + id + "회원 탙퇴");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
+        return false; // 업데이트 실패
     }
 }
