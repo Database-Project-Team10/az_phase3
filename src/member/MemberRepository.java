@@ -90,4 +90,25 @@ public class MemberRepository {
 
         return false; // 업데이트 실패
     }
+
+    public boolean delete(Long id){
+        String sql = "DELETE FROM member WHERE id = ?";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + id + "회원 탙퇴");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
+        return false; // 업데이트 실패
+    }
 }
