@@ -192,6 +192,7 @@ public class MemberRepository {
                 pstmt.executeUpdate();
             }
         }
+    }
         // Service가 conn.commit() 이나 conn.rollback()을 호출할 것이므로
         // 이 메서드는 여기서 끝납니다.
 
