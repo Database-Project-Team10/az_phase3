@@ -5,6 +5,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+import src.utils.Azconnection;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MemberService {
 
     private final MemberRepository memberRepository = new MemberRepository();
@@ -120,6 +126,84 @@ public class MemberService {
         }
     }
 
+    //Mbti 입력/수정
+    public void manageMyMbti() {
+        if (!isLoggedIn()) {
+            System.out.println("로그인이 필요합니다.");
+            return;
+        }
+
+        System.out.println("---------- 내 MBTI 입력/수정 ----------");
+
+        // [Service 로직 1] DB에서 MBTI 4가지 차원 정의를 가져옴
+        // (아직 MemberRepository에 만들지 않았지만, 곧 만들 예정)
+        List<MbtiDimension> dimensions = memberRepository.findAllMbtiDimensions();
+        if (dimensions == null || dimensions.isEmpty()) {
+            System.out.println("오류: MBTI 마스터 데이터를 불러올 수 없습니다.");
+            return;
+        }
+
+        // [Service 로직 2] 현재 설정된 MBTI 값을 가져옴 (key: mbti_id, value: selected_option)
+        Map<Long, String> currentMbti = memberRepository.findMbtiMapByMemberId(loggedInUser.getId());
+
+        System.out.print("현재 설정된 MBTI: ");
+        for (MbtiDimension dim : dimensions) {
+            // Map에서 mbti_id(dim.getId())를 키로 값을 찾고, 없으면 "?" 출력
+            System.out.print(currentMbti.getOrDefault(dim.getId(), "?"));
+        }
+        System.out.println("\n(4가지 차원을 모두 입력합니다.)");
+
+
+        // [Service 로직 3] 사용자에게 4가지 차원 입력받기
+        Map<Long, String> newMbtiMap = new HashMap<>(); // (key: mbti_id, value: 'E')
+
+        for (MbtiDimension dim : dimensions) {
+            String input = "";
+            while (true) {
+                // 예: "1. Energy (E/I): "
+                System.out.printf("%d. %s (%s/%s): ", dim.getId(), dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+                input = sc.nextLine().toUpperCase(); // 대문자로 변경
+
+                // [비즈니스 로직] 유효성 검사
+                if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
+                    newMbtiMap.put(dim.getId(), input); // Map에 저장
+                    break;
+                } else {
+                    System.out.printf("잘못된 입력입니다. %s 또는 %s를 입력해주세요.\n", dim.getOption1(), dim.getOption2());
+                }
+            }
+        }
+
+        // [Service 로직 4] DB에 트랜잭션으로 저장 (ProjectService의 createProject 참고)
+        Connection conn = null;
+        try {
+            conn = Azconnection.getConnection();
+            conn.setAutoCommit(false); // [!] 트랜잭션 시작
+
+            // (아직 MemberRepository에 만들지 않았지만, 곧 만들 예정)
+            memberRepository.upsertMemberMbti(conn, loggedInUser.getId(), newMbtiMap);
+
+            conn.commit(); // [!] 트랜잭션 성공 (커밋)
+            System.out.println("MBTI 정보가 성공적으로 저장되었습니다.");
+
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+            try {
+                if (conn != null) conn.rollback(); // [!] 트랜잭션 실패 (롤백)
+            } catch (SQLException ex) {
+                System.err.println("Rollback 실패: " + ex.getMessage());
+            }
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Auto-Commit 원상복구
+                    conn.close(); // Connection 반환
+                }
+            } catch (SQLException e) {
+                System.err.println("Connection 종료 실패: " + e.getMessage());
+            }
+        }
+    }
     /**
      * 로그아웃 로직
      */
