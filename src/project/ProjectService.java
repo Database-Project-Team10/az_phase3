@@ -112,13 +112,24 @@ public class ProjectService {
             return true;
 
         } catch (SQLException e) {
-            // ... (Rollback 로직 - 변경 없음) ...
+            System.err.println("프로젝트 생성 중 오류 발생: " + e.getMessage());
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                System.err.println("Rollback 실패: " + ex.getMessage());
+            }
         } finally {
-            // ... (Connection 반환 로직 - 변경 없음) ...
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Auto-Commit 원상복구
+                    conn.close(); // Connection 반환
+                }
+            } catch (SQLException e) {
+                System.err.println("Connection 종료 실패: " + e.getMessage());
+            }
         }
         return false;
     }
-
     public boolean updateProject(Long projectId) {
         Project project = projectRepository.findById(projectId);
 
