@@ -8,6 +8,9 @@ public class ReplyService {
 
     public List<Reply> getReplyList(Long postId){
         return replyRepository.findAllByPostId(postId);
+    }
 
+    public List<Reply> getMyReplyList(Long postId, Long memberId){
+        return replyRepository.findMyReplyByPostIdAndMemberId(postId, memberId);
     }
 }

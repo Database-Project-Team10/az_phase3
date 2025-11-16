@@ -36,6 +36,10 @@ public class ReplyController {
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
+                    case "2":
+                        showMyReplyList(replyService.getMyReplyList(postId, memberService.getCurrentUser().getId()));
+                        System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
+                        scanner.nextLine();
                     case "b":
                         return;
                     default:
@@ -49,6 +53,14 @@ public class ReplyController {
         System.out.println("---------- 댓글 목록 (최신순) ----------");
         for (Reply reply : replyList){
             System.out.println("- "+memberService.getMemberInfo(reply.getMemberId()) + ": " + reply.getContent());
+        }
+        System.out.println();
+    }
+
+    private void showMyReplyList(List<Reply> replyList) {
+        System.out.println("---------- 내 댓글 목록 ----------");
+        for (Reply reply : replyList){
+            System.out.println(reply.getId() + ". " + reply.getContent());
         }
         System.out.println();
     }
