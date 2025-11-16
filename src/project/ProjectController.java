@@ -2,6 +2,7 @@ package src.project;
 
 import src.member.MemberService;
 import src.participant.ParticipantService;
+import src.post.PostController;
 
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ public class ProjectController {
     private final Scanner scanner = new Scanner(System.in);
     private final ProjectService projectService = new ProjectService();
     private final ParticipantService participantService = new ParticipantService();
+    private final PostController postController = new PostController();
 
     public void showProjectMenu() {
         while (true) {
@@ -21,7 +23,7 @@ public class ProjectController {
                 System.out.println("1. 프로젝트 목록 보기");
                 System.out.println("2. 프로젝트 생성");
                 System.out.println("3. 프로젝트 참여");
-                System.out.println("4. 내가 참여 중인 프로젝트 보기");
+                System.out.println("4. 내가 참여 중인 프로젝트 보기 및 활동하기");
                 System.out.println("5. 프로젝트 수정");
                 System.out.println("6. 프로젝트 삭제");
                 System.out.println("b. 뒤로 가기");
@@ -70,6 +72,12 @@ public class ProjectController {
                         break;
                     case "4": // 참여 중인 프로젝트 조회
                         projectService.showMyProjectList(memberService.getCurrentUser());
+                        System.out.println("접속할 프로젝트의 번호를 입력해주세요.");
+
+                        projectId = scanner.nextLong();
+                        scanner.nextLine();
+                        postController.showPostMenu(projectId);
+
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
