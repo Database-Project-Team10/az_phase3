@@ -1,11 +1,13 @@
 package src.member;
 
 import src.techspec.MemberTechspecService;
+import src.techspec.MemberTechspecController;
 import java.util.Scanner;
 
 public class MemberController {
     private final MemberService memberService = new MemberService();
-    private final MemberTechspecService memberTechspecService = new MemberTechspecService();
+    //private final MemberTechspecService memberTechspecService = new MemberTechspecService();
+    private final MemberTechspecController memberTechspecController = new MemberTechspecController();
     private final Scanner scanner = new Scanner(System.in);
 
 
@@ -52,7 +54,7 @@ public class MemberController {
                         }
                         break;
                     case "5":
-                        this.showTechspecMenu(memberService.getCurrentUser());
+                        memberTechspecController.showMemberTechspecMenu(memberService.getCurrentUser());
                         break;
                     case "b":
                         return; // 메인 메뉴로
@@ -76,58 +78,7 @@ public class MemberController {
             }
         }
     }
-    /**
-     * 테크스택 관리 서브 메뉴
-     * @param currentUser 현재 로그인한 사용자 정보
-     */
-    private void showTechspecMenu(Member currentUser) {
 
-        while (true) {
-            System.out.println("\n---------- 내 테크스펙 관리 ----------");
-            System.out.println("현재 로그인: " + currentUser.getEmail());
-            System.out.println("1. 내 스택 목록 보기");
-            System.out.println("2. 스택 추가");
-            System.out.println("3. 스택 삭제");
-            System.out.println("b. 뒤로 가기");
-            System.out.print("메뉴를 선택하세요: ");
-            String choice = scanner.nextLine();
 
-            switch (choice) {
-                case "1":
-                    memberTechspecService.viewMyTechspecs(currentUser);
-                    break;
-                case "2":
-                    System.out.print("추가할 기술 스택 이름 (예: Java): ");
-                    String techNameToAdd = scanner.nextLine();
-                    memberTechspecService.addTechspec(currentUser, techNameToAdd);
-                    break;
-                case "3":
-                    // [!] "삭제" 로직 변경
-                    // 1. 먼저 현재 목록을 보여줘서 번호(ID)를 확인하게 함
-                    memberTechspecService.viewMyTechspecs(currentUser);
-                    System.out.println("----------------------------------------");
-                    System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
-                    String idInput = scanner.nextLine();
 
-                    if ("b".equalsIgnoreCase(idInput)) {
-                        System.out.println("삭제를 취소했습니다.");
-                        break; // switch 문 종료
-                    }
-
-                    try {
-                        // 2. 입력받은 번호(String)를 Long으로 변환
-                        Long idToDelete = Long.parseLong(idInput);
-                        // 3. Service의 "ID로 삭제" 메서드 호출
-                        memberTechspecService.removeTechspec(currentUser, idToDelete);
-                    } catch (NumberFormatException e) {
-                        System.out.println("오류: 유효한 숫자를 입력해야 합니다.");
-                    }
-                    break;
-                case "b":
-                    return; // 회원 메뉴(showMemberMenu)로 복귀
-                default:
-                    System.out.println("잘못된 입력입니다.");
-            }
-        }
-    }
 }
