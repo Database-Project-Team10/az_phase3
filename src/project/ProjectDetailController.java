@@ -31,7 +31,7 @@ public class ProjectDetailController {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    // postController.showPostMenu(projectId);
+                    postController.showPostMenu(projectId);
                     break;
                 case "2":
                     // 문서 기능

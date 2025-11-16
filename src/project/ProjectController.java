@@ -1,10 +1,10 @@
 package src.project;
 
-import src.member.Member;
 import src.member.MemberService;
 import src.participant.ParticipantService;
 import src.post.PostController;
 import src.techspec.ProjectTechspecService;
+
 import java.util.Scanner;
 
 public class ProjectController {
@@ -15,6 +15,7 @@ public class ProjectController {
     private final ParticipantService participantService = new ParticipantService();
     private final PostController postController = new PostController();
     private final ProjectTechspecService projectTechspecService = new ProjectTechspecService();
+    private final ProjectDetailController projectDetailController = new ProjectDetailController();
 
     public void showProjectMenu() {
         while (true) {
@@ -78,8 +79,7 @@ public class ProjectController {
 
                         projectId = scanner.nextLong();
                         scanner.nextLine();
-                        postController.showPostMenu(projectId);
-
+                        projectDetailController.showDetailMenu(projectId);
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
