@@ -108,8 +108,8 @@ public class PostController {
 
                         if (postService.updatePost(new Post(
                                 myPost.getId(),
-                                myPost.getTitle(),
-                                myPost.getContent(),
+                                title,
+                                content,
                                 myPost.getCreatedAt()
                         ))){
                             System.out.println("게시물 수정 성공!");
@@ -122,6 +122,17 @@ public class PostController {
                         scanner.nextLine();
                         break;
                     case "5": // 게시물 삭제
+                        System.out.println("---------- 게시물 삭제 ----------");
+                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
+
+                        System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
+                        choiceProjectId = Long.valueOf(scanner.nextLine());
+                        if (postService.deletePost(choiceProjectId)){
+                            System.out.println("게시물 삭제 성공!");
+                        }
+                        else {
+                            System.out.println("게시물 삭제 실패!");
+                        }
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
@@ -147,7 +158,7 @@ public class PostController {
         for (Post post : postList){
             System.out.println(post.getId() + ". " + post.getTitle());
             System.out.println("게시물 내용: " + post.getContent());
+            System.out.println();
         }
-        System.out.println();
     }
 }

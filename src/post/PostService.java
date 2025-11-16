@@ -25,4 +25,8 @@ public class PostService {
     public boolean updatePost(Post post){
         return postRepository.update(post);
     }
+
+    public boolean deletePost(Long postId){
+        return postRepository.delete(postId);
+    }
 }

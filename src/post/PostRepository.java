@@ -126,5 +126,27 @@ public class PostRepository {
         }
         return false;
     }
+
+    public boolean delete(Long postId){
+        String sql = "DELETE FROM post WHERE id=?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, postId);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + postId + "삭제됨.");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
+        return false;
+    }
 }
 
