@@ -110,7 +110,7 @@ public class MemberController {
                 System.out.printf("%d. %s (%s/%s): ", dim.getId(), dim.getDimensionType(), dim.getOption1(), dim.getOption2());
                 input = scanner.nextLine().toUpperCase(); // 대문자로 변경
 
-                if (input.equals(dim.getOption1()) || input.equals(dim.getOption2)) {
+                if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
                     newMbtiMap.put(dim.getId(), input); // Map에 저장 (key: mbti_id, value: 'E')
                     break;
                 } else {

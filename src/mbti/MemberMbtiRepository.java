@@ -10,14 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * [Member]의 MBTI 관련 DB 작업을 담당
- */
+
 public class MemberMbtiRepository {
 
-    /**
-     * (R) Read: MBTI 마스터 테이블의 4가지 차원 정의를 모두 조회합니다.
-     */
     public List<MbtiDimension> findAllMbtiDimensions() {
         List<MbtiDimension> dimensions = new ArrayList<>();
         String sql = "SELECT id, dimension_type, option1, option2 FROM MBTI ORDER BY id";
@@ -41,9 +36,7 @@ public class MemberMbtiRepository {
         return dimensions;
     }
 
-    /**
-     * (R) Read: 특정 회원의 현재 MBTI 설정을 Map으로 조회합니다.
-     */
+
     public Map<Long, String> findMbtiMapByMemberId(Long memberId) {
         Map<Long, String> mbtiMap = new HashMap<>();
         String sql = "SELECT mbti_id, selected_option FROM MemberMbti WHERE member_id = ?";
@@ -63,10 +56,6 @@ public class MemberMbtiRepository {
         return mbtiMap;
     }
 
-    /**
-     * (C/U) Create/Update: 회원의 MBTI 정보를 MERGE (Upsert) 합니다.
-     * [!] 규칙: Repository가 "직접" 트랜잭션을 관리합니다.
-     */
     public boolean saveMemberMbti(Long memberId, Map<Long, String> mbtiMap) {
         String sql = "MERGE INTO MemberMbti m " +
                 "USING (SELECT ? AS m_id, ? AS b_id, ? AS sel_opt FROM dual) src " +

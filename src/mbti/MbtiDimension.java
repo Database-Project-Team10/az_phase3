@@ -1,9 +1,5 @@
 package src.mbti;
 
-/**
- * DB의 MBTI 테이블 (마스터 데이터) 정보를
- * Java 객체로 변환하기 위한 헬퍼 클래스(DTO)입니다.
- */
 public class MbtiDimension {
     Long id;
     String dimensionType; // "Energy", "Awareness", ...
