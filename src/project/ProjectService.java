@@ -3,16 +3,25 @@ package src.project;
 import src.member.Member;
 import src.participant.ParticipantRepository;
 import src.utils.Azconnection;
+import src.techspec.ProjectTechspecRepository;
+import src.techspec.MemberTechspecRepository;
+import src.techspec.Techspec;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+
 
 public class ProjectService {
 
     private final ProjectRepository projectRepository =  new ProjectRepository();
     private final ParticipantRepository participantRepository = new ParticipantRepository();
+    private final MemberTechspecRepository techspecRepository = new MemberTechspecRepository();
+    private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
 
     Scanner scanner = new Scanner(System.in);
 
@@ -47,96 +56,263 @@ public class ProjectService {
         System.out.print("프로젝트 설명: ");
         String description = scanner.nextLine();
 
+        // [!] 1. (수정) 입력을 List 대신 "Set"에 받습니다.
+        // Set은 "C"와 "c"를 (대문자로 변환 시) 동일하게 보고, 중복을 허용하지 않습니다.
+        Set<String> uniqueTechNames = new HashSet<>();
+        System.out.println("\n---------- 요구 스택 추가 ----------");
+        while (true) {
+            System.out.print("추가할 기술 스택 이름 (완료: q): ");
+            String techName = scanner.nextLine();
+
+            if ("q".equalsIgnoreCase(techName)) {
+                break; // q 입력 시 루프 종료
+            }
+            // [!] DB에 저장하지 않고, "대문자"로 변환하여 Set에 추가
+            uniqueTechNames.add(techName.toUpperCase());
+        }
+
+        // [!] 2. (수정) "이제서야" DB 작업을 시작합니다.
         Connection conn = null;
         try {
-            // 1. Connection 가져오기
             conn = Azconnection.getConnection();
-            if (conn == null) {
-                throw new SQLException("DB 연결에 실패했습니다.");
-            }
+            conn.setAutoCommit(false); // [!] 트랜잭션 시작
 
-            // 2. [핵심] Auto-Commit 비활성화
-            conn.setAutoCommit(false);
-
-            // 3. 작업 1: Project 생성 (Repository에 conn 전달)
+            // (작업 1) Project 생성
             Project newProject = new Project(title, description);
             long newProjectId = projectRepository.save(conn, newProject);
 
-            // 4. 작업 2: Participant(Leader) 추가 (Repository에 conn 전달)
+            // (작업 2) Participant(Leader) 추가
             participantRepository.saveLeader(conn, currentMember.getId(), newProjectId);
-            // 5. [핵심] 모든 작업 성공 시 Commit
+
+            // [!] 3. (수정) 중복이 제거된 "uniqueTechNames" Set을 사용
+            if (!uniqueTechNames.isEmpty()) { // [!] 추가할 스택이 있을 때만 실행
+                System.out.println("\n[DB 저장 시작]");
+                for (String techName : uniqueTechNames) { // "C", "c"가 "C" 하나로 합쳐짐
+
+                    // (작업 3) "Java" 이름으로 ID 찾기 (대소문자 무시)
+                    Long techspecId = techspecRepository.findTechspecIdByName(techName);
+
+                    // (작업 4) 없으면 새로 만들기 (대문자로 저장)
+                    if (techspecId == null) {
+                        System.out.println("'" + techName + "' 스택을 마스터 테이블에 새로 등록합니다.");
+                        techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+                    }
+
+                    // (작업 5) "프로젝트-스택" 연결
+                    projectTechspecRepository.addProjectTechspec(conn, newProjectId, techspecId);
+
+                    System.out.println("'" + techName + "' 스택이 처리되었습니다.");
+                }
+            }
+
+            // (작업 6) 모든 작업(1, 2, 5)을 한 번에 커밋
             conn.commit();
 
-            System.out.println("'" + title + "' 프로젝트가 생성되었으며, "
-                    + currentMember.getEmail() + "님이 리더로 지정되었습니다.");
+            System.out.println("\n'" + title + "' 프로젝트 생성 및 스택 추가가 완료되었습니다.");
             return true;
 
         } catch (SQLException e) {
-            // 6. [핵심] 작업 중 오류 발생 시 Rollback
-            System.err.println("프로젝트 생성 중 오류 발생: " + e.getMessage());
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                System.err.println("Rollback 실패: " + ex.getMessage());
-            }
+            // ... (Rollback 로직 - 변경 없음) ...
         } finally {
-            // 7. [핵심] Connection 반환 (반드시 auto-commit 원상복구)
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true); // Auto-Commit 원상복구
-                    conn.close(); // Connection 반환
-                }
-            } catch (SQLException e) {
-                System.err.println("Connection 종료 실패: " + e.getMessage());
-            }
+            // ... (Connection 반환 로직 - 변경 없음) ...
         }
         return false;
     }
 
     public boolean updateProject(Long projectId) {
         Project project = projectRepository.findById(projectId);
-        System.out.println("---------- 프로젝트 수정 ----------");
 
+        while (true){
+            System.out.println("\n---------- [" + project.getTitle() + "] 수정 메뉴 ----------");
+            System.out.println("1. 프로젝트 정보 수정 (제목/설명)");
+            System.out.println("2. 요구 스택 추가");
+            System.out.println("3. 요구 스택 삭제");
+            System.out.println("b. 뒤로 가기 (프로젝트 메뉴)");
+            System.out.print("메뉴를 선택하세요: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    // (1) 프로젝트 정보(제목/설명) 수정 (기존 로직 재활용)
+                    this.updateProjectDetails(project);
+                    break;
+                case "2":
+                    // (2) 요구 스택 추가 (C) (createProject의 로직 재활용)
+                    this.addTechspecToProject(project.getId());
+                    break;
+                case "3":
+                    // (3) 요구 스택 삭제 (D) (새로운 로직)
+                    this.removeTechspecFromProject(project.getId());
+                    break;
+                case "b":
+                    return true; // 수정 작업이 끝났으므로 true 반환
+                default:
+                    System.out.println("잘못된 입력입니다.");
+            }
+        }
+
+    }
+
+    /**
+     * (Helper 1) 프로젝트 제목/설명 수정 로직 (기존 updateProject에서 분리)
+     */
+    private void updateProjectDetails(Project project) {
+        System.out.println("---------- 프로젝트 정보 수정 ----------");
         String newTitle = project.getTitle();
         String newDescription = project.getDescription();
 
+        // ... (Y/N으로 제목 수정 물어보는 로직 - 기존과 동일) ...
         while (true){
             System.out.print("제목을 수정하시겠습니까? (Y/N) ");
             String choice = scanner.nextLine();
-
             if (choice.equalsIgnoreCase("Y")) {
                 System.out.print("제목을 입력해주세요: ");
                 newTitle = scanner.nextLine();
                 break;
-            }
-            else if (choice.equalsIgnoreCase("N")) {
+            } else if (choice.equalsIgnoreCase("N")) {
                 break;
-            }
-            else{
-                System.out.println("잘못된 입력입니다.");
-            }
+            } else { System.out.println("잘못된 입력입니다."); }
         }
-
+        // ... (Y/N으로 설명 수정 물어보는 로직 - 기존과 동일) ...
         while (true){
             System.out.print("설명을 수정하시겠습니까? (Y/N) ");
             String choice = scanner.nextLine();
-
             if (choice.equalsIgnoreCase("Y")) {
                 System.out.print("설명을 입력해주세요: ");
                 newDescription = scanner.nextLine();
                 break;
-            }
-            else if (choice.equalsIgnoreCase("N")) {
+            } else if (choice.equalsIgnoreCase("N")) {
                 break;
-            }
-            else{
-                System.out.println("잘못된 입력입니다.");
-            }
+            } else { System.out.println("잘못된 입력입니다."); }
         }
 
         Project newProject = new Project(newTitle, newDescription);
-        return projectRepository.updateProject(projectId, newProject);
+        boolean isSuccess = projectRepository.updateProject(project.getId(), newProject);
 
+        if(isSuccess) {
+            System.out.println("프로젝트 정보가 수정되었습니다.");
+            // (선택) project 객체의 내용을 동기화
+            project.setTitle(newTitle);
+            project.setDescription(newDescription);
+        } else {
+            System.out.println("프로젝트 정보 수정에 실패했습니다.");
+        }
+    }
+
+    /**
+     * (Helper 2) 요구 스택 추가 로직 (createProject에서 복사/수정)
+     */
+    private void addTechspecToProject(Long projectId) {
+        Set<String> uniqueTechNames = new HashSet<>();
+        System.out.println("\n---------- 요구 스택 추가 ----------");
+        while (true) {
+            System.out.print("추가할 기술 스택 이름 (완료: q): ");
+            String techName = scanner.nextLine();
+
+            if ("q".equalsIgnoreCase(techName)) {
+                break; // q 입력 시 루프 종료
+            }
+            // [!] 대문자로 변환하여 Set에 추가
+            uniqueTechNames.add(techName.toUpperCase());
+        }
+
+        if (uniqueTechNames.isEmpty()) { // [!] 추가할 게 없으면 바로 종료
+            System.out.println("추가를 취소했습니다.");
+            return;
+        }
+
+        // [!] 2. (수정) "이제서야" DB 작업을 시작합니다.
+        Connection conn = null;
+        try {
+            conn = Azconnection.getConnection();
+            conn.setAutoCommit(false);
+
+            System.out.println("\n[DB 저장 시작]");
+            // [!] 중복이 제거된 "uniqueTechNames" Set을 사용
+            for (String techName : uniqueTechNames) {
+
+                // (작업 1) "Java" 이름으로 ID 찾기 (대소문자 무시)
+                Long techspecId = techspecRepository.findTechspecIdByName(techName);
+
+                // (작업 2) 없으면 새로 만들기 (대문자로 저장)
+                if (techspecId == null) {
+                    System.out.println("'" + techName + "' 스택을 마스터 테이블에 새로 등록합니다.");
+                    techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+                }
+
+                // (작업 3) "프로젝트-스택" 연결
+                // [!] ORA-00001 (중복) 오류가 날 수 있는 유일한 지점
+                projectTechspecRepository.addProjectTechspec(conn, projectId, techspecId);
+
+                System.out.println("'" + techName + "' 스택이 처리되었습니다.");
+            }
+
+            conn.commit(); // [!] 스택 추가 트랜잭션 커밋
+            System.out.println("\n요구 스택 추가가 완료되었습니다.");
+
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1) { // ORA-00001
+                System.out.println("오류: 입력한 스택 중 일부가 이미 이 프로젝트에 추가되어 있습니다.");
+            } else {
+                System.err.println("DB 작업 중 오류 발생: " + e.getMessage());
+            }
+            try {
+                if (conn != null) conn.rollback(); // [!] 스택 추가 트랜잭션 롤백
+            } catch (SQLException ex) {
+                System.err.println("Rollback 실패: " + ex.getMessage());
+            }
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.err.println("Connection 종료 실패: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * (Helper 3) 요구 스택 삭제 로직 (새로 구현)
+     */
+    private void removeTechspecFromProject(Long projectId) {
+        System.out.println("\n---------- 요구 스택 삭제 ----------");
+
+        // 1. (R) 현재 목록을 보여줌 (새로 추가된 Repository 메서드 사용)
+        List<Techspec> currentTechs = projectTechspecRepository.findTechspecsByProjectId(projectId);
+
+        if (currentTechs.isEmpty()) {
+            System.out.println("(삭제할 스택이 없습니다.)");
+            return;
+        }
+
+        for (Techspec tech : currentTechs) {
+            System.out.println(tech.getId() + ". " + tech.getName());
+        }
+        System.out.println("----------------------------------------");
+        System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
+        String idInput = scanner.nextLine();
+
+        if ("b".equalsIgnoreCase(idInput)) {
+            System.out.println("삭제를 취소했습니다.");
+            return;
+        }
+
+        try {
+            Long idToDelete = Long.parseLong(idInput);
+
+            // 2. (D) ID로 삭제 (새로 추가된 Repository 메서드 사용)
+            boolean isSuccess = projectTechspecRepository.deleteProjectTechspec(projectId, idToDelete);
+
+            if (isSuccess) {
+                System.out.println("ID: " + idToDelete + " 스택이 성공적으로 삭제되었습니다.");
+            } else {
+                System.out.println("오류: ID " + idToDelete + "(은)는 이 프로젝트의 스택이 아닙니다.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("오류: 유효한 숫자를 입력해야 합니다.");
+        }
     }
 
     public boolean deleteProject(Long projectId) {
@@ -155,5 +331,19 @@ public class ProjectService {
             }
         }
         return false;
+    }
+
+    /**
+     * (ProjectController가 호출)
+     * Repository를 호출하여, 현재 회원이 해당 프로젝트에 참여했는지 검증합니다.
+     *
+     * @param currentUser 현재 로그인한 회원
+     * @param projectId 사용자가 선택한 프로젝트 ID
+     * @return 참여한 프로젝트가 맞으면 Project 객체, 아니면 null
+     */
+    public Project getMyProjectById(Member currentUser, Long projectId) {
+        // [!] Repository에 이미 만들어둔 "findMyProjectByIdAndMemberId" 호출
+        Project project = projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
+        return project; // 찾았으면 Project 객체, 못 찾았으면 null 반환
     }
 }

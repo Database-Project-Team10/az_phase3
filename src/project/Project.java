@@ -43,4 +43,13 @@ public class Project {
     public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

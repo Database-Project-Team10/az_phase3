@@ -1,14 +1,13 @@
 package src.techspec;
 
-import src.techspec.TechspecRepository;
 import src.member.Member;
 import java.util.List;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class TechspecService {
-    private final TechspecRepository techspecRepository = new TechspecRepository();
+public class MemberTechspecService {
+    private final MemberTechspecRepository memberTechspecRepository = new MemberTechspecRepository();
 
     /**
      * 1. 내 스택 목록 보기
@@ -17,7 +16,7 @@ public class TechspecService {
     public void viewMyTechspecs(Member currentUser) {
         System.out.println("\n---------- " + currentUser.getName() + "님의 스택 목록 ----------");
 
-        List<Techspec> myTechs = techspecRepository.findTechspecsByMemberId(currentUser.getId());
+        List<Techspec> myTechs = memberTechspecRepository.findTechspecsByMemberId(currentUser.getId());
 
         if (myTechs.isEmpty()) {
             System.out.println("아직 등록된 스펙이 없습니다.");
@@ -35,7 +34,7 @@ public class TechspecService {
      */
     public void addTechspec(Member currentUser,String techName) {
         // 1. (SELECT) 먼저 마스터 테이블에 기술이 있는지 "밖에서" 확인합니다.
-        Long techspecId = techspecRepository.findTechspecIdByName(techName);
+        Long techspecId = memberTechspecRepository.findTechspecIdByName(techName);
 
         Connection conn = null;
         try {
@@ -48,12 +47,12 @@ public class TechspecService {
             if (techspecId == null) {
                 System.out.println("'" + techName + "' 스택을 마스터 테이블에 새로 등록합니다.");
                 // Repository에 트랜잭션 Connection을 전달
-                techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+                techspecId = memberTechspecRepository.createTechspecAndGetId(conn, techName);
             }
 
             // 4. [핵심 작업] "회원-기술" 연결을 INSERT합니다. (트랜잭션 안에서)
             //    Repository에 트랜잭션 Connection을 전달
-            boolean isSuccess = techspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId);
+            boolean isSuccess = memberTechspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId);
 
             // 5. [트랜잭션 성공] 모든 작업이 성공했으므로 commit
             conn.commit();
@@ -98,7 +97,7 @@ public class TechspecService {
     public void removeTechspec(Member currentUser, Long techspecId) {
         // [Service 로직 1] Repository를 호출하여 MemberTechspec에서 삭제
         // (findTechspecIdByName이 더 이상 필요 없음!)
-        boolean isSuccess = techspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
+        boolean isSuccess = memberTechspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
 
         // [비즈니스 로직 2] 결과 처리
         if (isSuccess) {

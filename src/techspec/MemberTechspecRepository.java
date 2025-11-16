@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TechspecRepository {
+public class MemberTechspecRepository {
     /**
      * 특정 회원이 보유한 모든 기술 스택의 "이름"을 조회합니다.
      * @param memberId 조회할 회원의 ID
@@ -49,7 +49,7 @@ public class TechspecRepository {
         return myTechs; // 조회된 리스트 반환
     }
     public Long findTechspecIdByName(String techName) {
-        String sql = "SELECT id FROM Techspec WHERE name = ?";
+        String sql = "SELECT id FROM Techspec WHERE UPPER(name) = UPPER(?)";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -77,7 +77,7 @@ public class TechspecRepository {
      * @throws SQLException
      */
     public Long createTechspecAndGetId(Connection conn, String techName) throws SQLException {
-        String sql = "INSERT INTO Techspec (name) VALUES (?)";
+        String sql = "INSERT INTO Techspec (name) VALUES (UPPER(?))";
         // [!] ProjectRepository에서 썼던 방식과 동일하게, 생성된 ID를 반환받습니다.
         String[] generatedColumns = {"id"};
 
