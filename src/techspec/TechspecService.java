@@ -1,26 +1,31 @@
 package src.techspec;
 
 import src.member.Member;
-import src.techspec.TechspecRepository;
+import java.util.List;
 
 public class TechspecService {
     private final TechspecRepository techspecRepository = new TechspecRepository();
 
     /**
-     * (개발 중) 1. 내 스택 목록 보기 (R)
+     * 1. 내 스택 목록 보기
      * @param currentUser 현재 로그인한 사용자
      */
     public void viewMyTechspecs(Member currentUser) {
-        System.out.println("\n---------- (개발 중) 내 스택 목록 보기 ----------");
-        System.out.println(currentUser.getEmail() + "님의 스택을 조회합니다.");
+        System.out.println("\n---------- " + currentUser.getName() + "님의 스택 목록 ----------");
 
-        // (다음 로직)
-        // 1. techspecRepository.findTechspecsByMemberId(currentUser.getId()) 호출
-        // 2. 반환된 List<String> (기술 이름 리스트)를 출력
+        List<String> myTechs = techspecRepository.findTechspecsByMemberId(currentUser.getId());
+
+        if (myTechs.isEmpty()) {
+            System.out.println("아직 등록된 스펙이 없습니다.");
+        }else{
+            for (String techName : myTechs) {
+                System.out.println("- "+techName);
+            }
+        }
     }
 
     /**
-     * (개발 중) 2. 스택 추가 (C)
+     * 2. 스택 추가
      * @param currentUser 현재 로그인한 사용자
      * @param techName [!] Controller에서 입력받은 기술 이름
      */
