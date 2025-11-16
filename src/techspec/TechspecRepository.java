@@ -14,13 +14,13 @@ public class TechspecRepository {
      * @param memberId 조회할 회원의 ID
      * @return 기술 스택 이름(String)이 담긴 List
      */
-    public List<String> findTechspecsByMemberId(Long memberId) {
-        List<String> myTechs = new ArrayList<>();
+    public List<Techspec> findTechspecsByMemberId(Long memberId) {
+        List<Techspec> myTechs = new ArrayList<>();
 
         // [!] Phase 2의 DDL을 기반으로 2개 테이블을 JOIN하는 SQL
         // MemberTechspec (회원의 답안지)
         // Techspec (기술 이름 마스터)
-        String sql = "SELECT t.name " +
+        String sql = "SELECT t.id, t.name " +
                 "FROM MemberTechspec mt " +
                 "JOIN Techspec t ON mt.techspec_id = t.id " +
                 "WHERE mt.member_id = ?";
@@ -35,7 +35,9 @@ public class TechspecRepository {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     // "Java", "Python" 등 이름(String)을 리스트에 추가
-                    myTechs.add(rs.getString("name"));
+                    Long techspecId = rs.getLong(1);
+                    String techspecName = rs.getString(2);
+                    myTechs.add(new Techspec(techspecId, techspecName));
                 }
             }
         } catch (SQLException e) {

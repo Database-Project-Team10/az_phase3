@@ -102,9 +102,26 @@ public class MemberController {
                     techspecService.addTechspec(currentUser, techNameToAdd);
                     break;
                 case "3":
-                    System.out.print("삭제할 기술 스택 이름 (예: Java): ");
-                    String techNameToRemove = scanner.nextLine();
-                    techspecService.removeTechspec(currentUser, techNameToRemove);
+                    // [!] "삭제" 로직 변경
+                    // 1. 먼저 현재 목록을 보여줘서 번호(ID)를 확인하게 함
+                    techspecService.viewMyTechspecs(currentUser);
+                    System.out.println("----------------------------------------");
+                    System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
+                    String idInput = scanner.nextLine();
+
+                    if ("b".equalsIgnoreCase(idInput)) {
+                        System.out.println("삭제를 취소했습니다.");
+                        break; // switch 문 종료
+                    }
+
+                    try {
+                        // 2. 입력받은 번호(String)를 Long으로 변환
+                        Long idToDelete = Long.parseLong(idInput);
+                        // 3. Service의 "ID로 삭제" 메서드 호출
+                        techspecService.removeTechspec(currentUser, idToDelete);
+                    } catch (NumberFormatException e) {
+                        System.out.println("오류: 유효한 숫자를 입력해야 합니다.");
+                    }
                     break;
                 case "b":
                     return; // 회원 메뉴(showMemberMenu)로 복귀

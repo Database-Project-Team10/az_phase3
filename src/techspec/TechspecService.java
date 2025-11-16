@@ -17,13 +17,13 @@ public class TechspecService {
     public void viewMyTechspecs(Member currentUser) {
         System.out.println("\n---------- " + currentUser.getName() + "님의 스택 목록 ----------");
 
-        List<String> myTechs = techspecRepository.findTechspecsByMemberId(currentUser.getId());
+        List<Techspec> myTechs = techspecRepository.findTechspecsByMemberId(currentUser.getId());
 
         if (myTechs.isEmpty()) {
             System.out.println("아직 등록된 스펙이 없습니다.");
         }else{
-            for (String techName : myTechs) {
-                System.out.println("- "+techName);
+            for (Techspec tech : myTechs) {
+                System.out.println(tech.getId()+". "+tech.getName());
             }
         }
     }
@@ -93,26 +93,18 @@ public class TechspecService {
     /**
      * (개발 중) 3. 스택 삭제 (D)
      * @param currentUser 현재 로그인한 사용자
-     * @param techName [!] Controller에서 입력받은 기술 이름
+     * @param techspecId [!] Controller에서 입력받은 기술 이름
      */
-    public void removeTechspec(Member currentUser, String techName) {
-        // Repository를 호출하여 Techspec ID를 조회
-        Long techspecId = techspecRepository.findTechspecIdByName(techName);
-
-        // DB에 없는 기술인지 확인
-        if (techspecId == null) {
-            System.out.println("오류: '" + techName + "'(은)는 등록된 기술 스택이 아닙니다.");
-            return;
-        }
-
-        // Repository를 호출하여 MemberTechspec에서 삭제
+    public void removeTechspec(Member currentUser, Long techspecId) {
+        // [Service 로직 1] Repository를 호출하여 MemberTechspec에서 삭제
+        // (findTechspecIdByName이 더 이상 필요 없음!)
         boolean isSuccess = techspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
 
-        // 결과 처리
+        // [비즈니스 로직 2] 결과 처리
         if (isSuccess) {
-            System.out.println("'" + techName + "' 스택이 성공적으로 삭제되었습니다.");
+            System.out.println("ID: " + techspecId + " 스택이 성공적으로 삭제되었습니다.");
         } else {
-            System.out.println("오류: '" + techName + "'(은)는 이미 삭제되었거나, 보유하지 않은 스택입니다.");
+            System.out.println("오류: ID " + techspecId + "(은)는 보유하지 않은 스택이거나, 삭제에 실패했습니다.");
         }
     }
 }
