@@ -1,15 +1,15 @@
 package src.member;
 
+import src.utils.Azconnection;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
-
-import src.utils.Azconnection;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class MemberService {
 
@@ -124,6 +124,10 @@ public class MemberService {
         } else {
             System.out.println("오류가 발생하여 비밀번호 변경에 실패했습니다.");
         }
+    }
+
+    public Member getMemberInfo(Long id) {
+        return memberRepository.findById(id);
     }
 
     //Mbti 입력/수정
