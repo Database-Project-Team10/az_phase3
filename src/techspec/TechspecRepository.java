@@ -45,4 +45,61 @@ public class TechspecRepository {
 
         return myTechs; // 조회된 리스트 반환
     }
+    // [!] --------------------------------------------------------------------
+    // [!] 1. (C) Create - Techspec 마스터 테이블에 INSERT
+    // [!] --------------------------------------------------------------------
+    /**
+     * Techspec 마스터 테이블에 새 기술을 INSERT하고, 생성된 ID를 반환합니다.
+     * @param conn Service에서 전달받은 트랜잭션 Connection
+     * @param techName 새로 추가할 기술 이름 (예: "Git")
+     * @return 생성된 새 ID (Long)
+     * @throws SQLException
+     */
+    public Long createTechspecAndGetId(Connection conn, String techName) throws SQLException {
+        String sql = "INSERT INTO Techspec (name) VALUES (?)";
+        // [!] ProjectRepository에서 썼던 방식과 동일하게, 생성된 ID를 반환받습니다.
+        String[] generatedColumns = {"id"};
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
+            pstmt.setString(1, techName);
+            pstmt.executeUpdate();
+
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getLong(1); // 1번째 컬럼(생성된 ID) 반환
+                } else {
+                    throw new SQLException("Techspec 생성 실패: ID를 가져오지 못했습니다.");
+                }
+            }
+        }
+        // conn.close()는 Service에서 하므로 여기서 닫지 않습니다.
+    }
+
+    // [!] --------------------------------------------------------------------
+    // [!] 2. (C) Create - (수정) MemberTechspec 테이블에 추가
+    // [!] --------------------------------------------------------------------
+    /**
+     * MemberTechspec 테이블에 회원ID와 기술ID를 INSERT 합니다. (스택 추가)
+     * @param conn [!] Service에서 전달받은 트랜잭션 Connection
+     * @param memberId 회원 ID
+     * @param techspecId 기술 ID
+     * @return INSERT 성공 시 true, 실패 시 false
+     * @throws SQLException [!] 트랜잭션 관리를 위해 예외를 Service로 던집니다.
+     */
+    public boolean addMemberTechspec(Connection conn, Long memberId, Long techspecId) throws SQLException {
+        String sql = "INSERT INTO MemberTechspec (member_id, techspec_id) VALUES (?, ?)";
+
+        // [!] Repository가 Connection을 직접 만들지 않고, 전달받은 conn을 사용합니다.
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, memberId);
+            pstmt.setLong(2, techspecId);
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0; // 1줄 이상 삽입되었으면 true 반환
+
+        }
+        // [!] Service가 트랜잭션 처리를 할 수 있도록 catch 블록을 제거하고,
+        //     throws SQLException을 메서드에 추가합니다.
+    }
 }
