@@ -23,7 +23,8 @@ public class TechspecRepository {
         String sql = "SELECT t.id, t.name " +
                 "FROM MemberTechspec mt " +
                 "JOIN Techspec t ON mt.techspec_id = t.id " +
-                "WHERE mt.member_id = ?";
+                "WHERE mt.member_id = ?" +
+                "ORDER BY t.id";
 
         // [!] 새 규칙: Repository에서 직접 Connection을 가져와서 관리
         // try-with-resources: conn, pstmt, rs가 자동으로 close() 됩니다.
