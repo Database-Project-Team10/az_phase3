@@ -1,9 +1,10 @@
 package src.project;
 
+import src.member.Member;
 import src.member.MemberService;
 import src.participant.ParticipantService;
 import src.post.PostController;
-
+import src.techspec.ProjectTechspecService;
 import java.util.Scanner;
 
 public class ProjectController {
@@ -13,6 +14,7 @@ public class ProjectController {
     private final ProjectService projectService = new ProjectService();
     private final ParticipantService participantService = new ParticipantService();
     private final PostController postController = new PostController();
+    private final ProjectTechspecService projectTechspecService = new ProjectTechspecService();
 
     public void showProjectMenu() {
         while (true) {
@@ -86,7 +88,7 @@ public class ProjectController {
                         System.out.print("수정할 프로젝트의 번호를 입력해주세요: ");
                         projectId = scanner.nextLong();
                         scanner.nextLine();
-                        projectService.showProjectDetail(projectId);
+                        //projectService.showProjectDetail(projectId);
 
                         if (projectService.updateProject(projectId)){
                             System.out.println("수정 완료!");

@@ -1,16 +1,12 @@
 package src.techspec;
 
-import src.techspec.ProjectTechspecRepository;
-import src.techspec.MemberTechspecRepository;
-
 import src.project.Project;
-import src.member.Member;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ProjecTechspecService {
+public class ProjectTechspecService {
     // [!] 2개의 Repository를 모두 생성
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
     // (재사용) Techspec 마스터 테이블을 다루기 위해 필요

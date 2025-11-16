@@ -49,7 +49,7 @@ public class MemberTechspecRepository {
         return myTechs; // 조회된 리스트 반환
     }
     public Long findTechspecIdByName(String techName) {
-        String sql = "SELECT id FROM Techspec WHERE name = ?";
+        String sql = "SELECT id FROM Techspec WHERE UPPER(name) = UPPER(?)";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -77,7 +77,7 @@ public class MemberTechspecRepository {
      * @throws SQLException
      */
     public Long createTechspecAndGetId(Connection conn, String techName) throws SQLException {
-        String sql = "INSERT INTO Techspec (name) VALUES (?)";
+        String sql = "INSERT INTO Techspec (name) VALUES (UPPER(?))";
         // [!] ProjectRepository에서 썼던 방식과 동일하게, 생성된 ID를 반환받습니다.
         String[] generatedColumns = {"id"};
 
