@@ -45,6 +45,24 @@ public class TechspecRepository {
 
         return myTechs; // 조회된 리스트 반환
     }
+    public Long findTechspecIdByName(String techName) {
+        String sql = "SELECT id FROM Techspec WHERE name = ?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, techName);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong("id"); // ID를 찾아서 반환
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Techspec ID 조회 중 오류: " + e.getMessage());
+        }
+        return null; // 일치하는 기술이 없으면 null 반환
+    }
     // [!] --------------------------------------------------------------------
     // [!] 1. (C) Create - Techspec 마스터 테이블에 INSERT
     // [!] --------------------------------------------------------------------
