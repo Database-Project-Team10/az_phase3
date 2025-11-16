@@ -76,35 +76,35 @@ public class MemberController {
             }
         }
     }
-    // [!] "내 테크스택 관리" 서브 메뉴 메서드 (변경 없음)
     /**
-     * 테크스택 관리 서브 메뉴 (CRUD 메뉴)
+     * 테크스택 관리 서브 메뉴
      * @param currentUser 현재 로그인한 사용자 정보
      */
     private void showTechspecMenu(Member currentUser) {
 
         while (true) {
-            System.out.println("\n---------- 내 테크스택 관리 ----------");
+            System.out.println("\n---------- 내 테크스펙 관리 ----------");
             System.out.println("현재 로그인: " + currentUser.getEmail());
-            System.out.println("1. 내 스택 목록 보기 (R)");
-            System.out.println("2. 스택 추가 (C)");
-            System.out.println("3. 스택 삭제 (D)");
-            System.out.println("b. 뒤로 가기 (회원 메뉴)");
+            System.out.println("1. 내 스택 목록 보기");
+            System.out.println("2. 스택 추가");
+            System.out.println("3. 스택 삭제");
+            System.out.println("b. 뒤로 가기");
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    // (다음) techspecService.viewMyTechspecs(currentUser);
-                    System.out.println("(개발 중) 내 스택 목록 보기");
+                    techspecService.viewMyTechspecs(currentUser);
                     break;
                 case "2":
-                    // (다음) techspecService.addTechspec(currentUser);
-                    System.out.println("(개발 중) 스택 추가");
+                    System.out.print("추가할 기술 스택 이름 (예: Java): ");
+                    String techNameToAdd = scanner.nextLine();
+                    techspecService.addTechspec(currentUser, techNameToAdd);
                     break;
                 case "3":
-                    // (다음) techspecService.removeTechspec(currentUser);
-                    System.out.println("(개발 중) 스택 삭제");
+                    System.out.print("삭제할 기술 스택 이름 (예: Java): ");
+                    String techNameToRemove = scanner.nextLine();
+                    techspecService.removeTechspec(currentUser, techNameToRemove);
                     break;
                 case "b":
                     return; // 회원 메뉴(showMemberMenu)로 복귀
