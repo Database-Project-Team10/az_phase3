@@ -28,6 +28,7 @@ public class ReplyController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
+            String content = "";
 
             if (memberService.isLoggedIn()) {
                 switch (choice) {
@@ -40,6 +41,20 @@ public class ReplyController {
                         showMyReplyList(replyService.getMyReplyList(postId, memberService.getCurrentUser().getId()));
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
+                    case "3":
+                        System.out.println("---------- 댓글 작성 ----------");
+                        System.out.print("댓글 내용: ");
+                        content = scanner.nextLine();
+                        Reply reply = new Reply(postId, memberService.getCurrentUser().getId(), content);
+                        if (replyService.createReply(reply)){
+                            System.out.println("게시물 생성 성공!");
+                        }
+                        else {
+                            System.out.println("게시물 생성 실패!");
+                        }
+                        System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
+                        scanner.nextLine();
+                        break;
                     case "b":
                         return;
                     default:

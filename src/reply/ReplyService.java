@@ -13,4 +13,8 @@ public class ReplyService {
     public List<Reply> getMyReplyList(Long postId, Long memberId){
         return replyRepository.findMyReplyByPostIdAndMemberId(postId, memberId);
     }
+
+    public boolean createReply(Reply reply){
+        return replyRepository.save(reply);
+    }
 }

@@ -8,12 +8,21 @@ public class Reply {
     Long memberId;
     String content;
     LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    LocalDateTime modifiedAt;
 
-    public Reply(Long id, Long memberId, String content) {
+    public Reply(Long postId, Long memberId, String content) {
+        this.postId = postId;
+        this.memberId = memberId;
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now();
+    }
+
+    public Reply(Long id, Long memberId, String content, LocalDateTime createdAt) {
         this.id = id;
         this.memberId = memberId;
         this.content = content;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -36,7 +45,7 @@ public class Reply {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getModifiedAt() {
+        return modifiedAt;
     }
 }

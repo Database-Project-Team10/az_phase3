@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class ReplyRepository {
                     Reply reply = new Reply(
                             rs.getLong("id"),
                             rs.getLong("member_id"),
-                            rs.getString("content")
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class)
                     );
                     replyList.add(reply);
                 }
@@ -51,7 +53,8 @@ public class ReplyRepository {
                     Reply reply = new Reply(
                             rs.getLong("id"),
                             rs.getLong("member_id"),
-                            rs.getString("content")
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class)
                     );
                     replyList.add(reply);
                 }
@@ -60,6 +63,26 @@ public class ReplyRepository {
             System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
         }
         return replyList;
+    }
+
+    public boolean save(Reply reply){
+        String sql = "INSERT INTO reply (post_id, member_id, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, reply.getPostId());
+            pstmt.setLong(2, reply.getMemberId());
+            pstmt.setString(3, reply.getContent());
+            pstmt.setObject(4, reply.getCreatedAt());
+            pstmt.setObject(5, reply.getModifiedAt());
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows != 0;
+
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+        }
+        return false;
     }
 
 }
