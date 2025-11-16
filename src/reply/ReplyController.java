@@ -105,10 +105,10 @@ public class ReplyController {
         }
     }
 
-    private void showReplyList(List<Reply> replyList) {
+    private void showReplyList(List<ReplyResponseDto> replyList) {
         System.out.println("---------- 댓글 목록 (최신순) ----------");
-        for (Reply reply : replyList){
-            System.out.println("- "+memberService.getMemberInfo(reply.getMemberId()) + ": " + reply.getContent());
+        for (ReplyResponseDto reply : replyList){
+            System.out.println("- "+reply.getName() + ": " + reply.getContent());
         }
         System.out.println();
     }

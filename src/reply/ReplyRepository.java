@@ -13,9 +13,9 @@ import java.util.List;
 
 public class ReplyRepository {
 
-    public List<Reply> findAllByPostId(Long postId){
-        List<Reply> replyList = new ArrayList<>();
-        String sql = "select * from reply where post_id = ? ORDER BY modified_at DESC";
+    public List<ReplyResponseDto> findAllByPostId(Long postId){
+        List<ReplyResponseDto> replyResponseList = new ArrayList<>();
+        String sql = "SELECT r.id, r.content, m.name FROM Reply r JOIN Member m ON r.member_id = m.id WHERE r.post_id = ? ORDER BY r.modified_at DESC";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -24,19 +24,18 @@ public class ReplyRepository {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    Reply reply = new Reply(
-                            rs.getLong("id"),
-                            rs.getLong("member_id"),
-                            rs.getString("content"),
-                            rs.getObject("created_at", LocalDateTime.class)
+                    ReplyResponseDto reply = new ReplyResponseDto(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            rs.getString(3)
                     );
-                    replyList.add(reply);
+                    replyResponseList.add(reply);
                 }
             }
         } catch (SQLException e) {
             System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
         }
-        return replyList;
+        return replyResponseList;
     }
 
     public List<Reply> findMyReplyByPostIdAndMemberId(Long postId, Long memberId){

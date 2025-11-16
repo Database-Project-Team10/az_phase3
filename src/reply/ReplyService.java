@@ -6,7 +6,7 @@ public class ReplyService {
 
     private final ReplyRepository replyRepository = new ReplyRepository();
 
-    public List<Reply> getReplyList(Long postId){
+    public List<ReplyResponseDto> getReplyList(Long postId){
         return replyRepository.findAllByPostId(postId);
     }
 
