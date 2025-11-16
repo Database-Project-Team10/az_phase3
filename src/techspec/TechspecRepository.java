@@ -120,4 +120,33 @@ public class TechspecRepository {
         // [!] Service가 트랜잭션 처리를 할 수 있도록 catch 블록을 제거하고,
         //     throws SQLException을 메서드에 추가합니다.
     }
+    // [!] --------------------------------------------------------------------
+    // [!] 1. (D) Delete: MemberTechspec 테이블에서 삭제
+    // [!] --------------------------------------------------------------------
+    /**
+     * MemberTechspec 테이블에서 회원ID와 기술ID가 일치하는 행을 DELETE 합니다. (스택 삭제)
+     * @param memberId 회원 ID
+     * @param techspecId 기술 ID
+     * @return DELETE 성공 시 true, 실패(삭제된 행이 없음) 시 false
+     */
+    public boolean deleteMemberTechspec(Long memberId, Long techspecId) {
+        String sql = "DELETE FROM MemberTechspec WHERE member_id = ? AND techspec_id = ?";
+
+        // 이 작업은 트랜잭션이 필요 없으므로, Repository가 직접 Connection을 관리합니다.
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, memberId);
+            pstmt.setLong(2, techspecId);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            // 1줄 이상 삭제되었으면(성공) true, 0줄이면(실패) false 반환
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            System.err.println("MemberTechspec 삭제 중 오류: " + e.getMessage());
+            return false;
+        }
+    }
 }
