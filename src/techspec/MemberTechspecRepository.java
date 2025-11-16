@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TechspecRepository {
+public class MemberTechspecRepository {
     /**
      * 특정 회원이 보유한 모든 기술 스택의 "이름"을 조회합니다.
      * @param memberId 조회할 회원의 ID

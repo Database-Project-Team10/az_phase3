@@ -1,11 +1,11 @@
 package src.member;
 
-import src.techspec.TechspecService;
+import src.techspec.MemberTechspecService;
 import java.util.Scanner;
 
 public class MemberController {
     private final MemberService memberService = new MemberService();
-    private final TechspecService techspecService = new TechspecService();
+    private final MemberTechspecService memberTechspecService = new MemberTechspecService();
     private final Scanner scanner = new Scanner(System.in);
 
 
@@ -94,17 +94,17 @@ public class MemberController {
 
             switch (choice) {
                 case "1":
-                    techspecService.viewMyTechspecs(currentUser);
+                    memberTechspecService.viewMyTechspecs(currentUser);
                     break;
                 case "2":
                     System.out.print("추가할 기술 스택 이름 (예: Java): ");
                     String techNameToAdd = scanner.nextLine();
-                    techspecService.addTechspec(currentUser, techNameToAdd);
+                    memberTechspecService.addTechspec(currentUser, techNameToAdd);
                     break;
                 case "3":
                     // [!] "삭제" 로직 변경
                     // 1. 먼저 현재 목록을 보여줘서 번호(ID)를 확인하게 함
-                    techspecService.viewMyTechspecs(currentUser);
+                    memberTechspecService.viewMyTechspecs(currentUser);
                     System.out.println("----------------------------------------");
                     System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
                     String idInput = scanner.nextLine();
@@ -118,7 +118,7 @@ public class MemberController {
                         // 2. 입력받은 번호(String)를 Long으로 변환
                         Long idToDelete = Long.parseLong(idInput);
                         // 3. Service의 "ID로 삭제" 메서드 호출
-                        techspecService.removeTechspec(currentUser, idToDelete);
+                        memberTechspecService.removeTechspec(currentUser, idToDelete);
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 숫자를 입력해야 합니다.");
                     }
