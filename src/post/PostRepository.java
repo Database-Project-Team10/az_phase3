@@ -61,5 +61,26 @@ public class PostRepository {
         }
         return postList;
     }
+
+    public boolean save(Post post){
+        String sql = "INSERT INTO post (project_id, member_id, title, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, post.getProjectId());
+            pstmt.setLong(2, post.getMemberId());
+            pstmt.setString(3, post.getTitle());
+            pstmt.setString(4, post.getContent());
+            pstmt.setObject(5, post.getCreatedAt());
+            pstmt.setObject(6, post.getModifiedAt());
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows != 0;
+
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+        }
+        return false;
+    }
 }
 

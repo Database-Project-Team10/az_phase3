@@ -54,6 +54,18 @@ public class PostController {
                         scanner.nextLine();
                         break;
                     case "3": // 게시물 생성
+                        System.out.println("---------- 게시물 작성 ----------");
+                        System.out.print("게시물 제목: ");
+                        String title = scanner.nextLine();
+                        System.out.print("게시물 내용: ");
+                        String content = scanner.nextLine();
+                        Post post = new Post(projectId, memberService.getCurrentUser().getId(), title, content);
+                        if (postService.createPost(post)){
+                            System.out.println("게시물 생성 성공!");
+                        }
+                        else {
+                            System.out.println("게시물 생성 실패!");
+                        }
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
