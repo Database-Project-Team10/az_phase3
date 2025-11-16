@@ -1,5 +1,6 @@
 package src.reply;
 
+import src.post.Post;
 import src.utils.Azconnection;
 
 import java.sql.Connection;
@@ -65,6 +66,29 @@ public class ReplyRepository {
         return replyList;
     }
 
+    public Reply findById(Long replyId){
+        String sql = "SELECT * FROM reply WHERE id=?";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, replyId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Reply(
+                            rs.getLong("id"),
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("modified_at", LocalDateTime.class)
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+        return null;
+    }
+
     public boolean save(Reply reply){
         String sql = "INSERT INTO reply (post_id, member_id, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = Azconnection.getConnection();
@@ -82,6 +106,46 @@ public class ReplyRepository {
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
         }
+        return false;
+    }
+
+    public boolean update(Reply reply){
+        String sql = "UPDATE reply SET content=?, modified_at=? WHERE id=?";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, reply.getContent());
+            pstmt.setObject(2, reply.getModifiedAt());
+            pstmt.setLong(3, reply.getId());
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows != 0;
+
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean delete(Long replyId) {
+        String sql = "DELETE FROM reply WHERE id=?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, replyId);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("[Debug] Repository: " + replyId + "삭제됨.");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+        }
+
         return false;
     }
 

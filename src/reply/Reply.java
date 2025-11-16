@@ -10,6 +10,13 @@ public class Reply {
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
+    public Reply(Long id, String content, LocalDateTime createdAt, LocalDateTime modifiedAt){
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
+
     public Reply(Long postId, Long memberId, String content) {
         this.postId = postId;
         this.memberId = memberId;
@@ -23,6 +30,13 @@ public class Reply {
         this.memberId = memberId;
         this.content = content;
         this.createdAt = createdAt;
+    }
+
+    public Reply(Long id, String content, LocalDateTime createdAt) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     public Long getId() {

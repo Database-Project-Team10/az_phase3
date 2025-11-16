@@ -14,7 +14,19 @@ public class ReplyService {
         return replyRepository.findMyReplyByPostIdAndMemberId(postId, memberId);
     }
 
+    public Reply getReply(Long replyId){
+        return replyRepository.findById(replyId);
+    }
+
     public boolean createReply(Reply reply){
         return replyRepository.save(reply);
+    }
+
+    public boolean updateReply(Reply reply){
+        return replyRepository.update(reply);
+    }
+
+    public boolean deleteReply(Long replyId){
+        return replyRepository.delete(replyId);
     }
 }
