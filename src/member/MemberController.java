@@ -1,7 +1,7 @@
 package src.member;
 
-import src.techspec.MemberTechspecService;
 import src.techspec.MemberTechspecController;
+
 import java.util.Scanner;
 
 public class MemberController {
