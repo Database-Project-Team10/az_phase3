@@ -31,34 +31,28 @@ public class PostController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
+            Long choiceProjectId = null;
+            String title = null;
+            String content = null;
 
             if (memberService.isLoggedIn()) {
                 switch (choice) {
                     case "1": // 게시물 목록
-                        List<Post> postList = postService.getPostList(projectId);
-                        System.out.println("---------- 전체 게시물 목록 ----------");
-                        for (Post post : postList){
-                            System.out.println(post.getId() + ". " + post.getTitle());
-                            System.out.println("게시물 내용: " + post.getContent());
-                        }
+                        showPostList(postService.getPostList(projectId));
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
                     case "2":  // 내가 작성한 게시물 목록
-                        System.out.println("---------- 내가 작성한 게시물 목록 ----------");
-                        List<Post> myPostList = postService.getMyPostList(projectId, memberService.getCurrentUser().getId());
-                        for (Post post : myPostList){
-                            System.out.println(post.getId() + ". " + post.getTitle());
-                        }
+                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
                     case "3": // 게시물 생성
                         System.out.println("---------- 게시물 작성 ----------");
                         System.out.print("게시물 제목: ");
-                        String title = scanner.nextLine();
+                        title = scanner.nextLine();
                         System.out.print("게시물 내용: ");
-                        String content = scanner.nextLine();
+                        content = scanner.nextLine();
                         Post post = new Post(projectId, memberService.getCurrentUser().getId(), title, content);
                         if (postService.createPost(post)){
                             System.out.println("게시물 생성 성공!");
@@ -70,6 +64,60 @@ public class PostController {
                         scanner.nextLine();
                         break;
                     case "4": // 게시물 수정
+                        System.out.println("---------- 게시물 수정 ----------");
+                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
+
+                        System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
+                        choiceProjectId = Long.valueOf(scanner.nextLine());
+                        Post myPost = postService.getPost(choiceProjectId);
+                        showPostDetail(myPost);
+
+                        while (true) {
+                            System.out.print("제목을 수정하시겠습니까? (Y/N): ");
+                            choice = scanner.nextLine();
+                            if (choice.equals("Y")) {
+                                System.out.print("수정할 제목 입력: ");
+                                title = scanner.nextLine();
+                                break;
+                            }
+                            else if (choice.equals("N")) {
+                                title = myPost.getTitle();
+                                break;
+                            }
+                            else {
+                                System.out.println("잘못된 입력입니다.");
+                            }
+                        }
+
+                        while (true) {
+                            System.out.print("내용을 수정하시겠습니까? (Y/N): ");
+                            choice = scanner.nextLine();
+                            if (choice.equals("Y")) {
+                                System.out.print("수정할 내용 입력: ");
+                                content = scanner.nextLine();
+                                break;
+                            }
+                            else if (choice.equals("N")) {
+                                content = myPost.getContent();
+                                break;
+                            }
+                            else {
+                                System.out.println("잘못된 입력입니다.");
+                            }
+                        }
+
+                        if (postService.updatePost(new Post(
+                                myPost.getId(),
+                                myPost.getTitle(),
+                                myPost.getContent(),
+                                myPost.getCreatedAt()
+                        ))){
+                            System.out.println("게시물 수정 성공!");
+                        }
+                        else {
+                            System.out.println("게시물 수정 실패!");
+                        }
+
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
@@ -84,5 +132,22 @@ public class PostController {
                 }
             }
         }
+    }
+
+    public void showPostDetail(Post post){
+        System.out.println("---------- 게시물 번호 " + post.getId() + " ----------");
+        System.out.println("게시물 제목: " + post.getTitle());
+        System.out.println("게시물 내용");
+        System.out.println(post.getContent());
+        System.out.println();
+    }
+
+    public void showPostList(List<Post> postList){
+        System.out.println("---------- 게시물 목록 ----------");
+        for (Post post : postList){
+            System.out.println(post.getId() + ". " + post.getTitle());
+            System.out.println("게시물 내용: " + post.getContent());
+        }
+        System.out.println();
     }
 }

@@ -17,4 +17,12 @@ public class PostService {
     public boolean createPost(Post post){
         return postRepository.save(post);
     }
+
+    public Post getPost(Long postId){
+        return postRepository.findById(postId);
+    }
+
+    public boolean updatePost(Post post){
+        return postRepository.update(post);
+    }
 }
