@@ -96,11 +96,23 @@ public class TechspecService {
      * @param techName [!] Controller에서 입력받은 기술 이름
      */
     public void removeTechspec(Member currentUser, String techName) {
-        System.out.println("\n---------- (개발 중) 스택 삭제 ----------");
-        System.out.println(currentUser.getEmail() + "님에게서 '" + techName + "' 스택을 삭제합니다.");
+        // Repository를 호출하여 Techspec ID를 조회
+        Long techspecId = techspecRepository.findTechspecIdByName(techName);
 
-        // (다음 로직)
-        // 2. techspecRepository.findTechspecByName("Java") 호출 -> techspec_id 찾기
-        // 3. techspecRepository.deleteMemberTechspec(currentUser.getId(), techspec_id) 호출
+        // DB에 없는 기술인지 확인
+        if (techspecId == null) {
+            System.out.println("오류: '" + techName + "'(은)는 등록된 기술 스택이 아닙니다.");
+            return;
+        }
+
+        // Repository를 호출하여 MemberTechspec에서 삭제
+        boolean isSuccess = techspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
+
+        // 결과 처리
+        if (isSuccess) {
+            System.out.println("'" + techName + "' 스택이 성공적으로 삭제되었습니다.");
+        } else {
+            System.out.println("오류: '" + techName + "'(은)는 이미 삭제되었거나, 보유하지 않은 스택입니다.");
+        }
     }
 }
