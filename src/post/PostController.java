@@ -1,7 +1,6 @@
 package src.post;
 
 import src.member.MemberService;
-import src.participant.ParticipantService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -11,7 +10,6 @@ public class PostController {
     private final MemberService memberService =  new MemberService();
     private final Scanner scanner = new Scanner(System.in);
     private final PostService postService = new PostService();
-    private final ParticipantService participantService = new ParticipantService();
 
     public void showPostMenu(Long projectId) {
         while (true) {
@@ -37,7 +35,8 @@ public class PostController {
             if (memberService.isLoggedIn()) {
                 switch (choice) {
                     case "1": // 게시물 목록
-                        List<Post> postList= postService.getPostList(projectId);
+                        List<Post> postList = postService.getPostList(projectId);
+                        System.out.println("---------- 전체 게시물 목록 ----------");
                         for (Post post : postList){
                             System.out.println(post.getId() + ". " + post.getTitle());
                             System.out.println("게시물 내용: " + post.getContent());
@@ -46,6 +45,11 @@ public class PostController {
                         scanner.nextLine();
                         break;
                     case "2":  // 내가 작성한 게시물 목록
+                        System.out.println("---------- 내가 작성한 게시물 목록 ----------");
+                        List<Post> myPostList = postService.getMyPostList(projectId, memberService.getCurrentUser().getId());
+                        for (Post post : myPostList){
+                            System.out.println(post.getId() + ". " + post.getTitle());
+                        }
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
