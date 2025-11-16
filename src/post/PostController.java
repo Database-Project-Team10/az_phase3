@@ -1,12 +1,14 @@
 package src.post;
 
 import src.member.MemberService;
+import src.reply.ReplyController;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class PostController {
 
+    private final ReplyController replyController = new ReplyController();
     private final MemberService memberService =  new MemberService();
     private final Scanner scanner = new Scanner(System.in);
     private final PostService postService = new PostService();
@@ -23,6 +25,7 @@ public class PostController {
                 System.out.println("3. 게시물 작성");
                 System.out.println("4. 게시물 수정");
                 System.out.println("5. 게시물 삭제");
+                System.out.println("6. 게시물 접속");
                 System.out.println("b. 뒤로 가기");
             } else {
                 System.out.println("로그인해야합니다.");
@@ -31,7 +34,7 @@ public class PostController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
-            Long choiceProjectId = null;
+            Long choicePostId = null;
             String title = null;
             String content = null;
 
@@ -68,8 +71,8 @@ public class PostController {
                         showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
 
                         System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
-                        choiceProjectId = Long.valueOf(scanner.nextLine());
-                        Post myPost = postService.getPost(choiceProjectId);
+                        choicePostId = Long.valueOf(scanner.nextLine());
+                        Post myPost = postService.getPost(choicePostId);
                         showPostDetail(myPost);
 
                         while (true) {
@@ -126,8 +129,8 @@ public class PostController {
                         showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
 
                         System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
-                        choiceProjectId = Long.valueOf(scanner.nextLine());
-                        if (postService.deletePost(choiceProjectId)){
+                        choicePostId = Long.valueOf(scanner.nextLine());
+                        if (postService.deletePost(choicePostId)){
                             System.out.println("게시물 삭제 성공!");
                         }
                         else {
@@ -135,6 +138,14 @@ public class PostController {
                         }
                         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
                         scanner.nextLine();
+                        break;
+                    case "6":
+                        showPostList(postService.getPostList(projectId));
+                        System.out.print("접속할 게시물의 번호를 입력해주세요: ");
+                        choicePostId = Long.valueOf(scanner.nextLine());
+                        showPostDetail(postService.getPost(choicePostId));
+                        replyController.showReplyMenu(choicePostId);
+
                         break;
                     case "b":
                         return;
