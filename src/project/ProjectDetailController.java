@@ -4,6 +4,7 @@ import src.member.MemberService;
 import src.post.PostController;
 import src.mbti.project.ProjectMbtiController;
 import src.link.LinkController;
+import src.document.DocumentController;
 
 import src.mbti.project.ProjectMbtiRepository;
 import src.techspec.ProjectTechspecRepository;
@@ -17,6 +18,7 @@ public class ProjectDetailController {
 
     private final PostController postController =  new PostController();
     private final LinkController linkController = new LinkController();
+    private final DocumentController documentController = new DocumentController();
     private final MemberService memberService = new MemberService();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -52,7 +54,7 @@ public class ProjectDetailController {
                     postController.showPostMenu(projectId);
                     break;
                 case "2":
-                    // 문서 기능
+                    documentController.showDocumentMenu(projectId);
                     break;
                 case "3":
                     linkController.showLinkMenu(projectId);
