@@ -16,10 +16,10 @@ public class ProjectTechspecController {
 
     public void showProjectTechspecMenu(Project currentProject) {
         while(true) {
-            System.out.println("\n---------- [" + currentProject.getTitle() + "] 요구 스택 관리 ----------");
-            System.out.println("1. 요구 스택 목록 보기");
-            System.out.println("2. 스택 추가");
-            System.out.println("3. 스택 삭제 ");
+            System.out.println("\n---------- [" + currentProject.getTitle() + "] 요구 테크스펙 관리 ----------");
+            System.out.println("1. 요구 테크스펙 목록 보기");
+            System.out.println("2. 테크스펙 추가");
+            System.out.println("3. 테크스펙 삭제 ");
             System.out.println("b. 뒤로 가기 (상세 메뉴)");
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();

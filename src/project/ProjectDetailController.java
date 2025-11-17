@@ -1,18 +1,15 @@
 package src.project;
 
+import src.document.DocumentController;
+import src.link.LinkController;
+import src.mbti.project.ProjectMbtiController;
+import src.mbti.project.ProjectMbtiRepository;
+import src.meeting.MeetingController;
 import src.member.MemberService;
 import src.post.PostController;
-import src.mbti.project.ProjectMbtiController;
-import src.link.LinkController;
-import src.document.DocumentController;
-import src.meeting.MeetingController;
-
-import src.mbti.project.ProjectMbtiRepository;
+import src.techspec.project.ProjectTechspecController;
 import src.techspec.project.ProjectTechspecRepository;
-import src.techspec.Techspec;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class ProjectDetailController {
@@ -21,12 +18,15 @@ public class ProjectDetailController {
     private final LinkController linkController = new LinkController();
     private final DocumentController documentController = new DocumentController();
     private final MeetingController meetingController = new MeetingController();
+    private final ProjectTechspecController projectTechspecController = new ProjectTechspecController();
+    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
+
+    private final ProjectService projectService = new ProjectService();
     private final MemberService memberService = new MemberService();
+
     private final Scanner scanner = new Scanner(System.in);
 
-    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
     private final ProjectRepository projectRepository = new ProjectRepository();
-
     private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
 
@@ -42,7 +42,9 @@ public class ProjectDetailController {
                 System.out.println("2. 문서 아카이브");
                 System.out.println("3. 링크 아카이브");
                 System.out.println("4. 회의록 아카이브");
-                System.out.println("5. 설정 정보 조회 (MBTI/스택)");
+                System.out.println("5. 제목/설명 수정");
+                System.out.println("6. 요구 테크스펙");
+                System.out.println("7. 희망 MBTI");
                 System.out.println("b. 뒤로 가기");
             } else {
                 System.out.println("로그인해야합니다.");
@@ -65,7 +67,13 @@ public class ProjectDetailController {
                     meetingController.showMeetingMenu(projectId);
                     break;
                 case "5":
-                    this.showProjectInfo(projectId);
+                    updateProjectInfoUI(currentProject);
+                    break;
+                case "6":
+                    projectTechspecController.showProjectTechspecMenu(currentProject);
+                    return;
+                case "7":
+                    projectMbtiController.showProjectMbtiMenu(currentProject);
                     break;
                 case "b":
                     return;
@@ -76,35 +84,24 @@ public class ProjectDetailController {
         }
     }
 
-    private void showProjectInfo(Long projectId) {
-        System.out.println("\n---------- 프로젝트 설정 정보 ----------");
+    private void updateProjectInfoUI(Project project) {
+        String newTitle = project.getTitle();
+        String newDesc = project.getDescription();
 
-        // (1) 선호 MBTI 조회
-        Map<Long, String> mbtiMap = projectMbtiRepository.findMbtiMapByProjectId(projectId);
-        System.out.print("[선호 MBTI] ");
-        if (mbtiMap.isEmpty()) {
-            System.out.print("(설정되지 않음)");
+        System.out.print("새 제목 (엔터 시 유지): ");
+        String t = scanner.nextLine();
+        if(!t.isEmpty()) newTitle = t;
+
+        System.out.print("새 설명 (엔터 시 유지): ");
+        String d = scanner.nextLine();
+        if(!d.isEmpty()) newDesc = d;
+
+        if(projectService.updateProjectInfo(project.getId(), newTitle, newDesc)) {
+            System.out.println("수정 완료");
+            project.setTitle(newTitle);
+            project.setDescription(newDesc);
         } else {
-            // ID 1~4번 순서대로 출력 (E/I, S/N, T/F, J/P)
-            for (long i = 1; i <= 4; i++) {
-                System.out.print(mbtiMap.getOrDefault(i, "?"));
-            }
+            System.out.println("수정 실패");
         }
-        System.out.println();
-
-        // (2) 요구 기술 스택 조회
-        List<Techspec> techList = projectTechspecRepository.findTechspecsByProjectId(projectId);
-        System.out.println("[요구 기술 스택]");
-        if (techList.isEmpty()) {
-            System.out.println("- (설정되지 않음)");
-        } else {
-            for (Techspec tech : techList) {
-                System.out.println("- " + tech.getName());
-            }
-        }
-
-        System.out.println("----------------------------------------");
-        System.out.println("(엔터키를 누르면 상세 메뉴로 돌아갑니다)");
-        scanner.nextLine();
     }
 }
