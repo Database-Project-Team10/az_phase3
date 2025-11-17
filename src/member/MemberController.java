@@ -71,7 +71,8 @@ public class MemberController {
                          this.manageMyMbti(memberService.getCurrentUser());
                          break;
                     case "4":
-                        if (memberService.deleteMember()){
+                        System.out.print("정말로 탈퇴하시겠습니까? (Y/N) ");
+                        if (memberService.deleteMember(scanner.nextLine())){
                           System.out.println("탈퇴가 완료되었습니다.");
                         }
                         else {

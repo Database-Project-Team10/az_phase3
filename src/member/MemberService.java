@@ -69,13 +69,12 @@ public class MemberService {
 //        return memberRepository.findById(id);
 //    }
 
-    public boolean deleteMember() {
+    public boolean deleteMember(String choice) {
         if (!isLoggedIn()) {
             System.out.println("로그인이 필요합니다.");
             return false;
         }
-        System.out.print("정말로 탈퇴하시겠습니까? (Y/N) ");
-        String choice = sc.nextLine();
+
         if (choice.equalsIgnoreCase("Y")) {
             Long deleteUserId = loggedInUser.getId();
             logout();
@@ -85,9 +84,8 @@ public class MemberService {
             return false;
         }
         else {
-            System.out.println("잘못된 입력입니다.");
+            return false;
         }
-        return false;
     }
 
     /**
