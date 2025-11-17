@@ -26,7 +26,7 @@ public class MemberController {
             if (memberService.isLoggedIn()) {
                 System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
                 System.out.println("1. 로그아웃");
-                System.out.println("2. 회원 정보 수정");
+                System.out.println("2. 비밀번호 수정");
                 System.out.println("3. 내 MBTI 입력/수정");
                 System.out.println("4. 회원 탈퇴");
                 System.out.println("5. 내 테크스펙 관리");
