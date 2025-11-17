@@ -4,6 +4,7 @@ import src.member.MemberService;
 import src.post.PostController;
 import src.link.LinkController;
 import src.document.DocumentController;
+import src.meeting.MeetingController;
 
 import java.util.Scanner;
 
@@ -12,6 +13,7 @@ public class ProjectDetailController {
     private final PostController postController =  new PostController();
     private final LinkController linkController = new LinkController();
     private final DocumentController documentController = new DocumentController();
+    private final MeetingController meetingController = new MeetingController();
     private final MemberService memberService = new MemberService();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -44,7 +46,7 @@ public class ProjectDetailController {
                     linkController.showLinkMenu(projectId);
                     break;
                 case "4":
-                    // 회의록 기능
+                    meetingController.showMeetingMenu(projectId);
                     break;
                 case "b":
                     return;
