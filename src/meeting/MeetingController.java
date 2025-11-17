@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
+import src.meeting.exception.MeetingException;
+import src.meeting.exception.InvalidMeetingInputException;
 
 public class MeetingController {
 
@@ -52,28 +54,31 @@ public class MeetingController {
 
                 case "2": // 회의록 작성
                     System.out.println("---------- 회의록 작성 ----------");
-                    System.out.print("회의록 제목: ");
-                    title = scanner.nextLine();
-                    System.out.print("회의록 내용: ");
-                    description = scanner.nextLine();
                     
-                    startTime = parseDateTime("회의 시작 시간 (YYYY-MM-DD HH:MM): ");
-                    if (startTime == null) break; // 입력 오류 시 메뉴로 복귀
+                    try {
+                        System.out.print("회의록 제목: ");
+                        title = scanner.nextLine();
+                        System.out.print("회의록 내용 (없으면 엔터): ");
+                        description = scanner.nextLine();
 
-                    endTime = parseDateTime("회의 종료 시간 (YYYY-MM-DD HH:MM): ");
-                    if (endTime == null) break; // 입력 오류 시 메뉴로 복귀
+                        if (title.trim().isEmpty()) {
+                            throw new InvalidMeetingInputException("회의록 제목은 비워둘 수 없습니다.");
+                        }
 
-                    if (!endTime.isAfter(startTime)) {
-                        System.out.println("오류: 종료 시간은 시작 시간보다 이후여야 합니다.");
-                        break;
+                        startTime = parseDateTime("회의 시작 시간 (예: 2025-11-17 14:30): ");
+                        endTime = parseDateTime("회의 종료 시간 (예: 2025-11-17 15:30): ");
+                        
+                        Meeting newMeeting = new Meeting(projectId, title, description, startTime, endTime);
+                        
+                        if (meetingService.createMeeting(newMeeting)) {
+                            System.out.println("회의록이 성공적으로 작성되었습니다.");
+                        } else {
+                            System.out.println("회의록 작성에 실패했습니다.");
+                        }
+                    } catch (MeetingException e) {
+                        System.out.println("[오류] " + e.getMessage());
                     }
                     
-                    Meeting newMeeting = new Meeting(projectId, title, description, startTime, endTime);
-                    if (meetingService.createMeeting(newMeeting)) {
-                        System.out.println("회의록이 성공적으로 작성되었습니다.");
-                    } else {
-                        System.out.println("회의록 작성에 실패했습니다.");
-                    }
                     System.out.print("\n엔터키를 누르면 회의록 메뉴로 돌아갑니다.");
                     scanner.nextLine();
                     break;
@@ -87,7 +92,7 @@ public class MeetingController {
                         meetingId = Long.parseLong(scanner.nextLine());
                         Meeting targetMeeting = meetingService.getMeeting(meetingId);
 
-                        if (targetMeeting == null || !targetMeeting.getProjectId().equals(projectId)) {
+                        if (targetMeeting == null) {
                             System.out.println("오류: 해당 회의록을 찾을 수 없습니다.");
                             break;
                         }
@@ -144,32 +149,34 @@ public class MeetingController {
                             } else { System.out.println("잘못된 입력입니다."); }
                         }
 
-                        if (!newEndTime.isAfter(newStartTime)) {
-                            System.out.println("오류: 종료 시간은 시작 시간보다 이후여야 합니다.");
-                            break;
+                        if (newTitle.trim().isEmpty()) {
+                            throw new InvalidMeetingInputException("회의록 제목은 비워둘 수 없습니다.");
                         }
 
                         Meeting updatedMeeting = new Meeting(
-                            targetMeeting.getId(), 
-                            targetMeeting.getProjectId(), 
-                            newTitle, 
-                            newDescription,
-                            newStartTime,
-                            newEndTime
-                        );
-                        
-                        if (meetingService.updateMeeting(updatedMeeting)) {
-                            System.out.println("회의록이 성공적으로 수정되었습니다.");
-                        } else {
-                            System.out.println("회의록 수정에 실패했습니다.");
-                        }
+                                targetMeeting.getId(), 
+                                targetMeeting.getProjectId(), 
+                                newTitle, 
+                                newDescription,
+                                newStartTime,
+                                newEndTime
+                            );
+                            
+                            
+                            if (meetingService.updateMeeting(updatedMeeting, projectId)) {
+                                System.out.println("회의록이 성공적으로 수정되었습니다.");
+                            } else {
+                                System.out.println("회의록 수정에 실패했습니다.");
+                            }
 
-                    } catch (NumberFormatException e) {
-                        System.out.println("오류: 유효한 ID 번호를 입력하세요.");
-                    }
-                    System.out.print("\n엔터키를 누르면 회의록 메뉴로 돌아갑니다.");
-                    scanner.nextLine();
-                    break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+                        } catch (MeetingException e) {
+                            System.out.println("[오류] " + e.getMessage());
+                        }
+                        System.out.print("\n엔터키를 누르면 회의록 메뉴로 돌아갑니다.");
+                        scanner.nextLine();
+                        break;
 
                 case "4": // 회의록 삭제
                     System.out.println("---------- 회의록 삭제 ----------");
@@ -179,13 +186,15 @@ public class MeetingController {
                     try {
                         meetingId = Long.parseLong(scanner.nextLine());
                         
-                        if (meetingService.deleteMeeting(meetingId)) {
+                        if (meetingService.deleteMeeting(meetingId, projectId)) {
                             System.out.println("회의록이 성공적으로 삭제되었습니다.");
                         } else {
                             System.out.println("회의록 삭제에 실패했습니다.");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+                    } catch (MeetingException e) {
+                        System.out.println("[오류] " + e.getMessage());
                     }
                     System.out.print("\n엔터키를 누르면 회의록 메뉴로 돌아갑니다.");
                     scanner.nextLine();
@@ -220,6 +229,11 @@ public class MeetingController {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine();
+            
+            if (input.trim().isEmpty()) {
+                 return null;
+            }
+            
             try {
                 return LocalDateTime.parse(input, formatter);
             } catch (DateTimeParseException e) {
