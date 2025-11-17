@@ -1,6 +1,8 @@
 package src.mbti.project;
 
 import src.mbti.MbtiDimension;
+import src.mbti.project.ProjectMbtiService;
+
 import src.project.Project;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,34 @@ public class ProjectMbtiController {
 
     private final ProjectMbtiService projectMbtiService = new ProjectMbtiService();
     private final Scanner scanner = new Scanner(System.in);
+
+    public Map<Long, String> inputMbti() {
+        Map<Long, String> newMbtiMap = new HashMap<>();
+
+        List<MbtiDimension> dimensions = projectMbtiService.getMbtiDimensions();
+        if (dimensions == null || dimensions.isEmpty()) {
+            System.out.println("오류: MBTI 데이터를 불러올 수 없습니다.");
+            return newMbtiMap;
+        }
+
+        System.out.println("\n---------- 선호 MBTI 입력 ----------");
+        System.out.println("(4가지 차원을 모두 입력합니다.)");
+
+        for (MbtiDimension dim : dimensions) {
+            while (true) {
+                System.out.printf("%s (%s/%s): ", dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+                String input = scanner.nextLine().toUpperCase();
+
+                // 유효성 검사
+                if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
+                    newMbtiMap.put(dim.getId(), input);
+                    break;
+                }
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+        return newMbtiMap; // 입력된 Map 반환
+    }
 
     public void manageProjectMbti(Project currentProject) {
         System.out.println("\n---------- [" + currentProject.getTitle() + "] 선호 MBTI 입력/수정 ----------");
