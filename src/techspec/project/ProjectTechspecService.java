@@ -1,85 +1,86 @@
 package src.techspec.project;
 
+import src.techspec.exception.TechspecInvalidException;
+import src.techspec.exception.TechspecAlreadyExistsException;
+import src.techspec.exception.TechspecNotFoundException;
 import src.project.Project;
 import src.techspec.Techspec;
 import src.techspec.TechspecRepository;
 import src.utils.Azconnection;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 public class ProjectTechspecService {
+
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
     private final TechspecRepository techspecRepository = new TechspecRepository();
 
-    public void viewProjectTechspecs(Project currentProject) {
-        System.out.println("\n---------- [" + currentProject.getTitle() + "] 요구 스택 목록 ----------");
-
-        List<Techspec> projectTechs = projectTechspecRepository.findTechspecsByProjectId(currentProject.getId());
-
-        if (projectTechs.isEmpty()) {
-            System.out.println("(아직 등록된 요구 스택이 없습니다.)");
-        } else {
-            for (Techspec tech : projectTechs) {
-                System.out.println(tech.getId() + ". " + tech.getName());
-            }
-        }
+    public List<Techspec> getProjectTechspecs(Project currentProject) {
+        return projectTechspecRepository.findTechspecsByProjectId(currentProject.getId());
     }
 
     public void addTechspecToProject(Project currentProject, String techName) {
 
-        Long techspecId = techspecRepository.findTechspecIdByName(techName);
+        if (techName == null || techName.isBlank()) {
+            throw new TechspecInvalidException("스택 이름은 비어 있을 수 없습니다.");
+        }
 
         Connection conn = null;
         try {
             conn = Azconnection.getConnection();
             conn.setAutoCommit(false);
 
+            Long techspecId = techspecRepository.findTechspecIdByName(techName);
             if (techspecId == null) {
-                System.out.println("'" + techName + "' 스택을 마스터 테이블에 새로 등록합니다.");
                 techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
             }
 
-            boolean isSuccess = projectTechspecRepository.addProjectTechspec(conn, currentProject.getId(), techspecId);
+            boolean inserted = projectTechspecRepository.addProjectTechspec(
+                    conn, currentProject.getId(), techspecId
+            );
 
+            if (!inserted) {
+                throw new RuntimeException("스택 추가 실패");
+            }
 
             conn.commit();
 
-            if (isSuccess) {
-                System.out.println("'" + techName + "' 스택이 [프로젝트]에 성공적으로 추가되었습니다.");
+        } catch (SQLException e) {
+
+            rollbackQuietly(conn);
+
+            if (e.getErrorCode() == 1) {
+                throw new TechspecAlreadyExistsException(
+                        "이미 존재하는 스택입니다."
+                );
             }
 
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 1) { // ORA-00001 (Unique Constraint)
-                System.out.println("오류: '" + techName + "'(은)는 이미 이 프로젝트에 추가된 스택입니다.");
-            } else {
-                System.err.println("DB 작업 중 오류 발생: " + e.getMessage());
-            }
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                System.err.println("Rollback 실패: " + ex.getMessage());
-            }
+            throw new RuntimeException("DB 오류 발생: " + e.getMessage());
+
         } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Connection 종료 실패: " + e.getMessage());
-            }
+            closeQuietly(conn);
         }
     }
 
     public void removeTechspecFromProject(Project currentProject, Long techspecId) {
 
-        boolean isSuccess = projectTechspecRepository.deleteProjectTechspec(currentProject.getId(), techspecId);
-
-        if (isSuccess) {
-            System.out.println("ID: " + techspecId + " 스택이 [프로젝트]에서 성공적으로 삭제되었습니다.");
-        } else {
-            System.out.println("오류: ID " + techspecId + "(은)는 이 프로젝트에 없거나, 삭제에 실패했습니다.");
+        if (!projectTechspecRepository.deleteProjectTechspec(currentProject.getId(), techspecId)) {
+            throw new TechspecNotFoundException("삭제할 스택이 존재하지 않습니다.");
         }
+    }
+
+    private void rollbackQuietly(Connection conn) {
+        try { if (conn != null) conn.rollback(); } catch (SQLException ignored) {}
+    }
+
+    private void closeQuietly(Connection conn) {
+        try {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        } catch (SQLException ignored) {}
     }
 }
