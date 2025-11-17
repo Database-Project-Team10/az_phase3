@@ -56,7 +56,7 @@ public class MatchingRepository {
     }
 
 
-     //<2> 테크스펙 기반 매칭 (일치 개수 많은 순 상위 10개)
+     //테크스펙 기반 매칭 (일치 개수 많은 순 상위 10개)
     public List<MatchedProject> findTechMatches(Long memberId) {
         List<MatchedProject> results = new ArrayList<>();
         String sql =
@@ -95,7 +95,7 @@ public class MatchingRepository {
     }
 
 
-     // <3> 종합 매칭 (MBTI + Techspec 점수)
+     //종합 매칭 (MBTI + Techspec 점수)
     public List<MatchedProject> findCombinedMatches(Long memberId) {
         List<MatchedProject> results = new ArrayList<>();
         String sql =

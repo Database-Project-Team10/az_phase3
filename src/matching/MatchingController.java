@@ -54,7 +54,7 @@ public class MatchingController {
                         System.out.printf("   └─ 점수: %d | %s\n", p.getScore(), p.getDescription());
                     }
                 }
-                // 결과 확인 후 잠시 대기
+
                 System.out.println("\n(엔터키를 누르면 매칭 메뉴로 돌아갑니다)");
                 scanner.nextLine();
             }
