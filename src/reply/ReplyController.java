@@ -144,15 +144,7 @@ public class ReplyController {
     }
 
     private void printError(Exception e) {
-        if (e instanceof ReplyNotFoundException) {
-            System.out.println("[오류] 댓글을 찾을 수 없습니다.");
-        } else if (e instanceof UnauthorizedReplyAccessException) {
-            System.out.println("[오류] 작성자 본인만 수정/삭제할 수 있습니다.");
-        } else if (e instanceof InvalidReplyException) {
-            System.out.println("[오류] " + e.getMessage());
-        } else {
-            System.out.println("[시스템 오류] " + e.getMessage());
-        }
+        System.out.println("[오류] " + e.getMessage());
     }
 
     private void pause() {
