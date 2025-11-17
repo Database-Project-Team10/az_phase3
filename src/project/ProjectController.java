@@ -3,10 +3,9 @@ package src.project;
 import src.member.MemberService;
 import src.participant.ParticipantService;
 import src.post.PostController;
-import src.techspec.ProjectTechspecController;
+import src.techspec.project.ProjectTechspecController;
 import src.mbti.project.ProjectMbtiController;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;

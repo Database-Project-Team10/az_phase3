@@ -1,5 +1,6 @@
-package src.techspec;
+package src.techspec.project;
 
+import src.techspec.Techspec;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,4 @@
-package src.techspec;
+package src.techspec.project;
 
 import src.project.Project;
 import java.util.Scanner;

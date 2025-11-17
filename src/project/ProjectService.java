@@ -3,11 +3,10 @@ package src.project;
 import src.member.Member;
 import src.participant.ParticipantRepository;
 import src.utils.Azconnection;
-import src.techspec.ProjectTechspecRepository;
-import src.techspec.MemberTechspecRepository;
+import src.techspec.project.ProjectTechspecRepository;
+import src.techspec.member.MemberTechspecRepository;
 import src.mbti.member.MemberMbtiRepository;
 import src.mbti.project.ProjectMbtiRepository;
-import src.mbti.MbtiDimension;
 
 import java.sql.Connection;
 import java.sql.SQLException;

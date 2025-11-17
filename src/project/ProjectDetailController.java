@@ -8,7 +8,7 @@ import src.document.DocumentController;
 import src.meeting.MeetingController;
 
 import src.mbti.project.ProjectMbtiRepository;
-import src.techspec.ProjectTechspecRepository;
+import src.techspec.project.ProjectTechspecRepository;
 import src.techspec.Techspec;
 
 import java.util.List;

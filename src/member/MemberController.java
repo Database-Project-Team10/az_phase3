@@ -1,7 +1,7 @@
 package src.member;
 
 import src.mbti.member.MemberMbtiController;
-import src.techspec.MemberTechspecController;
+import src.techspec.member.MemberTechspecController;
 import src.matching.MatchingController;
 
 import src.member.exception.*;

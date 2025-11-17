@@ -1,7 +1,9 @@
-package src.techspec;
+package src.techspec.member;
 
 import src.member.Member;
 import java.util.List;
+
+import src.techspec.Techspec;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
