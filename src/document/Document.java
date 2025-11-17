@@ -1,9 +1,5 @@
 package src.document;
 
-/**
- * Document (문서) 엔티티를 위한 DTO (Data Transfer Object) 클래스입니다.
- * (참고: Link.java의 구조를 재활용했습니다.)
- */
 public class Document {
     Long id;          // PK (document_id)
     Long projectId;   // FK (project_id)

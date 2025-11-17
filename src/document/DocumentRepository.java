@@ -45,7 +45,7 @@ public class DocumentRepository {
                             rs.getLong("id"),
                             rs.getLong("project_id"),
                             rs.getString("title"),
-                            rs.getString("location") // [!] location으로 변경
+                            rs.getString("location")
                     );
                     documentList.add(document);
                 }
@@ -85,7 +85,7 @@ public class DocumentRepository {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, document.getTitle());
-            pstmt.setString(2, document.getLocation()); // [!] location으로 변경
+            pstmt.setString(2, document.getLocation());
             pstmt.setLong(3, document.getId()); 
 
             int affectedRows = pstmt.executeUpdate();
