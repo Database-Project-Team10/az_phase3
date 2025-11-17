@@ -22,9 +22,9 @@ public class MemberTechspecController {
         while (true) {
             System.out.println("\n---------- 내 테크스택 관리 ----------");
             System.out.println("현재 로그인: " + currentUser.getEmail());
-            System.out.println("1. 내 스택 목록 보기 (R)");
-            System.out.println("2. 스택 추가 (C)");
-            System.out.println("3. 스택 삭제 (D)");
+            System.out.println("1. 내 스택 목록 보기");
+            System.out.println("2. 스택 추가");
+            System.out.println("3. 스택 삭제");
             System.out.println("b. 뒤로 가기 (회원 메뉴)");
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
@@ -48,11 +48,12 @@ public class MemberTechspecController {
                         System.out.println("삭제를 취소했습니다.");
                         break;
                     }
-                    try {
-                        Long idToDelete = Long.parseLong(idInput);
-                        memberTechspecService.removeTechspec(currentUser, idToDelete);
-                    } catch (NumberFormatException e) {
-                        System.out.println("오류: 유효한 숫자를 입력해야 합니다.");
+
+                    Long idToDelete = Long.parseLong(idInput);
+                    if (memberTechspecService.removeTechspec(currentUser, idToDelete)) {
+                        System.out.println("삭제 성공!");
+                    } else {
+                        System.out.println("삭제 실패!");
                     }
                     break;
                 case "b":

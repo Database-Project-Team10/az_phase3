@@ -94,16 +94,9 @@ public class MemberTechspecService {
      * @param currentUser 현재 로그인한 사용자
      * @param techspecId [!] Controller에서 입력받은 기술 이름
      */
-    public void removeTechspec(Member currentUser, Long techspecId) {
+    public boolean removeTechspec(Member currentUser, Long techspecId) {
         // [Service 로직 1] Repository를 호출하여 MemberTechspec에서 삭제
         // (findTechspecIdByName이 더 이상 필요 없음!)
-        boolean isSuccess = memberTechspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
-
-        // [비즈니스 로직 2] 결과 처리
-        if (isSuccess) {
-            System.out.println("ID: " + techspecId + " 스택이 성공적으로 삭제되었습니다.");
-        } else {
-            System.out.println("오류: ID " + techspecId + "(은)는 보유하지 않은 스택이거나, 삭제에 실패했습니다.");
-        }
+        return memberTechspecRepository.deleteMemberTechspec(currentUser.getId(), techspecId);
     }
 }

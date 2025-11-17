@@ -39,56 +39,53 @@ public class MemberRepository {
         // 일치하는 사용자가 없으면 null을 반환
         return null;
     }
-    public Member findById(Long id) {
-        String sql = "SELECT * FROM member WHERE id = ?";
-        try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setLong(1, id);
+//    public Member findById(Long id) {
+//        String sql = "SELECT * FROM member WHERE id = ?";
+//        try (Connection conn = Azconnection.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//
+//            pstmt.setLong(1, id);
+//
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//                // 결과가 있다면 (rs.next())
+//                if (rs.next()) {
+//                    // 찾은 정보로 Member 객체를 생성하여 반환
+//                    return new Member(
+//                            rs.getLong("id"),
+//                            rs.getString("email"),
+//                            rs.getString("password"),
+//                            rs.getString("name"),
+//                            rs.getObject("birth_date", LocalDate.class),
+//                            rs.getObject("created_at", LocalDateTime.class)
+//                    );
+//                }
+//            }
+//        } catch (SQLException e) {
+//            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+//        }
+//
+//        return null;
+//    }
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                // 결과가 있다면 (rs.next())
-                if (rs.next()) {
-                    // 찾은 정보로 Member 객체를 생성하여 반환
-                    return new Member(
-                            rs.getLong("id"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getObject("birth_date", LocalDate.class),
-                            rs.getObject("created_at", LocalDateTime.class)
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
-        }
-
-        return null;
-    }
-    public void save(Member member) throws SQLException{
-        // [SQL] members 테이블에 username과 password를 삽입합니다.
+    public boolean save(Member member){
         String sql = "INSERT INTO member (email, password, name, birth_date, created_at) VALUES (?, ?, ?, ? ,?)";
 
-        // try-with-resources: conn과 pstmt가 자동으로 close() 됩니다.
-        Connection conn = Azconnection.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, member.getEmail());
+            pstmt.setString(2, member.getPassword());
+            pstmt.setString(3, member.getName());
+            pstmt.setObject(4, member.getBirthDate());
+            pstmt.setObject(5, member.getCreatedAt());
 
-        // SQL의 '?'에 값을 바인딩합니다. (SQL Injection 방지)
-        pstmt.setString(1, member.getEmail());
-        pstmt.setString(2, member.getPassword());
-        pstmt.setString(3, member.getName());
-        pstmt.setObject(4, member.getBirthDate());
-        pstmt.setObject(5, member.getCreatedAt());
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows != 0;
 
-
-        // 쿼리 실행
-        int affectedRows = pstmt.executeUpdate();
-
-        if (affectedRows > 0) {
-            System.out.println("[Debug] Repository: DB에 " + member.getEmail() + " 저장됨.");
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
         }
-
+        return false;
     }
 
     public boolean updatePassword(String email, String newPassword) {
@@ -107,7 +104,6 @@ public class MemberRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + email + "의 비밀번호 변경됨.");
                 return true; // 1개 이상의 행이 변경되었으면 성공
             }
 
@@ -128,7 +124,6 @@ public class MemberRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + id + "회원 탙퇴");
                 return true;
             }
 

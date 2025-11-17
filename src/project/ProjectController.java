@@ -2,11 +2,11 @@ package src.project;
 
 import src.member.MemberService;
 import src.participant.ParticipantService;
-import src.post.PostController;
-import src.techspec.ProjectTechspecService;
-import src.mbti.ProjectMbtiController;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ProjectController {
 
@@ -14,8 +14,6 @@ public class ProjectController {
     private final Scanner scanner = new Scanner(System.in);
     private final ProjectService projectService = new ProjectService();
     private final ParticipantService participantService = new ParticipantService();
-    private final PostController postController = new PostController();
-    private final ProjectTechspecService projectTechspecService = new ProjectTechspecService();
     private final ProjectDetailController projectDetailController = new ProjectDetailController();
     private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
 
@@ -48,12 +46,31 @@ public class ProjectController {
                         System.out.print("보고 싶은 프로젝트 개수를 입력하세요.(최신순): ");
                         int cnt = scanner.nextInt();
                         scanner.nextLine();
-                        projectService.showProjectList(cnt);
+                        showProjectList(projectService.getProjectList(cnt));
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
                     case "2": // 프로젝트 생성
-                        if (projectService.createProject(memberService.getCurrentUser())){
+                        System.out.println("---------- 프로젝트 생성 ----------");
+                        System.out.print("프로젝트 제목: ");
+                        String title = scanner.nextLine();
+                        System.out.print("프로젝트 설명: ");
+                        String description = scanner.nextLine();
+
+                        Set<String> uniqueTechNames = new HashSet<>();
+                        System.out.println("\n---------- 요구 스택 추가 ----------");
+                        while (true) {
+                            System.out.print("추가할 기술 스택 이름 (완료: q): ");
+                            String techName = scanner.nextLine();
+
+                            if ("q".equalsIgnoreCase(techName)) {
+                                break; // q 입력 시 루프 종료
+                            }
+                            // [!] DB에 저장하지 않고, "대문자"로 변환하여 Set에 추가
+                            uniqueTechNames.add(techName.toUpperCase());
+                        }
+
+                        if (projectService.createProject(title, description, uniqueTechNames, memberService.getCurrentUser())){
                             System.out.println("프로젝트가 생성되었습니다.");
                         }
                         else {
@@ -76,7 +93,7 @@ public class ProjectController {
                         scanner.nextLine();
                         break;
                     case "4": // 참여 중인 프로젝트 조회
-                        projectService.showMyProjectList(memberService.getCurrentUser());
+                        showProjectList(projectService.getMyProjectList(memberService.getCurrentUser()));
                         System.out.println("접속할 프로젝트의 번호를 입력해주세요.");
 
                         projectId = scanner.nextLong();
@@ -86,11 +103,10 @@ public class ProjectController {
                         scanner.nextLine();
                         break;
                     case "5": // 프로젝트 수정
-                        projectService.showMyProjectList(memberService.getCurrentUser());
+                        showProjectList(projectService.getMyProjectList(memberService.getCurrentUser()));
                         System.out.print("수정할 프로젝트의 번호를 입력해주세요: ");
                         projectId = scanner.nextLong();
                         scanner.nextLine();
-                        //projectService.showProjectDetail(projectId);
 
                         if (projectService.updateProject(projectId)){
                             System.out.println("수정 완료!");
@@ -102,11 +118,12 @@ public class ProjectController {
                         scanner.nextLine();
                         break;
                     case "6": // 프로젝트 삭제
-                        projectService.showMyProjectList(memberService.getCurrentUser());
+                        showProjectList(projectService.getMyProjectList(memberService.getCurrentUser()));
                         System.out.print("삭제할 프로젝트의 번호를 입력해주세요: ");
                         projectId = scanner.nextLong();
                         scanner.nextLine();
-                        if (projectService.deleteProject(projectId)){
+                        System.out.print("정말로 삭제하시겠습니까? (Y/N) ");
+                        if (projectService.deleteProject(projectId, scanner.nextLine())){
                             System.out.println("삭제 완료!");
                         }
                         else {
@@ -127,7 +144,7 @@ public class ProjectController {
                         System.out.print("보고 싶은 프로젝트 개수를 입력하세요.(최신순): ");
                         int cnt = scanner.nextInt();
                         scanner.nextLine();
-                        projectService.showProjectList(cnt);
+                        showProjectList(projectService.getProjectList(cnt));
                         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
                         scanner.nextLine();
                         break;
@@ -138,5 +155,19 @@ public class ProjectController {
                 }
             }
         }
+    }
+
+    private void showProjectList(List<Project> projectList){
+        System.out.println("---------- 프로젝트 목록 ----------");
+        for (Project project : projectList) {
+            System.out.println(project.getId() + ". " + project.getTitle());
+        }
+    }
+
+    private void showProjectDetail(Project project){
+        System.out.println("\n---------- 프로젝트 상세 정보 ----------");
+        System.out.println("프로젝트명: " +  project.getTitle());
+        System.out.println("\n프로젝트 설명");
+        System.out.println(project.getDescription());
     }
 }
