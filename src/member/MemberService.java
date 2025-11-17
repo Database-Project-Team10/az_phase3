@@ -10,7 +10,7 @@ public class MemberService {
     /**
      * 회원가입
      */
-    public boolean signUp(Member member, String confirmPassword) {
+    public void signUp(Member member, String confirmPassword) {
 
         if (isLoggedIn()) {
             throw new UnauthorizedException();
@@ -24,13 +24,13 @@ public class MemberService {
             throw new PasswordMismatchException();
         }
 
-        return memberRepository.save(member);
+        memberRepository.save(member);
     }
 
     /**
      * 로그인
      */
-    public boolean login(String email, String password) {
+    public void login(String email, String password) {
 
         if (isLoggedIn()) {
             throw new UnauthorizedException();
@@ -43,13 +43,12 @@ public class MemberService {
         }
 
         loggedInUser = member;
-        return true;
     }
 
     /**
      * 비밀번호 변경
      */
-    public boolean editPassword(String newPassword, String confirmPassword) {
+    public void editPassword(String newPassword, String confirmPassword) {
 
         if (!isLoggedIn()) {
             throw new UnauthorizedException();
@@ -59,13 +58,13 @@ public class MemberService {
             throw new PasswordMismatchException();
         }
 
-        return memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
+        memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
     }
 
     /**
      * 회원 탈퇴
      */
-    public boolean deleteMember(String choice) {
+    public void deleteMember(String choice) {
 
         if (!isLoggedIn()) {
             throw new UnauthorizedException();
@@ -74,21 +73,18 @@ public class MemberService {
         if (choice.equalsIgnoreCase("Y")) {
             Long deleteUserId = loggedInUser.getId();
             logout();
-            return memberRepository.delete(deleteUserId);
+            memberRepository.delete(deleteUserId);
         }
-
-        return false;
     }
 
     /**
      * 로그아웃
      */
-    public boolean logout() {
+    public void logout() {
         if (!isLoggedIn()) {
             throw new UnauthorizedException();
         }
         loggedInUser = null;
-        return true;
     }
 
     /**

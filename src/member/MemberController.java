@@ -92,11 +92,8 @@ public class MemberController {
                 String input = scanner.nextLine();
 
                 try {
-                    if (memberService.deleteMember(input)) {
-                        System.out.println("탈퇴가 완료되었습니다.");
-                    } else {
-                        System.out.println("탈퇴가 취소되었습니다.");
-                    }
+                    memberService.deleteMember(input);
+                    System.out.println("탈퇴가 완료되었습니다.");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
                 }

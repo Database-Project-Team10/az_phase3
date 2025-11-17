@@ -37,7 +37,7 @@ public class ReplyService {
         return reply;
     }
 
-    public boolean createReply(Reply reply){
+    public void createReply(Reply reply){
         if (reply.getPostId() == null){
             throw new InvalidReplyException("게시물 ID가 필요합니다.");
         }
@@ -47,10 +47,10 @@ public class ReplyService {
         if (reply.getContent() == null || reply.getContent().trim().isEmpty()) {
             throw new InvalidPostException("댓글 내용은 필수입니다.");
         }
-        return replyRepository.save(reply);
+        replyRepository.save(reply);
     }
 
-    public boolean updateReply(Reply reply){
+    public void updateReply(Reply reply){
         Reply original =  replyRepository.findById(reply.getId());
         if (original == null){
             throw new ReplyNotFoundException();
@@ -64,10 +64,10 @@ public class ReplyService {
             throw new InvalidPostException("댓글 내용은 필수입니다.");
         }
 
-        return replyRepository.update(reply);
+        replyRepository.update(reply);
     }
 
-    public boolean deleteReply(Long replyId, Long memberId){
+    public void deleteReply(Long replyId, Long memberId){
         Reply original =  replyRepository.findById(replyId);
         if (original == null){
             throw new ReplyNotFoundException();
@@ -76,6 +76,6 @@ public class ReplyService {
         if (!original.getMemberId().equals(memberId)){
             throw new UnauthorizedReplyAccessException();
         }
-        return replyRepository.delete(replyId);
+        replyRepository.delete(replyId);
     }
 }
