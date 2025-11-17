@@ -1,12 +1,13 @@
 package src.project;
 
-import src.member.Member;
-import src.participant.ParticipantRepository;
-import src.utils.Azconnection;
-import src.techspec.project.ProjectTechspecRepository;
-import src.techspec.member.MemberTechspecRepository;
 import src.mbti.member.MemberMbtiRepository;
 import src.mbti.project.ProjectMbtiRepository;
+import src.member.Member;
+import src.participant.ParticipantRepository;
+import src.techspec.TechspecRepository;
+import src.techspec.member.MemberTechspecRepository;
+import src.techspec.project.ProjectTechspecRepository;
+import src.utils.Azconnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository =  new ProjectRepository();
     private final ParticipantRepository participantRepository = new ParticipantRepository();
-    private final MemberTechspecRepository techspecRepository = new MemberTechspecRepository();
+    private final TechspecRepository techspecRepository = new TechspecRepository();
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
     private final MemberMbtiRepository memberMbtiRepository = new MemberMbtiRepository();
     private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
