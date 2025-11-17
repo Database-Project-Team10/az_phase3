@@ -74,6 +74,7 @@ public class PostRepository {
                 if (rs.next()) {
                     return new Post(
                             rs.getLong("id"),
+                            rs.getLong("member_id"),
                             rs.getString("title"),
                             rs.getString("content"),
                             rs.getObject("created_at", LocalDateTime.class),
@@ -188,7 +189,6 @@ public class PostRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + postId + "삭제됨.");
                 return true;
             }
 

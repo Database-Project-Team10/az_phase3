@@ -12,6 +12,15 @@ public class Post {
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
+    public Post(Long id, Long memberId, String title, String content, LocalDateTime createdAt,  LocalDateTime modifiedAt) {
+        this.id = id;
+        this.memberId = memberId;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
+
     public Post(Long id, Long memberId, String title, String content, LocalDateTime createdAt){
         this.id = id;
         this.memberId = memberId;

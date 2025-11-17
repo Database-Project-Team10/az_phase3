@@ -81,7 +81,7 @@ public class PostService {
     }
 
     /**
-     * 게시글 단건 조회
+     * 프로젝트 내부 게시글 단건 조회
      */
     public Post getPostInProject(Long postId, Long projectId) {
         Post post = postRepository.findByIdAndProjectId(postId, projectId);
@@ -98,7 +98,7 @@ public class PostService {
      */
     public void updatePost(Post updatedPost) {
 
-        Post original = postRepository.findByIdAndMemberId(updatedPost.getId(), updatedPost.getMemberId());
+        Post original = postRepository.findById(updatedPost.getId());
         if (original == null) {
             throw new PostNotFoundException();
         }
@@ -123,12 +123,12 @@ public class PostService {
      */
     public void deletePost(Long postId, Long memberId) {
 
-        Post post = postRepository.findByIdAndMemberId(postId, memberId);
-        if (post == null) {
+        Post original = postRepository.findById(postId);
+        if (original == null) {
             throw new PostNotFoundException();
         }
 
-        if (!post.getMemberId().equals(memberId)) {
+        if (!original.getMemberId().equals(memberId)) {
             throw new UnauthorizedPostAccessException();
         }
 
