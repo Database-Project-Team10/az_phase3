@@ -87,6 +87,31 @@ public class PostRepository {
         return null;
     }
 
+    public Post findByIdAndMemberId(Long postId, Long memberId){
+        String sql = "SELECT * FROM post WHERE id=? AND member_id=?";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, postId);
+            pstmt.setLong(2, memberId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Post(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("modified_at", LocalDateTime.class)
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+        return null;
+    }
+
     public boolean save(Post post){
         String sql = "INSERT INTO post (project_id, member_id, title, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = Azconnection.getConnection();
