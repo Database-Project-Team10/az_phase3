@@ -74,18 +74,18 @@ public class MemberController {
                     case "1":
                         System.out.println("---------- 회원 가입 ----------");
                         System.out.print("사용할 이메일: ");
-                        String email = scanner.nextLine();
+                        String newEmail = scanner.nextLine();
                         System.out.print("사용할 비밀번호: ");
-                        String password = scanner.nextLine();
+                        String newPassword = scanner.nextLine();
                         System.out.print("비밀번호 확인: ");
                         String confirmPassword = scanner.nextLine();
                         System.out.print("이름: ");
-                        String name = scanner.nextLine();
+                        String newName = scanner.nextLine();
                         System.out.print("생년월일(YYYY-MM-DD): ");
-                        String birthDate = scanner.nextLine();
+                        String newBirthDate = scanner.nextLine();
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                        LocalDate localBirthDate = LocalDate.parse(birthDate, formatter);
-                        Member member = new Member(email, password, name, localBirthDate);
+                        LocalDate localBirthDate = LocalDate.parse(newBirthDate, formatter);
+                        Member member = new Member(newEmail, newPassword, newName, localBirthDate);
                         if (memberService.signUp(member, confirmPassword)){
                             System.out.println("'" + member.getEmail() + "'님, 회원가입이 완료되었습니다!");
                         }
@@ -94,10 +94,20 @@ public class MemberController {
                         }
                         break;
                     case "2":
-                        memberService.login();
+                        System.out.println("---------- 로그인 ----------");
+                        System.out.print("이메일: ");
+                        String email = scanner.nextLine();
+                        System.out.print("비밀번호: ");
+                        String password = scanner.nextLine();
+                        if (memberService.login(email, password)){
+                            System.out.println("로그인 성공! '" + email + "'님, 환영합니다.");
+                        }
+                        else {
+                            System.out.println("로그인 실패! 이메일 혹은 비밀번호가 잘못되었습니다.");
+                        }
                         break;
                     case "b":
-                        return; // 메인 메뉴로
+                        return;
                     default:
                         System.out.println("잘못된 입력입니다.");
                 }

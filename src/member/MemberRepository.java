@@ -39,6 +39,7 @@ public class MemberRepository {
         // 일치하는 사용자가 없으면 null을 반환
         return null;
     }
+
     public Member findById(Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
         try (Connection conn = Azconnection.getConnection();
