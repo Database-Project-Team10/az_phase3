@@ -3,7 +3,8 @@ package src.document;
 import src.member.MemberService;
 import java.util.List;
 import java.util.Scanner;
-
+import src.document.exception.DocumentException;
+import src.document.exception.InvalidDocumentInputException;
 
 public class DocumentController {
 
@@ -47,17 +48,28 @@ public class DocumentController {
 
                 case "2":
                     System.out.println("---------- 문서 작성 ----------");
-                    System.out.print("문서 제목: ");
-                    title = scanner.nextLine();
-                    System.out.print("문서 위치: ");
-                    location = scanner.nextLine();
-                    
-                    Document newDocument = new Document(projectId, title, location);
-                    if (documentService.createDocument(newDocument)) {
-                        System.out.println("문서가 성공적으로 작성되었습니다.");
-                    } else {
-                        System.out.println("문서 작성에 실패했습니다.");
+
+                    try {
+                        System.out.print("문서 제목: ");
+                        title = scanner.nextLine();
+                        System.out.print("문서 위치 (e.g., /docs/file.pdf): ");
+                        location = scanner.nextLine();
+
+                        if (title.trim().isEmpty() || location.trim().isEmpty()) {
+                            throw new InvalidDocumentInputException("제목과 위치는 비워둘 수 없습니다.");
+                        }
+                        
+                        Document newDocument = new Document(projectId, title, location);
+                        
+                        if (documentService.createDocument(newDocument)) {
+                            System.out.println("문서가 성공적으로 작성되었습니다.");
+                        } else {
+                            System.out.println("문서 작성에 실패했습니다.");
+                        }
+                    } catch (DocumentException e) {
+                        System.out.println("[오류] " + e.getMessage());
                     }
+                    
                     System.out.print("\n엔터키를 누르면 문서 메뉴로 돌아갑니다.");
                     scanner.nextLine();
                     break;
@@ -71,7 +83,7 @@ public class DocumentController {
                         documentId = Long.parseLong(scanner.nextLine());
                         Document targetDocument = documentService.getDocument(documentId);
 
-                        if (targetDocument == null || !targetDocument.getProjectId().equals(projectId)) {
+                        if (targetDocument == null) {
                             System.out.println("오류: 해당 문서를 찾을 수 없습니다.");
                             break;
                         }
@@ -108,6 +120,10 @@ public class DocumentController {
                             }
                         }
 
+                        if (newTitle.trim().isEmpty() || newLocation.trim().isEmpty()) {
+                            throw new InvalidDocumentInputException("제목과 위치는 비워둘 수 없습니다.");
+                        }
+
                         Document updatedDocument = new Document(
                             targetDocument.getId(), 
                             targetDocument.getProjectId(), 
@@ -115,7 +131,7 @@ public class DocumentController {
                             newLocation
                         );
                         
-                        if (documentService.updateDocument(updatedDocument)) {
+                        if (documentService.updateDocument(updatedDocument, projectId)) {
                             System.out.println("문서가 성공적으로 수정되었습니다.");
                         } else {
                             System.out.println("문서 수정에 실패했습니다.");
@@ -123,6 +139,8 @@ public class DocumentController {
 
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+                    } catch (DocumentException e) {
+                        System.out.println("[오류] " + e.getMessage());
                     }
                     System.out.print("\n엔터키를 누르면 문서 메뉴로 돌아갑니다.");
                     scanner.nextLine();
@@ -136,13 +154,15 @@ public class DocumentController {
                     try {
                         documentId = Long.parseLong(scanner.nextLine());
                         
-                        if (documentService.deleteDocument(documentId)) {
+                        if (documentService.deleteDocument(documentId, projectId)) {
                             System.out.println("문서가 성공적으로 삭제되었습니다.");
                         } else {
                             System.out.println("문서 삭제에 실패했습니다.");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+                    } catch (DocumentException e) {
+                        System.out.println("[오류] " + e.getMessage());
                     }
                     System.out.print("\n엔터키를 누르면 문서 메뉴로 돌아갑니다.");
                     scanner.nextLine();
