@@ -42,7 +42,7 @@ public class MemberController {
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
             if (choice.equals("b")) {
-                return; // showMemberMenu() 메서드 자체를 종료시킴
+                return;
             }
 
             if (memberService.isLoggedIn()) {

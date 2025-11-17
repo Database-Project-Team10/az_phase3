@@ -8,10 +8,6 @@ public class MemberTechspecController {
     private final MemberTechspecService memberTechspecService = new MemberTechspecService();
     private final Scanner scanner = new Scanner(System.in);
 
-    /**
-     * (MemberController로부터 호출됨)
-     * @param currentUser 현재 로그인한 사용자 정보
-     */
     public void showMemberTechspecMenu(Member currentUser) {
 
         while (true) {
@@ -52,7 +48,7 @@ public class MemberTechspecController {
                     }
                     break;
                 case "b":
-                    return; // 회원 메뉴(showMemberMenu)로 복귀
+                    return;
                 default:
                     System.out.println("잘못된 입력입니다.");
             }
