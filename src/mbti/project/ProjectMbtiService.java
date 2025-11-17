@@ -1,9 +1,9 @@
 package src.mbti.project;
 
 import src.mbti.MbtiDimension;
+import src.mbti.MbtiRepository;
 import src.mbti.exception.InvalidMbtiException;
 import src.mbti.exception.MbtiNotFoundException;
-import src.mbti.member.MemberMbtiRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
 public class ProjectMbtiService {
 
     private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
-    private final MemberMbtiRepository mbtiRepository = new MemberMbtiRepository();
+    private final MbtiRepository mbtiRepository = new MbtiRepository();
 
     public List<MbtiDimension> getMbtiDimensions() {
         List<MbtiDimension> dimensions = mbtiRepository.findAllMbtiDimensions();

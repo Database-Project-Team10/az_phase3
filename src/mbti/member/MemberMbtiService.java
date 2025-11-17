@@ -1,6 +1,7 @@
 package src.mbti.member;
 
 import src.mbti.MbtiDimension;
+import src.mbti.MbtiRepository;
 import src.mbti.exception.InvalidMbtiException;
 import src.mbti.exception.MbtiNotFoundException;
 
@@ -9,7 +10,8 @@ import java.util.Map;
 
 public class MemberMbtiService {
 
-    private final MemberMbtiRepository mbtiRepository = new MemberMbtiRepository();
+    private final MbtiRepository mbtiRepository = new MbtiRepository();
+    private final MemberMbtiRepository memberMbtiRepository = new MemberMbtiRepository();
 
     public List<MbtiDimension> getMbtiDimensions() {
         List<MbtiDimension> dimensions = mbtiRepository.findAllMbtiDimensions();
@@ -25,7 +27,7 @@ public class MemberMbtiService {
             throw new InvalidMbtiException("회원 ID가 필요합니다.");
         }
 
-        Map<Long, String> map = mbtiRepository.findMbtiMapByMemberId(memberId);
+        Map<Long, String> map = memberMbtiRepository.findMbtiMapByMemberId(memberId);
 
         if (map == null) {
             throw new MbtiNotFoundException("해당 회원의 MBTI 정보를 찾을 수 없습니다.");
@@ -44,6 +46,6 @@ public class MemberMbtiService {
             throw new InvalidMbtiException("MBTI 정보가 비어있습니다.");
         }
 
-        mbtiRepository.saveMemberMbti(memberId, mbtiMap);
+        memberMbtiRepository.saveMemberMbti(memberId, mbtiMap);
     }
 }
