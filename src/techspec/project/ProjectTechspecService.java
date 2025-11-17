@@ -2,7 +2,7 @@ package src.techspec.project;
 
 import src.project.Project;
 import src.techspec.Techspec;
-import src.techspec.member.MemberTechspecRepository;
+import src.techspec.TechspecRepository;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ProjectTechspecService {
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
-    private final MemberTechspecRepository techspecRepository = new MemberTechspecRepository();
+    private final TechspecRepository techspecRepository = new TechspecRepository();
 
     public void viewProjectTechspecs(Project currentProject) {
         System.out.println("\n---------- [" + currentProject.getTitle() + "] 요구 스택 목록 ----------");

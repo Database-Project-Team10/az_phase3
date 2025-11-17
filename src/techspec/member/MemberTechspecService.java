@@ -1,15 +1,17 @@
 package src.techspec.member;
 
 import src.member.Member;
-import java.util.List;
-
 import src.techspec.Techspec;
+import src.techspec.TechspecRepository;
 import src.utils.Azconnection;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class MemberTechspecService {
     private final MemberTechspecRepository memberTechspecRepository = new MemberTechspecRepository();
+    private final TechspecRepository techspecRepository = new TechspecRepository();
 
     /**
      * 1. 내 스택 목록 보기
@@ -35,7 +37,7 @@ public class MemberTechspecService {
      * @param techName [!] Controller에서 입력받은 기술 이름
      */
     public void addTechspec(Member currentUser,String techName) {
-        Long techspecId = memberTechspecRepository.findTechspecIdByName(techName);
+        Long techspecId = techspecRepository.findTechspecIdByName(techName);
 
         Connection conn = null;
         try {
@@ -44,7 +46,7 @@ public class MemberTechspecService {
 
             if (techspecId == null) {
                 System.out.println("'" + techName + "' 스택을 마스터 테이블에 새로 등록합니다.");
-                techspecId = memberTechspecRepository.createTechspecAndGetId(conn, techName);
+                techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
             }
 
             boolean isSuccess = memberTechspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId);
