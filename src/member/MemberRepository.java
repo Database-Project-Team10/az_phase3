@@ -133,4 +133,72 @@ public class MemberRepository {
 
         return false; // 업데이트 실패
     }
+
+    public MemberInfoDto getAllInfoById(Long id){
+        String sql = "SELECT\n" +
+                "    m.id,\n" +
+                "    m.name,\n" +
+                "    m.email,\n" +
+                "    m.birth_date,\n" +
+                "    (\n" +
+                "        SELECT\n" +
+                "            LISTAGG(mm.selected_option, '') WITHIN GROUP (ORDER BY mm.mbti_id)\n" +
+                "        FROM\n" +
+                "            MemberMbti mm\n" +
+                "        WHERE\n" +
+                "            mm.member_id = m.id\n" +
+                "    ) AS mbti,\n" +
+                "    (\n" +
+                "        SELECT\n" +
+                "            LISTAGG(t.name, ', ') WITHIN GROUP (ORDER BY t.name)\n" +
+                "        FROM\n" +
+                "            MemberTechspec mt\n" +
+                "        JOIN\n" +
+                "            Techspec t ON mt.techspec_id = t.id\n" +
+                "        WHERE\n" +
+                "            mt.member_id = m.id\n" +
+                "    ) AS tech_specs,\n" +
+                "    (\n" +
+                "        SELECT\n" +
+                "            LISTAGG(p.title || ' (' || pa.role || ')', '; ') WITHIN GROUP (ORDER BY p.title)\n" +
+                "        FROM\n" +
+                "            Participant pa\n" +
+                "        JOIN\n" +
+                "            Project p ON pa.project_id = p.id\n" +
+                "        WHERE\n" +
+                "            pa.member_id = m.id\n" +
+                "    ) AS projects_and_roles\n" +
+                "FROM\n" +
+                "    Member m\n" +
+                "WHERE\n" +
+                "    m.id = ?";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // 결과가 있다면 (rs.next())
+                if (rs.next()) {
+                    // 찾은 정보로 Member 객체를 생성하여 반환
+                    return new MemberInfoDto(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getObject(4, LocalDate.class),
+                            rs.getString(5),
+                            rs.getString(6),
+                            rs.getString(7)
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+
+        // 일치하는 사용자가 없으면 null을 반환
+        return null;
+
+    }
 }
