@@ -40,6 +40,9 @@ public class MemberController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
+            if (choice.equals("b")) {
+                return; // showMemberMenu() 메서드 자체를 종료시킴
+            }
 
             if (memberService.isLoggedIn()) {
                 handleLoggedInMenu(choice);
@@ -107,9 +110,6 @@ public class MemberController {
                 matchingController.showMatchingMenu(memberService.getCurrentUser());
                 break;
 
-            case "b":
-                return;
-
             default:
                 System.out.println("잘못된 입력입니다.");
         }
@@ -167,9 +167,6 @@ public class MemberController {
                     System.out.println("[오류] " + e.getMessage());
                 }
                 break;
-
-            case "b":
-                return;
 
             default:
                 System.out.println("잘못된 입력입니다.");
