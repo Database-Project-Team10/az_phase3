@@ -28,10 +28,10 @@ public class MemberController {
                 System.out.println("1. 로그아웃");
                 System.out.println("2. 비밀번호 수정");
                 System.out.println("3. 내 MBTI 입력/수정");
-                System.out.println("4. 회원 탈퇴");
-                System.out.println("5. 내 테크스펙 관리");
-                System.out.println("6. 프로젝트 매칭 (추천)");
-                System.out.println("7. 내 정보 보기");
+                System.out.println("4. 내 테크스펙 관리");
+                System.out.println("5. 프로젝트 매칭 (추천)");
+                System.out.println("6. 내 정보 보기");
+                System.out.println("7. 회원 탈퇴");
                 System.out.println("b. 뒤로 가기");
             } else {
                 System.out.println("1. 회원 가입");
@@ -89,6 +89,19 @@ public class MemberController {
                 break;
 
             case "4":
+                memberTechspecController.showMemberTechspecMenu(memberService.getCurrentUser());
+                break;
+
+            case "5":
+                matchingController.showMatchingMenu(memberService.getCurrentUser());
+                break;
+
+            case "6":
+                MemberInfoDto memberInfoDto = memberService.getAllInfo();
+                System.out.println(memberInfoDto.toString());
+                break;
+
+            case "7":
                 System.out.print("정말로 탈퇴하시겠습니까? (Y/N) ");
                 String input = scanner.nextLine();
 
@@ -98,19 +111,6 @@ public class MemberController {
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
                 }
-                break;
-
-            case "5":
-                memberTechspecController.showMemberTechspecMenu(memberService.getCurrentUser());
-                break;
-
-            case "6":
-                matchingController.showMatchingMenu(memberService.getCurrentUser());
-                break;
-
-            case "7":
-                MemberInfoDto memberInfoDto = memberService.getAllInfo();
-                System.out.println(memberInfoDto.toString());
                 break;
 
             default:
