@@ -76,6 +76,7 @@ public class ReplyRepository {
                 if (rs.next()) {
                     return new Reply(
                             rs.getLong("id"),
+                            rs.getLong("member_id"),
                             rs.getString("content"),
                             rs.getObject("created_at", LocalDateTime.class),
                             rs.getObject("modified_at", LocalDateTime.class)
