@@ -140,7 +140,6 @@ public class ProjectRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + projectId + "수정됨.");
                 return true; // 1개 이상의 행이 변경되었으면 성공
             }
 
@@ -152,7 +151,7 @@ public class ProjectRepository {
     }
 
     public boolean deleteProject(Long projectId) {
-        String sql = "DELETE project WHERE id = ?";
+        String sql = "DELETE FROM project WHERE id = ?";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -163,7 +162,6 @@ public class ProjectRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + projectId + "삭제됨.");
                 return true;
             }
 
