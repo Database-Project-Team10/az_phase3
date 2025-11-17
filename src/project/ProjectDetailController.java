@@ -3,12 +3,10 @@ package src.project;
 import src.document.DocumentController;
 import src.link.LinkController;
 import src.mbti.project.ProjectMbtiController;
-import src.mbti.project.ProjectMbtiRepository;
 import src.meeting.MeetingController;
 import src.member.MemberService;
 import src.post.PostController;
 import src.techspec.project.ProjectTechspecController;
-import src.techspec.project.ProjectTechspecRepository;
 
 import java.util.Scanner;
 
@@ -26,12 +24,8 @@ public class ProjectDetailController {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    private final ProjectRepository projectRepository = new ProjectRepository();
-    private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
-    private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
-
     public void showDetailMenu(Long projectId){
-        Project currentProject = projectRepository.findById(projectId);
+        Project currentProject = projectService.getProjectDetail(projectId);
 
         while (true) {
             System.out.println("\n---------- 프로젝트 상세 ----------");
