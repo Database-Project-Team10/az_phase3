@@ -3,6 +3,7 @@ package src.project;
 import src.member.MemberService;
 import src.post.PostController;
 import src.mbti.ProjectMbtiController;
+import src.link.LinkController;
 
 import src.mbti.ProjectMbtiRepository;
 import src.techspec.ProjectTechspecRepository;
@@ -15,6 +16,7 @@ import java.util.Scanner;
 public class ProjectDetailController {
 
     private final PostController postController =  new PostController();
+    private final LinkController linkController = new LinkController();
     private final MemberService memberService = new MemberService();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -53,7 +55,7 @@ public class ProjectDetailController {
                     // 문서 기능
                     break;
                 case "3":
-                    // 링크 기능
+                    linkController.showLinkMenu(projectId);
                     break;
                 case "4":
                     // 회의록 기능
