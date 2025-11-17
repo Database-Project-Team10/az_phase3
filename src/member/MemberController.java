@@ -3,6 +3,9 @@ package src.member;
 import src.mbti.MemberMbtiService;
 import src.mbti.MbtiDimension;
 import src.techspec.MemberTechspecController;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +72,26 @@ public class MemberController {
                 // 로그아웃 상태일 때
                 switch (choice) {
                     case "1":
-                        memberService.signUp();
+                        System.out.println("---------- 회원 가입 ----------");
+                        System.out.print("사용할 이메일: ");
+                        String email = scanner.nextLine();
+                        System.out.print("사용할 비밀번호: ");
+                        String password = scanner.nextLine();
+                        System.out.print("비밀번호 확인: ");
+                        String confirmPassword = scanner.nextLine();
+                        System.out.print("이름: ");
+                        String name = scanner.nextLine();
+                        System.out.print("생년월일(YYYY-MM-DD): ");
+                        String birthDate = scanner.nextLine();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate localBirthDate = LocalDate.parse(birthDate, formatter);
+                        Member member = new Member(email, password, name, localBirthDate);
+                        if (memberService.signUp(member, confirmPassword)){
+                            System.out.println("'" + member.getEmail() + "'님, 회원가입이 완료되었습니다!");
+                        }
+                        else {
+                            System.out.println("회원 가입에 실패했습니다.");
+                        }
                         break;
                     case "2":
                         memberService.login();

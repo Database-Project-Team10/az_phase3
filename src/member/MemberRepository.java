@@ -66,29 +66,25 @@ public class MemberRepository {
 
         return null;
     }
-    public void save(Member member) throws SQLException{
-        // [SQL] members 테이블에 username과 password를 삽입합니다.
+
+    public boolean save(Member member){
         String sql = "INSERT INTO member (email, password, name, birth_date, created_at) VALUES (?, ?, ?, ? ,?)";
 
-        // try-with-resources: conn과 pstmt가 자동으로 close() 됩니다.
-        Connection conn = Azconnection.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, member.getEmail());
+            pstmt.setString(2, member.getPassword());
+            pstmt.setString(3, member.getName());
+            pstmt.setObject(4, member.getBirthDate());
+            pstmt.setObject(5, member.getCreatedAt());
 
-        // SQL의 '?'에 값을 바인딩합니다. (SQL Injection 방지)
-        pstmt.setString(1, member.getEmail());
-        pstmt.setString(2, member.getPassword());
-        pstmt.setString(3, member.getName());
-        pstmt.setObject(4, member.getBirthDate());
-        pstmt.setObject(5, member.getCreatedAt());
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows != 0;
 
-
-        // 쿼리 실행
-        int affectedRows = pstmt.executeUpdate();
-
-        if (affectedRows > 0) {
-            System.out.println("[Debug] Repository: DB에 " + member.getEmail() + " 저장됨.");
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
         }
-
+        return false;
     }
 
     public boolean updatePassword(String email, String newPassword) {
