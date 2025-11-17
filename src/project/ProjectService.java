@@ -6,6 +6,9 @@ import src.utils.Azconnection;
 import src.techspec.ProjectTechspecRepository;
 import src.techspec.MemberTechspecRepository;
 import src.techspec.Techspec;
+import src.mbti.MemberMbtiRepository;
+import src.mbti.ProjectMbtiRepository;
+import src.mbti.MbtiDimension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,6 +17,9 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.HashSet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class ProjectService {
 
@@ -21,6 +27,8 @@ public class ProjectService {
     private final ParticipantRepository participantRepository = new ParticipantRepository();
     private final MemberTechspecRepository techspecRepository = new MemberTechspecRepository();
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
+    private final MemberMbtiRepository memberMbtiRepository = new MemberMbtiRepository();
+    private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
 
     Scanner scanner = new Scanner(System.in);
 
@@ -41,16 +49,16 @@ public class ProjectService {
         Connection conn = null;
         try {
             conn = Azconnection.getConnection();
-            conn.setAutoCommit(false); // [!] 트랜잭션 시작
+            conn.setAutoCommit(false); // 트랜잭션 시작
 
-            // (작업 1) Project 생성
+            // Project 생성
             Project newProject = new Project(title, description);
             long newProjectId = projectRepository.save(conn, newProject);
 
-            // (작업 2) Participant(Leader) 추가
+            // Participant 추가
             participantRepository.saveLeader(conn, currentMember.getId(), newProjectId);
 
-            // [!] 3. (수정) 중복이 제거된 "uniqueTechNames" Set을 사용
+            // 3. (수정) 중복이 제거된 "uniqueTechNames" Set을 사용
             if (!uniqueTechNames.isEmpty()) { // [!] 추가할 스택이 있을 때만 실행
                 System.out.println("\n[DB 저장 시작]");
                 for (String techName : uniqueTechNames) { // "C", "c"가 "C" 하나로 합쳐짐
@@ -71,10 +79,13 @@ public class ProjectService {
                 }
             }
 
-            // (작업 6) 모든 작업(1, 2, 5)을 한 번에 커밋
+            if (!newMbtiMap.isEmpty()) {
+                projectMbtiRepository.saveProjectMbti(conn,newProjectId, newMbtiMap);
+            }
+
             conn.commit();
 
-            System.out.println("\n'" + title + "' 프로젝트 생성 및 스택 추가가 완료되었습니다.");
+            System.out.println("\n'" + title + "' 프로젝트 생성 및 설정이 완료되었습니다.");
             return true;
 
         } catch (SQLException e) {
@@ -105,22 +116,26 @@ public class ProjectService {
             System.out.println("1. 프로젝트 정보 수정 (제목/설명)");
             System.out.println("2. 요구 스택 추가");
             System.out.println("3. 요구 스택 삭제");
+            System.out.println("4. 선호 MBTI 수정");
             System.out.println("b. 뒤로 가기 (프로젝트 메뉴)");
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    // (1) 프로젝트 정보(제목/설명) 수정 (기존 로직 재활용)
+                    // (1) 프로젝트 정보(제목/설명) 수정
                     this.updateProjectDetails(project);
                     break;
                 case "2":
-                    // (2) 요구 스택 추가 (C) (createProject의 로직 재활용)
+                    // (2) 요구 스택 추가
                     this.addTechspecToProject(project.getId());
                     break;
                 case "3":
-                    // (3) 요구 스택 삭제 (D) (새로운 로직)
+                    // (3) 요구 스택 삭제
                     this.removeTechspecFromProject(project.getId());
+                    break;
+                case "4":
+                    this.updateProjectMbti(project.getId());
                     break;
                 case "b":
                     return true; // 수정 작업이 끝났으므로 true 반환
@@ -131,15 +146,11 @@ public class ProjectService {
 
     }
 
-    /**
-     * (Helper 1) 프로젝트 제목/설명 수정 로직 (기존 updateProject에서 분리)
-     */
     private void updateProjectDetails(Project project) {
         System.out.println("---------- 프로젝트 정보 수정 ----------");
         String newTitle = project.getTitle();
         String newDescription = project.getDescription();
 
-        // ... (Y/N으로 제목 수정 물어보는 로직 - 기존과 동일) ...
         while (true){
             System.out.print("제목을 수정하시겠습니까? (Y/N) ");
             String choice = scanner.nextLine();
@@ -151,7 +162,6 @@ public class ProjectService {
                 break;
             } else { System.out.println("잘못된 입력입니다."); }
         }
-        // ... (Y/N으로 설명 수정 물어보는 로직 - 기존과 동일) ...
         while (true){
             System.out.print("설명을 수정하시겠습니까? (Y/N) ");
             String choice = scanner.nextLine();
@@ -177,9 +187,6 @@ public class ProjectService {
         }
     }
 
-    /**
-     * (Helper 2) 요구 스택 추가 로직 (createProject에서 복사/수정)
-     */
     private void addTechspecToProject(Long projectId) {
         Set<String> uniqueTechNames = new HashSet<>();
         System.out.println("\n---------- 요구 스택 추가 ----------");
@@ -199,7 +206,6 @@ public class ProjectService {
             return;
         }
 
-        // [!] 2. (수정) "이제서야" DB 작업을 시작합니다.
         Connection conn = null;
         try {
             conn = Azconnection.getConnection();
@@ -251,13 +257,10 @@ public class ProjectService {
         }
     }
 
-    /**
-     * (Helper 3) 요구 스택 삭제 로직 (새로 구현)
-     */
     private void removeTechspecFromProject(Long projectId) {
         System.out.println("\n---------- 요구 스택 삭제 ----------");
 
-        // 1. (R) 현재 목록을 보여줌 (새로 추가된 Repository 메서드 사용)
+        // 1. 현재 목록을 보여줌
         List<Techspec> currentTechs = projectTechspecRepository.findTechspecsByProjectId(projectId);
 
         if (currentTechs.isEmpty()) {
@@ -280,7 +283,7 @@ public class ProjectService {
         try {
             Long idToDelete = Long.parseLong(idInput);
 
-            // 2. (D) ID로 삭제 (새로 추가된 Repository 메서드 사용)
+            // 2. ID로 삭제
             boolean isSuccess = projectTechspecRepository.deleteProjectTechspec(projectId, idToDelete);
 
             if (isSuccess) {
@@ -319,5 +322,37 @@ public class ProjectService {
         // [!] Repository에 이미 만들어둔 "findMyProjectByIdAndMemberId" 호출
         Project project = projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
         return project; // 찾았으면 Project 객체, 못 찾았으면 null 반환
+    }
+
+    private void updateProjectMbti(Long projectId) {
+        System.out.println("\n---------- 선호 MBTI 수정 ----------");
+
+        List<MbtiDimension> dimensions = memberMbtiRepository.findAllMbtiDimensions();
+        Map<Long, String> currentMbti = projectMbtiRepository.findMbtiMapByProjectId(projectId);
+
+        System.out.print("현재 설정: ");
+        for (MbtiDimension dim : dimensions) {
+            System.out.print(currentMbti.getOrDefault(dim.getId(), "?"));
+        }
+        System.out.println();
+
+        Map<Long, String> newMbtiMap = new HashMap<>();
+        for (MbtiDimension dim : dimensions) {
+            while (true) {
+                System.out.printf("%s (%s/%s): ", dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+                String input = scanner.nextLine().toUpperCase();
+                if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
+                    newMbtiMap.put(dim.getId(), input);
+                    break;
+                }
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+
+        if (projectMbtiRepository.saveProjectMbti(projectId, newMbtiMap)) {
+            System.out.println("MBTI 수정이 완료되었습니다.");
+        } else {
+            System.out.println("수정에 실패했습니다.");
+        }
     }
 }

@@ -15,6 +15,7 @@ public class ProjectController {
     private final ProjectService projectService = new ProjectService();
     private final ParticipantService participantService = new ParticipantService();
     private final ProjectDetailController projectDetailController = new ProjectDetailController();
+    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
 
     public void showProjectMenu() {
         while (true) {
