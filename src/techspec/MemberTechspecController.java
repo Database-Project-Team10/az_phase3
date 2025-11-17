@@ -3,17 +3,12 @@ package src.techspec;
 import src.member.Member;
 import java.util.Scanner;
 
-/**
- * [Member]의 테크스택 관련 "입력(UI)"을 담당하는 컨트롤러
- */
 public class MemberTechspecController {
 
-    // [!] 방금 이름을 바꾼 Service를 사용
     private final MemberTechspecService memberTechspecService = new MemberTechspecService();
     private final Scanner scanner = new Scanner(System.in);
 
     /**
-     * "내 테크스택 관리" 서브 메뉴 (CRUD 메뉴)
      * (MemberController로부터 호출됨)
      * @param currentUser 현재 로그인한 사용자 정보
      */
@@ -39,7 +34,7 @@ public class MemberTechspecController {
                     memberTechspecService.addTechspec(currentUser, techNameToAdd);
                     break;
                 case "3":
-                    memberTechspecService.viewMyTechspecs(currentUser); // 목록 먼저 표시
+                    memberTechspecService.viewMyTechspecs(currentUser);
                     System.out.println("----------------------------------------");
                     System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
                     String idInput = scanner.nextLine();

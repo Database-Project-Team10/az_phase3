@@ -174,13 +174,7 @@ public class ProjectRepository {
         return false;
     }
 
-    // [!] --------------------------------------------------------------------
-    // [!] 1. (추가) "내가 참여"하고 "ID가 일치"하는 프로젝트 1개 찾기
-    // [!] --------------------------------------------------------------------
     /**
-     * 특정 회원이 참여한 프로젝트 중에서, 특정 ID를 가진 프로젝트 1개를 조회합니다.
-     * (Controller가 "내가 참여한 프로젝트가 맞는지" 검증하기 위해 사용)
-     *
      * @param memberId 현재 로그인한 회원의 ID
      * @param projectId 사용자가 선택한 프로젝트의 ID
      * @return 찾았으면 Project 객체, 못 찾았으면(참여 안 했으면) null
@@ -211,19 +205,14 @@ public class ProjectRepository {
         } catch (SQLException e) {
             System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
         }
-        return null; // 못 찾았으면 null 반환
+        return null;
     }
 
-    // [!] --------------------------------------------------------------------
-    // [!] 2. (추가) ID로 프로젝트 1개 찾기 (트랜잭션용)
-    // [!] --------------------------------------------------------------------
+
     /**
-     * ID로 프로젝트 1개를 조회합니다.
-     * (createProject 직후, 생성된 객체를 Service로 반환하기 위해 사용)
-     *
      * @param conn Service에서 전달받은 트랜잭션 Connection
      * @param projectId 조회할 프로젝트의 ID
-     * @return 찾았으면 Project 객체
+     * @return
      * @throws SQLException
      */
     public Project findProjectById(Connection conn, Long projectId) throws SQLException {
