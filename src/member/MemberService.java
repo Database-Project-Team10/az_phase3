@@ -1,78 +1,74 @@
 package src.member;
 
-import java.util.Scanner;
+import src.member.exception.*;
 
 public class MemberService {
 
     private final MemberRepository memberRepository = new MemberRepository();
-    private final Scanner sc = new Scanner(System.in);
-
     private static Member loggedInUser = null;
 
+    /**
+     * 회원가입
+     */
     public boolean signUp(Member member, String confirmPassword) {
 
         if (isLoggedIn()) {
-            System.out.println("이미 로그인되어 있습니다. 먼저 로그아웃해주세요.");
-            return false;
+            throw new UnauthorizedException();
         }
 
-        // [비즈니스 로직 1] 아이디 중복 검사
         if (memberRepository.findByEmail(member.getEmail()) != null) {
-            System.out.println("이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요.");
-            return false;
+            throw new DuplicateEmailException();
         }
 
-        // [비즈니스 로직 2] 비밀번호 확인
         if (!member.getPassword().equals(confirmPassword)) {
-            System.out.println("비밀번호가 일치하지 않습니다. 다시 시도해주세요.");
-            return false;
+            throw new PasswordMismatchException();
         }
 
         return memberRepository.save(member);
-
     }
 
+    /**
+     * 로그인
+     */
     public boolean login(String email, String password) {
+
         if (isLoggedIn()) {
-            System.out.println("이미 로그인되어 있습니다.");
-            return false;
+            throw new UnauthorizedException();
         }
 
-        // [비즈니스 로직 3] 사용자 조회
         Member member = memberRepository.findByEmail(email);
 
-        // [비즈니스 로직 4] 비밀번호 검증
-        if (member != null && member.getPassword().equals(password)) {
-            // 로그인 성공
-            loggedInUser = member; // static 변수에 현재 로그인한 사용자 정보 저장
-            return true;
+        if (member == null || !member.getPassword().equals(password)) {
+            throw new InvalidCredentialsException();
         }
-        return false;
 
+        loggedInUser = member;
+        return true;
     }
 
+    /**
+     * 비밀번호 변경
+     */
     public boolean editPassword(String newPassword, String confirmPassword) {
+
         if (!isLoggedIn()) {
-            System.out.println("로그인이 필요합니다.");
-            return false;
+            throw new UnauthorizedException();
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            System.out.println("비밀번호가 일치하지 않습니다.");
-            return false;
+            throw new PasswordMismatchException();
         }
 
         return memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
     }
 
-//    public Member getMemberInfo(Long id) {
-//        return memberRepository.findById(id);
-//    }
-
+    /**
+     * 회원 탈퇴
+     */
     public boolean deleteMember(String choice) {
+
         if (!isLoggedIn()) {
-            System.out.println("로그인이 필요합니다.");
-            return false;
+            throw new UnauthorizedException();
         }
 
         if (choice.equalsIgnoreCase("Y")) {
@@ -80,31 +76,31 @@ public class MemberService {
             logout();
             return memberRepository.delete(deleteUserId);
         }
-        else if (choice.equalsIgnoreCase("N")) {
-            return false;
-        }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     /**
-     * 로그아웃 로직
+     * 로그아웃
      */
     public boolean logout() {
         if (!isLoggedIn()) {
-            return false;
+            throw new UnauthorizedException();
         }
         loggedInUser = null;
         return true;
     }
 
-    // 로그인 상태 확인
+    /**
+     * 로그인 여부
+     */
     public boolean isLoggedIn() {
         return loggedInUser != null;
     }
 
-    //현재 로그인된 사용자 반환
+    /**
+     * 현재 로그인된 사용자
+     */
     public Member getCurrentUser() {
         return loggedInUser;
     }
