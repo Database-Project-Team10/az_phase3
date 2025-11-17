@@ -93,13 +93,12 @@ public class MemberService {
     /**
      * 로그아웃 로직
      */
-    public void logout() {
+    public boolean logout() {
         if (!isLoggedIn()) {
-            System.out.println("로그인 상태가 아닙니다.");
-            return;
+            return false;
         }
-        System.out.println("'" + loggedInUser.getEmail() + "'님이 로그아웃하셨습니다.");
-        loggedInUser = null; // 로그인 정보 제거
+        loggedInUser = null;
+        return true;
     }
 
     // 로그인 상태 확인

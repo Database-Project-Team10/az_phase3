@@ -44,7 +44,12 @@ public class MemberController {
                 // 로그인 상태일 때
                 switch (choice) {
                     case "1":
-                        memberService.logout();
+                        if (memberService.logout()) {
+                            System.out.println("'로그아웃 성공!");
+                        }
+                        else {
+                            System.out.println("로그인 상태가 아닙니다.");
+                        }
                         break;
                     case "2":
                         System.out.println("----- 회원 정보 수정 -----");
