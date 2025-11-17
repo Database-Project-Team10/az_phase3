@@ -47,7 +47,20 @@ public class MemberController {
                         memberService.logout();
                         break;
                     case "2":
-                        memberService.editMemberInfo();
+                        System.out.println("----- 회원 정보 수정 -----");
+                        System.out.println("현재 이메일: " + memberService.getCurrentUser().getEmail());
+
+                        System.out.print("새 비밀번호: ");
+                        String newPassword = scanner.nextLine();
+                        System.out.print("새 비밀번호 확인: ");
+                        String confirmPassword = scanner.nextLine();
+
+                        if (memberService.editPassword(newPassword, confirmPassword)){
+                            System.out.println("비밀번호 변경 성공!");
+                        }
+                        else{
+                            System.out.println("비밀번호 변경 실패!");
+                        }
                         break;
                     case "3":
                          this.manageMyMbti(memberService.getCurrentUser());
@@ -85,7 +98,9 @@ public class MemberController {
                         String newBirthDate = scanner.nextLine();
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                         LocalDate localBirthDate = LocalDate.parse(newBirthDate, formatter);
+
                         Member member = new Member(newEmail, newPassword, newName, localBirthDate);
+
                         if (memberService.signUp(member, confirmPassword)){
                             System.out.println("'" + member.getEmail() + "'님, 회원가입이 완료되었습니다!");
                         }

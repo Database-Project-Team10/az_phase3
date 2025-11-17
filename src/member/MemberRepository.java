@@ -104,7 +104,6 @@ public class MemberRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + email + "의 비밀번호 변경됨.");
                 return true; // 1개 이상의 행이 변경되었으면 성공
             }
 
@@ -125,7 +124,6 @@ public class MemberRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: " + id + "회원 탙퇴");
                 return true;
             }
 

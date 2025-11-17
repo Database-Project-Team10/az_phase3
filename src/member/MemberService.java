@@ -51,35 +51,18 @@ public class MemberService {
 
     }
 
-    public void editMemberInfo() {
+    public boolean editPassword(String newPassword, String confirmPassword) {
         if (!isLoggedIn()) {
             System.out.println("로그인이 필요합니다.");
-            return;
+            return false;
         }
-
-        System.out.println("----- 회원 정보 수정 -----");
-        System.out.println("현재 이메일: " + loggedInUser.getEmail());
-
-        System.out.print("새 비밀번호: ");
-        String newPassword = sc.nextLine();
-        System.out.print("새 비밀번호 확인: ");
-        String confirmPassword = sc.nextLine();
 
         if (!newPassword.equals(confirmPassword)) {
             System.out.println("비밀번호가 일치하지 않습니다.");
-            return;
+            return false;
         }
 
-        boolean isSuccess = memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
-
-        if (isSuccess) {
-            // 현재 메모리에 들고 있는 loggedInUser 객체의 정보도 동기화
-            loggedInUser.setPassword(newPassword);
-
-            System.out.println("비밀번호가 성공적으로 변경되었습니다.");
-        } else {
-            System.out.println("오류가 발생하여 비밀번호 변경에 실패했습니다.");
-        }
+        return memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
     }
 
     public Member getMemberInfo(Long id) {
