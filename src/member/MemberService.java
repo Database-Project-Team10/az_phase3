@@ -100,4 +100,8 @@ public class MemberService {
     public Member getCurrentUser() {
         return loggedInUser;
     }
+
+    public MemberInfoDto getAllInfo() {
+        return memberRepository.getAllInfoById(getCurrentUser().getId());
+    }
 }
