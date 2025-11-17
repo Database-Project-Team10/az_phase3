@@ -2,10 +2,10 @@ package src.project;
 
 import src.member.MemberService;
 import src.post.PostController;
-import src.mbti.ProjectMbtiController;
+import src.mbti.project.ProjectMbtiController;
 import src.link.LinkController;
 
-import src.mbti.ProjectMbtiRepository;
+import src.mbti.project.ProjectMbtiRepository;
 import src.techspec.ProjectTechspecRepository;
 import src.techspec.Techspec;
 

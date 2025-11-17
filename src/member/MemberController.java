@@ -1,15 +1,10 @@
 package src.member;
 
-import src.mbti.MemberMbtiController;
-import src.mbti.MemberMbtiService;
-import src.mbti.MbtiDimension;
+import src.mbti.member.MemberMbtiController;
 import src.techspec.MemberTechspecController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class MemberController {

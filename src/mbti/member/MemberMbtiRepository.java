@@ -1,5 +1,6 @@
-package src.mbti; // [!] 새 패키지
+package src.mbti.member; // [!] 새 패키지
 
+import src.mbti.MbtiDimension;
 import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

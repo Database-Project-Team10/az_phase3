@@ -1,4 +1,4 @@
-package src.mbti;
+package src.mbti.project;
 
 import src.utils.Azconnection;
 import java.sql.Connection;

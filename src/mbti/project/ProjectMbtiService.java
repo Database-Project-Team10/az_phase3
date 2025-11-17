@@ -1,4 +1,7 @@
-package src.mbti;
+package src.mbti.project;
+
+import src.mbti.MbtiDimension;
+import src.mbti.member.MemberMbtiRepository;
 
 import java.util.List;
 import java.util.Map;

@@ -6,8 +6,8 @@ import src.utils.Azconnection;
 import src.techspec.ProjectTechspecRepository;
 import src.techspec.MemberTechspecRepository;
 import src.techspec.Techspec;
-import src.mbti.MemberMbtiRepository;
-import src.mbti.ProjectMbtiRepository;
+import src.mbti.member.MemberMbtiRepository;
+import src.mbti.project.ProjectMbtiRepository;
 import src.mbti.MbtiDimension;
 
 import java.sql.Connection;
@@ -76,6 +76,24 @@ public class ProjectService {
                     projectTechspecRepository.addProjectTechspec(conn, newProjectId, techspecId);
 
                     System.out.println("'" + techName + "' 스택이 처리되었습니다.");
+                }
+            }
+
+            Map<Long, String> newMbtiMap = new HashMap<>();
+            List<MbtiDimension> dimensions = memberMbtiRepository.findAllMbtiDimensions();
+
+            if (dimensions != null && !dimensions.isEmpty()) {
+                System.out.println("\n---------- 선호 MBTI 설정 ----------");
+                for (MbtiDimension dim : dimensions) {
+                    while (true) {
+                        System.out.printf("%s (%s/%s): ", dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+                        String input = scanner.nextLine().toUpperCase();
+                        if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
+                            newMbtiMap.put(dim.getId(), input);
+                            break;
+                        }
+                        System.out.println("잘못된 입력입니다.");
+                    }
                 }
             }
 

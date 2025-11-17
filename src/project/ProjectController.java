@@ -1,5 +1,6 @@
 package src.project;
 
+import src.mbti.project.ProjectMbtiController;
 import src.member.MemberService;
 import src.participant.ParticipantService;
 
