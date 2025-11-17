@@ -6,6 +6,7 @@ import src.techspec.MemberTechspecController;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import src.matching.MatchingController;
 
 public class MemberController {
     private final MemberService memberService = new MemberService();
@@ -13,7 +14,7 @@ public class MemberController {
     private final MemberTechspecController memberTechspecController = new MemberTechspecController();
     private final MemberMbtiController memberMbtiController = new MemberMbtiController();
     private final Scanner scanner = new Scanner(System.in);
-
+    private final MatchingController matchingController = new MatchingController();
 
     public void showMemberMenu() {
         while (true) {
@@ -26,6 +27,7 @@ public class MemberController {
                 System.out.println("3. 내 MBTI 입력/수정");
                 System.out.println("4. 회원 탈퇴");
                 System.out.println("5. 내 테크스펙 관리");
+                System.out.println("6. 프로젝트 매칭 (추천)");
                 System.out.println("b. 뒤로 가기");
             } else {
                 System.out.println("1. 회원 가입");
@@ -77,6 +79,9 @@ public class MemberController {
                         break;
                     case "5":
                         memberTechspecController.showMemberTechspecMenu(memberService.getCurrentUser());
+                        break;
+                    case "6":
+                        matchingController.showMatchingMenu(memberService.getCurrentUser());
                         break;
                     case "b":
                         return; // 메인 메뉴로
