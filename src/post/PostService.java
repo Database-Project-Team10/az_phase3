@@ -81,6 +81,19 @@ public class PostService {
     }
 
     /**
+     * 게시글 단건 조회
+     */
+    public Post getPostInProject(Long postId, Long projectId) {
+        Post post = postRepository.findByIdAndProjectId(postId, projectId);
+
+        if (post == null) {
+            throw new PostNotFoundException();
+        }
+
+        return post;
+    }
+
+    /**
      * 게시글 수정
      */
     public void updatePost(Post updatedPost) {

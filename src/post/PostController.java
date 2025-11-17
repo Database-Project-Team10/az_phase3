@@ -1,6 +1,7 @@
 package src.post;
 
 import src.member.MemberService;
+import src.post.exception.PostException;
 import src.reply.ReplyController;
 import src.post.exception.InvalidPostException;
 import src.post.exception.PostNotFoundException;
@@ -46,7 +47,7 @@ public class PostController {
                 case "1": // 게시물 목록
                     try {
                         showPostList(postService.getPostList(projectId));
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     pause();
@@ -55,7 +56,7 @@ public class PostController {
                 case "2":  // 내가 작성한 게시물 목록
                     try {
                         showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     pause();
@@ -74,7 +75,7 @@ public class PostController {
                         postService.createPost(post);
                         System.out.println("게시물 생성 성공!");
 
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     pause();
@@ -134,7 +135,7 @@ public class PostController {
                         postService.updatePost(updated);
                         System.out.println("게시물 수정 성공!");
 
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     pause();
@@ -151,7 +152,7 @@ public class PostController {
                         postService.deletePost(choicePostId, memberService.getCurrentUser().getId());
                         System.out.println("게시물 삭제 성공!");
 
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     pause();
@@ -162,10 +163,10 @@ public class PostController {
                         showPostList(postService.getPostList(projectId));
                         System.out.print("접속할 게시물의 번호를 입력해주세요: ");
                         choicePostId = Long.valueOf(scanner.nextLine());
-                        showPostDetail(postService.getPost(choicePostId));
+                        showPostDetail(postService.getPostInProject(choicePostId, projectId));
                         replyController.showReplyMenu(choicePostId);
 
-                    } catch (Exception e) {
+                    } catch (PostException e) {
                         printError(e);
                     }
                     break;
