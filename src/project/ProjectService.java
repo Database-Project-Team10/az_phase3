@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -25,53 +24,20 @@ public class ProjectService {
 
     Scanner scanner = new Scanner(System.in);
 
-    public void showProjectList(int cnt) {
-        List<Project> projectList = projectRepository.findProjects(cnt);
-        System.out.println("---------- 프로젝트 목록 ----------");
-        for (Project project : projectList) {
-            System.out.println(project.getId() + ". " + project.getTitle());
-        }
+    public List<Project> getProjectList(int cnt) {
+        return projectRepository.findProjects(cnt);
     }
 
-    public void showMyProjectList(Member currentMember) {
-        List<Project> projectList = projectRepository.findProjectsByMemberId(currentMember.getId());
-        System.out.println("---------- 내 프로젝트 목록 ----------");
-        for (Project project : projectList) {
-            System.out.println(project.getId() + ". " + project.getTitle());
-        }
+    public List<Project> getMyProjectList(Member currentMember) {
+        return projectRepository.findProjectsByMemberId(currentMember.getId());
     }
 
-    public void showProjectDetail(Long projectId) {
-        Project project = projectRepository.findById(projectId);
-        System.out.println("\n---------- 프로젝트 상세 정보 ----------");
-        System.out.println("프로젝트명: " +  project.getTitle());
-        System.out.println("\n프로젝트 설명");
-        System.out.println(project.getDescription());
+    public Project getProjectDetail(Long projectId) {
+        return projectRepository.findById(projectId);
     }
 
-    public boolean createProject(Member currentMember) {
-        System.out.println("---------- 프로젝트 생성 ----------");
-        System.out.print("프로젝트 제목: ");
-        String title = scanner.nextLine();
-        System.out.print("프로젝트 설명: ");
-        String description = scanner.nextLine();
+    public boolean createProject(String title, String description, Set<String> uniqueTechNames, Member currentMember) {
 
-        // [!] 1. (수정) 입력을 List 대신 "Set"에 받습니다.
-        // Set은 "C"와 "c"를 (대문자로 변환 시) 동일하게 보고, 중복을 허용하지 않습니다.
-        Set<String> uniqueTechNames = new HashSet<>();
-        System.out.println("\n---------- 요구 스택 추가 ----------");
-        while (true) {
-            System.out.print("추가할 기술 스택 이름 (완료: q): ");
-            String techName = scanner.nextLine();
-
-            if ("q".equalsIgnoreCase(techName)) {
-                break; // q 입력 시 루프 종료
-            }
-            // [!] DB에 저장하지 않고, "대문자"로 변환하여 Set에 추가
-            uniqueTechNames.add(techName.toUpperCase());
-        }
-
-        // [!] 2. (수정) "이제서야" DB 작업을 시작합니다.
         Connection conn = null;
         try {
             conn = Azconnection.getConnection();
@@ -130,6 +96,7 @@ public class ProjectService {
         }
         return false;
     }
+
     public boolean updateProject(Long projectId) {
         Project project = projectRepository.findById(projectId);
 
@@ -326,20 +293,16 @@ public class ProjectService {
         }
     }
 
-    public boolean deleteProject(Long projectId) {
-        while (true){
-            System.out.print("정말로 삭제하시겠습니까? (Y/N) ");
-            String choice = scanner.nextLine();
+    public boolean deleteProject(Long projectId, String choice) {
 
-            if (choice.equalsIgnoreCase("Y")) {
-                return projectRepository.deleteProject(projectId);
-            }
-            else if (choice.equalsIgnoreCase("N")) {
-                break;
-            }
-            else{
-                System.out.println("잘못된 입력입니다.");
-            }
+        if (choice.equalsIgnoreCase("Y")) {
+            return projectRepository.deleteProject(projectId);
+        }
+        else if (choice.equalsIgnoreCase("N")) {
+            return false;
+        }
+        else{
+            System.out.println("잘못된 입력입니다.");
         }
         return false;
     }

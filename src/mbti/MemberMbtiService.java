@@ -1,4 +1,4 @@
-package src.mbti; // [!] 새 패키지
+package src.mbti;
 
 import java.util.List;
 import java.util.Map;
