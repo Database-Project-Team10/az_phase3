@@ -77,4 +77,25 @@ public class ProjectMbtiRepository {
             }
         }
     }
+
+    public void saveProjectMbti(Connection conn, Long projectId, Map<Long, String> mbtiMap) throws SQLException {
+        String sql = "MERGE INTO ProjectMbti m " +
+                "USING (SELECT ? AS p_id, ? AS b_id, ? AS pre_opt FROM dual) src " +
+                "ON (m.project_id = src.p_id AND m.mbti_id = src.b_id) " +
+                "WHEN MATCHED THEN " +
+                "  UPDATE SET m.preferred_option = src.pre_opt " +
+                "WHEN NOT MATCHED THEN " +
+                "  INSERT (project_id, mbti_id, preferred_option) " +
+                "  VALUES (src.p_id, src.b_id, src.pre_opt)";
+
+        // 전달받은 conn을 사용
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (Map.Entry<Long, String> entry : mbtiMap.entrySet()) {
+                pstmt.setLong(1, projectId);
+                pstmt.setLong(2, entry.getKey());
+                pstmt.setString(3, entry.getValue());
+                pstmt.executeUpdate();
+            }
+        }
+    }
 }
