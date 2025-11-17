@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.sql.Types;
 import java.util.List;
 import src.utils.Azconnection;
 
@@ -20,8 +21,16 @@ public class MeetingRepository {
             pstmt.setLong(1, meeting.getProjectId());
             pstmt.setString(2, meeting.getTitle());
             pstmt.setString(3, meeting.getDescription());
-            pstmt.setTimestamp(4, Timestamp.valueOf(meeting.getStartTime()));
-            pstmt.setTimestamp(5, Timestamp.valueOf(meeting.getEndTime()));
+            if (meeting.getStartTime() != null) {
+                pstmt.setTimestamp(4, Timestamp.valueOf(meeting.getStartTime()));
+            } else {
+                pstmt.setNull(4, Types.TIMESTAMP);
+            }
+            if (meeting.getEndTime() != null) {
+                pstmt.setTimestamp(5, Timestamp.valueOf(meeting.getEndTime()));
+            } else {
+                pstmt.setNull(5, Types.TIMESTAMP);
+            }
 
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
@@ -48,8 +57,8 @@ public class MeetingRepository {
                             rs.getLong("project_id"),
                             rs.getString("title"),
                             rs.getString("description"),
-                            rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
-                            rs.getTimestamp("end_time") != null ? rs.getTimestamp("end_time").toLocalDateTime() : null
+                            rs.getObject("start_time", LocalDateTime.class),
+                            rs.getObject("end_time", LocalDateTime.class)
                     );
                     meetingList.add(meeting);
                 }
@@ -74,8 +83,8 @@ public class MeetingRepository {
                             rs.getLong("project_id"),
                             rs.getString("title"),
                             rs.getString("description"),
-                            rs.getTimestamp("start_time") != null ? rs.getTimestamp("start_time").toLocalDateTime() : null,
-                            rs.getTimestamp("end_time") != null ? rs.getTimestamp("end_time").toLocalDateTime() : null
+                            rs.getObject("start_time", LocalDateTime.class),
+                            rs.getObject("end_time", LocalDateTime.class)
                     );
                 }
             }
@@ -92,8 +101,17 @@ public class MeetingRepository {
 
             pstmt.setString(1, meeting.getTitle());
             pstmt.setString(2, meeting.getDescription());
-            pstmt.setTimestamp(3, Timestamp.valueOf(meeting.getStartTime()));
-            pstmt.setTimestamp(4, Timestamp.valueOf(meeting.getEndTime()));
+            if (meeting.getStartTime() != null) {
+                pstmt.setTimestamp(3, Timestamp.valueOf(meeting.getStartTime()));
+            } else {
+                pstmt.setNull(3, Types.TIMESTAMP);
+            }
+            
+            if (meeting.getEndTime() != null) {
+                pstmt.setTimestamp(4, Timestamp.valueOf(meeting.getEndTime()));
+            } else {
+                pstmt.setNull(4, Types.TIMESTAMP);
+            }
             pstmt.setLong(5, meeting.getId()); 
 
             int affectedRows = pstmt.executeUpdate();
