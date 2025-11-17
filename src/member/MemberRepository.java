@@ -40,33 +40,33 @@ public class MemberRepository {
         return null;
     }
 
-    public Member findById(Long id) {
-        String sql = "SELECT * FROM member WHERE id = ?";
-        try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setLong(1, id);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                // 결과가 있다면 (rs.next())
-                if (rs.next()) {
-                    // 찾은 정보로 Member 객체를 생성하여 반환
-                    return new Member(
-                            rs.getLong("id"),
-                            rs.getString("email"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getObject("birth_date", LocalDate.class),
-                            rs.getObject("created_at", LocalDateTime.class)
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
-        }
-
-        return null;
-    }
+//    public Member findById(Long id) {
+//        String sql = "SELECT * FROM member WHERE id = ?";
+//        try (Connection conn = Azconnection.getConnection();
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//
+//            pstmt.setLong(1, id);
+//
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//                // 결과가 있다면 (rs.next())
+//                if (rs.next()) {
+//                    // 찾은 정보로 Member 객체를 생성하여 반환
+//                    return new Member(
+//                            rs.getLong("id"),
+//                            rs.getString("email"),
+//                            rs.getString("password"),
+//                            rs.getString("name"),
+//                            rs.getObject("birth_date", LocalDate.class),
+//                            rs.getObject("created_at", LocalDateTime.class)
+//                    );
+//                }
+//            }
+//        } catch (SQLException e) {
+//            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+//        }
+//
+//        return null;
+//    }
 
     public boolean save(Member member){
         String sql = "INSERT INTO member (email, password, name, birth_date, created_at) VALUES (?, ?, ?, ? ,?)";

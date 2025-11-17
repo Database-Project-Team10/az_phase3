@@ -65,9 +65,9 @@ public class MemberService {
         return memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
     }
 
-    public Member getMemberInfo(Long id) {
-        return memberRepository.findById(id);
-    }
+//    public Member getMemberInfo(Long id) {
+//        return memberRepository.findById(id);
+//    }
 
     public boolean deleteMember() {
         if (!isLoggedIn()) {
