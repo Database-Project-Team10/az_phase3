@@ -68,19 +68,6 @@ public class PostService {
     }
 
     /**
-     * 내 게시글 단건 조회
-     */
-    public Post getMyPost(Long postId, Long memberId) {
-        Post post = postRepository.findByIdAndMemberId(postId, memberId);
-
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
-
-        return post;
-    }
-
-    /**
      * 프로젝트 내부 게시글 단건 조회
      */
     public Post getPostInProject(Long postId, Long projectId) {

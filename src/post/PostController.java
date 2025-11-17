@@ -3,9 +3,6 @@ package src.post;
 import src.member.MemberService;
 import src.post.exception.PostException;
 import src.reply.ReplyController;
-import src.post.exception.InvalidPostException;
-import src.post.exception.PostNotFoundException;
-import src.post.exception.UnauthorizedPostAccessException;
 
 import java.util.List;
 import java.util.Scanner;
@@ -89,7 +86,7 @@ public class PostController {
                         System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
                         choicePostId = Long.valueOf(scanner.nextLine());
 
-                        Post myPost = postService.getMyPost(choicePostId, memberService.getCurrentUser().getId());
+                        Post myPost = postService.getPost(choicePostId);
                         showPostDetail(myPost);
 
                         // 제목 입력 여부
@@ -181,15 +178,7 @@ public class PostController {
     }
 
     private void printError(Exception e) {
-        if (e instanceof PostNotFoundException) {
-            System.out.println("[오류] 게시물을 찾을 수 없습니다.");
-        } else if (e instanceof UnauthorizedPostAccessException) {
-            System.out.println("[오류] 작성자 본인만 수정/삭제할 수 있습니다.");
-        } else if (e instanceof InvalidPostException) {
-            System.out.println("[오류] " + e.getMessage());
-        } else {
-            System.out.println("[시스템 오류] " + e.getMessage());
-        }
+        System.out.println("[오류] " + e.getMessage());
     }
 
     private void pause() {
