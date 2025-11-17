@@ -4,6 +4,7 @@ import src.member.MemberService;
 import src.participant.ParticipantService;
 import src.post.PostController;
 import src.techspec.ProjectTechspecService;
+import src.mbti.ProjectMbtiController;
 
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class ProjectController {
     private final PostController postController = new PostController();
     private final ProjectTechspecService projectTechspecService = new ProjectTechspecService();
     private final ProjectDetailController projectDetailController = new ProjectDetailController();
+    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
 
     public void showProjectMenu() {
         while (true) {
