@@ -159,7 +159,7 @@ public class PostController {
         System.out.print("접속할 게시물의 번호를 입력해주세요: ");
         Long postId = Long.valueOf(scanner.nextLine());
 
-        Post post = postService.getPostInProject(postId, projectId);
+        Post post = postService.getPostInProject(projectId, postId);
         printPostDetail(post);
 
         replyController.showReplyMenu(postId);
