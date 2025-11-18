@@ -6,6 +6,7 @@ import src.mbti.project.ProjectMbtiController;
 import src.meeting.MeetingController;
 import src.member.MemberService;
 import src.post.PostController;
+import src.project.dto.ProjectUpdateRequestDto;
 import src.project.exception.ProjectException;
 import src.techspec.project.ProjectTechspecController;
 
@@ -33,6 +34,11 @@ public class ProjectDetailController {
             if (memberService.isLoggedIn()) {
                 System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
                 System.out.println("현재 접속 중인 프로젝트: " + projectId);
+                System.out.println("제목: " +  currentProject.getTitle());
+                System.out.println("설명");
+                System.out.println(currentProject.getDescription());
+                System.out.println("-------------------------------");
+
                 System.out.println("1. 게시물");
                 System.out.println("2. 문서 아카이브");
                 System.out.println("3. 링크 아카이브");
@@ -91,10 +97,13 @@ public class ProjectDetailController {
         String d = scanner.nextLine();
         if(!d.isEmpty()) newDesc = d;
 
-
         try{
-            projectService.updateProjectInfo(project.getId(), newTitle, newDesc, memberService.getCurrentUser().getId());
-            System.out.println("수정 완료");
+            ProjectUpdateRequestDto projectUpdateRequestDto = new ProjectUpdateRequestDto(
+                    newTitle,
+                    newDesc
+            );
+            projectService.updateProjectInfo(project.getId(), memberService.getCurrentUser().getId(), projectUpdateRequestDto);
+            System.out.println("수정 완료!");
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());
         }

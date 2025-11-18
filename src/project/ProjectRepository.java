@@ -135,15 +135,16 @@ public class ProjectRepository {
         }
     }
 
-    public boolean updateProject(Long projectId, Project project) {
-        String sql = "UPDATE project SET title = ?, description = ? WHERE id = ?";
+    public boolean updateProject(Project project) {
+        String sql = "UPDATE project SET title = ?, description = ?, updated_at = ? WHERE id = ?";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, project.getTitle());
             pstmt.setString(2, project.getDescription());
-            pstmt.setLong(3, projectId);
+            pstmt.setTimestamp(3, java.sql.Timestamp.valueOf(project.getModifiedAt()));
+            pstmt.setLong(4, project.getId());
 
             // 쿼리 실행 (영향받은 행의 수 반환)
             int affectedRows = pstmt.executeUpdate();

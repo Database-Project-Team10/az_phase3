@@ -5,6 +5,7 @@ import src.mbti.project.ProjectMbtiRepository;
 import src.member.Member;
 import src.participant.ParticipantRepository;
 import src.project.dto.ProjectCreateRequestDto;
+import src.project.dto.ProjectUpdateRequestDto;
 import src.project.exception.ProjectDescriptionInvalidException;
 import src.project.exception.ProjectNotFoundException;
 import src.project.exception.ProjectTitleInvalidException;
@@ -104,15 +105,21 @@ public class ProjectService {
         return null;
     }
 
-    public boolean updateProjectInfo(Long projectId, String newTitle, String newDescription, Long memberId) {
-        if (projectRepository.findById(projectId) == null) {
+    public void updateProjectInfo(Long projectId, Long memberId ,ProjectUpdateRequestDto requestDto) {
+        Project project = projectRepository.findById(projectId);
+        if (project == null) {
             throw new ProjectNotFoundException();
         }
         if (!participantRepository.exists(projectId, memberId)) {
             throw new UnauthorizedProjectAccessException("해당 프로젝트에 대한 수정 권한이 없습니다.");
         }
-        Project newProject = new Project(newTitle, newDescription);
-        return projectRepository.updateProject(projectId, newProject);
+        Project newProject = new Project(
+                projectId,
+                requestDto.getTitle(),
+                requestDto.getDescription(),
+                project.getCreatedAt()
+        );
+        projectRepository.updateProject(newProject);
     }
 
     public void deleteProject(Long projectId, Long memberId) {

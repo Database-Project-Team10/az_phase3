@@ -9,12 +9,20 @@ public class Project {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public Project(Long id, String title, String description, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public Project(Long id, String title, String description, LocalDateTime createdAt,  LocalDateTime modifiedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+    public Project(Long id, String title, String description, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     public Project(String title, String description) {
