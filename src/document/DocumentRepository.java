@@ -11,24 +11,41 @@ import src.utils.Azconnection;
 public class DocumentRepository {
 
 
-    public boolean save(Document document) {
+	public Document save(Document document) {
         String sql = "INSERT INTO Document (project_id, title, location) VALUES (?, ?, ?)";
+        String[] generatedColumns = {"id"};
+
         try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
 
             pstmt.setLong(1, document.getProjectId());
             pstmt.setString(2, document.getTitle());
             pstmt.setString(3, document.getLocation());
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
 
+            if (affectedRows == 0) {
+                throw new SQLException("문서 저장 실패: 영향받은 행이 없습니다.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Long id = generatedKeys.getLong(1);
+                    return new Document(
+                            id,
+                            document.getProjectId(),
+                            document.getTitle(),
+                            document.getLocation()
+                    );
+                } else {
+                    throw new SQLException("문서 저장 실패: ID를 가져올 수 없습니다.");
+                }
+            }
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생 (Document): " + e.getMessage());
+            return null;
         }
-        return false;
     }
-
 
     public List<Document> findByProjectId(Long projectId) {
         List<Document> documentList = new ArrayList<>();
