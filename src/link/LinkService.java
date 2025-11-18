@@ -1,9 +1,11 @@
 package src.link;
 
-import java.util.List;
-import src.link.exception.LinkAccessException;
+import src.link.dto.LinkRequestDto;
 import src.link.exception.InvalidLinkInputException;
+import src.link.exception.LinkAccessException;
 import src.link.exception.LinkNotFoundException;
+
+import java.util.List;
 
 public class LinkService {
 
@@ -31,31 +33,40 @@ public class LinkService {
     public Link getLink(Long linkId) {
         Link link = linkRepository.findById(linkId);
         if (link == null) {
-            throw new LinkNotFoundException("ID " + linkId + "에 해당하는 링크를 찾을 수 없습니다.");
+            throw new LinkNotFoundException();
         }
         return link;
     }
-    public void updateLink(Link updatedLink, Long expectedProjectId) {
-        if (updatedLink.getTitle().trim().isEmpty() || updatedLink.getUrl().trim().isEmpty()) {
+
+
+    public void updateLink(Long linkId, Long projectId, LinkRequestDto requestDto) {
+
+        Link targetLink = linkRepository.findById(linkId);
+        if (targetLink == null) {
+            throw new LinkNotFoundException();
+        }
+
+        if (requestDto.getTitle().trim().isEmpty() || requestDto.getUrl().trim().isEmpty()) {
             throw new InvalidLinkInputException("제목과 URL은 비워둘 수 없습니다.");
         }
-        Link targetLink = linkRepository.findById(updatedLink.getId());
-        if (targetLink == null) {
-            throw new LinkNotFoundException("수정할 링크(ID: " + updatedLink.getId() + ")를 찾을 수 없습니다.");
-        }
+
         
-        if (!targetLink.getProjectId().equals(expectedProjectId)) {
+        if (!targetLink.getProjectId().equals(projectId)) {
             throw new LinkAccessException("해당 링크는 이 프로젝트에 속하지 않아 수정할 수 없습니다.");
         }
         
-        validateUrl(updatedLink.getUrl()); 
-        linkRepository.update(updatedLink);
+        validateUrl(requestDto.getUrl());
+
+        Link link  = new Link(linkId, projectId, requestDto.getTitle(), requestDto.getUrl());
+
+        linkRepository.update(link);
     }
+
 
     public void deleteLink(Long linkId, Long expectedProjectId) {
         Link targetLink = linkRepository.findById(linkId);
         if (targetLink == null) {
-            throw new LinkNotFoundException("삭제할 링크(ID: " + linkId + ")를 찾을 수 없습니다.");
+            throw new LinkNotFoundException();
         }
         if (!targetLink.getProjectId().equals(expectedProjectId)) {
             throw new LinkAccessException("해당 링크는 이 프로젝트에 속하지 않아 삭제할 수 없습니다.");

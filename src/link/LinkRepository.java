@@ -94,7 +94,7 @@ public class LinkRepository {
 
             pstmt.setString(1, link.getTitle());
             pstmt.setString(2, link.getUrl());
-            pstmt.setLong(3, link.getId()); // WHERE 조건
+            pstmt.setLong(3, link.getId());
 
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
