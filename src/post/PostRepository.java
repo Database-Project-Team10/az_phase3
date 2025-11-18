@@ -24,8 +24,12 @@ public class PostRepository {
                 while (rs.next()) {
                     Post post = new Post(
                             rs.getLong("id"),
+                            rs.getLong("project_id"),
+                            rs.getLong("member_id"),
                             rs.getString("title"),
-                            rs.getString("content")
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("modified_at", LocalDateTime.class)
                     );
                     postList.add(post);
                 }
@@ -51,8 +55,12 @@ public class PostRepository {
                 while (rs.next()) {
                     Post post = new Post(
                             rs.getLong("id"),
+                            rs.getLong("project_id"),
+                            rs.getLong("member_id"),
                             rs.getString("title"),
-                            rs.getString("content")
+                            rs.getString("content"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("modified_at", LocalDateTime.class)
                     );
                     postList.add(post);
                 }
@@ -74,6 +82,7 @@ public class PostRepository {
                 if (rs.next()) {
                     return new Post(
                             rs.getLong("id"),
+                            rs.getLong("project_id"),
                             rs.getLong("member_id"),
                             rs.getString("title"),
                             rs.getString("content"),
@@ -100,6 +109,8 @@ public class PostRepository {
                 if (rs.next()) {
                     return new Post(
                             rs.getLong("id"),
+                            rs.getLong("project_id"),
+                            rs.getLong("member_id"),
                             rs.getString("title"),
                             rs.getString("content"),
                             rs.getObject("created_at", LocalDateTime.class),
@@ -125,6 +136,8 @@ public class PostRepository {
                 if (rs.next()) {
                     return new Post(
                             rs.getLong("id"),
+                            rs.getLong("project_id"),
+                            rs.getLong("member_id"),
                             rs.getString("title"),
                             rs.getString("content"),
                             rs.getObject("created_at", LocalDateTime.class),
@@ -138,10 +151,14 @@ public class PostRepository {
         return null;
     }
 
-    public boolean save(Post post){
-        String sql = "INSERT INTO post (project_id, member_id, title, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)";
+    public Post save(Post post) {
+        String sql = "INSERT INTO post (project_id, member_id, title, content, created_at, modified_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        String[] generatedColumns = {"id"};
+
         try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
 
             pstmt.setLong(1, post.getProjectId());
             pstmt.setLong(2, post.getMemberId());
@@ -151,12 +168,34 @@ public class PostRepository {
             pstmt.setObject(6, post.getModifiedAt());
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows != 0;
+
+            if (affectedRows == 0) {
+                throw new SQLException("Post 저장 실패: 영향받은 행이 없습니다.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Long id = generatedKeys.getLong(1);
+
+                    // 저장된 Post 객체 반환
+                    return new Post(
+                            id,
+                            post.getProjectId(),
+                            post.getMemberId(),
+                            post.getTitle(),
+                            post.getContent(),
+                            post.getCreatedAt(),
+                            post.getModifiedAt()
+                    );
+                } else {
+                    throw new SQLException("Post 저장 실패: ID를 가져오지 못했습니다.");
+                }
+            }
 
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+            return null;
         }
-        return false;
     }
 
     public boolean update(Post post){

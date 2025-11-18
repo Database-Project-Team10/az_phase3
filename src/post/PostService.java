@@ -36,20 +36,21 @@ public class PostService {
     /**
      * 게시글 생성
      */
-    public void createPost(Post post) {
+    public void createPost(Long projectId, Long memberId, PostCreateRequestDto requestDto) {
 
-        if (post.getProjectId() == null) {
+        if (projectId == null) {
             throw new InvalidPostException("프로젝트 ID가 필요합니다.");
         }
-        if (post.getMemberId() == null) {
+        if (memberId == null) {
             throw new InvalidPostException("회원 ID가 필요합니다.");
         }
-        if (post.getTitle() == null || post.getTitle().trim().isEmpty()) {
+        if (requestDto.getTitle() == null || requestDto.getTitle().trim().isEmpty()) {
             throw new InvalidPostException("게시글 제목은 필수입니다.");
         }
-        if (post.getContent() == null || post.getContent().trim().isEmpty()) {
+        if (requestDto.getContent() == null || requestDto.getContent().trim().isEmpty()) {
             throw new InvalidPostException("게시글 내용은 필수입니다.");
         }
+        Post post = new Post(projectId, memberId, requestDto.getTitle(), requestDto.getContent());
 
         postRepository.save(post);
     }

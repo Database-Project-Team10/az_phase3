@@ -12,8 +12,9 @@ public class Post {
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
-    public Post(Long id, Long memberId, String title, String content, LocalDateTime createdAt,  LocalDateTime modifiedAt) {
+    public Post(Long id, Long projectId, Long memberId, String title, String content, LocalDateTime createdAt,  LocalDateTime modifiedAt) {
         this.id = id;
+        this.projectId = projectId;
         this.memberId = memberId;
         this.title = title;
         this.content = content;
@@ -30,22 +31,6 @@ public class Post {
         this.modifiedAt = LocalDateTime.now();
     }
 
-    public Post(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Post(Long id, String title, String content, LocalDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdAt = createdAt;
-        this.modifiedAt = LocalDateTime.now();
-    }
-
     public Post(Long projectId, Long memberId, String title, String content) {
         this.projectId = projectId;
         this.memberId = memberId;
@@ -53,12 +38,6 @@ public class Post {
         this.content = content;
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
-    }
-
-    public Post (Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
     }
 
     public Long getId() {

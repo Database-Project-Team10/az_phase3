@@ -10,170 +10,191 @@ import java.util.Scanner;
 public class PostController {
 
     private final ReplyController replyController = new ReplyController();
-    private final MemberService memberService =  new MemberService();
+    private final MemberService memberService = new MemberService();
     private final Scanner scanner = new Scanner(System.in);
     private final PostService postService = new PostService();
 
     public void showPostMenu(Long projectId) {
         while (true) {
-            System.out.println("\n---------- 게시물 기능 ----------");
+            printMenu(projectId);
 
             if (!memberService.isLoggedIn()) {
                 System.out.println("로그인해야합니다.");
                 return;
             }
 
-            System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
-            System.out.println("현재 접속 중인 프로젝트: " + projectId);
-            System.out.println("1. 전체 게시물 보기");
-            System.out.println("2. 내가 작성한 게시물 보기");
-            System.out.println("3. 게시물 작성");
-            System.out.println("4. 게시물 수정");
-            System.out.println("5. 게시물 삭제");
-            System.out.println("6. 게시물 접속");
-            System.out.println("b. 뒤로 가기");
-
-            System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
-            Long choicePostId = null;
-            String title = null;
-            String content = null;
 
-            switch (choice) {
+            try {
+                switch (choice) {
+                    case "1":
+                        handleViewAllPosts(projectId);
+                        break;
 
-                case "1": // 게시물 목록
-                    try {
-                        showPostList(postService.getPostList(projectId));
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    pause();
-                    break;
+                    case "2":
+                        handleViewMyPosts(projectId);
+                        break;
 
-                case "2":  // 내가 작성한 게시물 목록
-                    try {
-                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    pause();
-                    break;
+                    case "3":
+                        handleCreatePost(projectId);
+                        break;
 
-                case "3": // 게시물 생성
-                    try {
-                        System.out.println("---------- 게시물 작성 ----------");
-                        System.out.print("게시물 제목: ");
-                        title = scanner.nextLine();
-                        System.out.print("게시물 내용: ");
-                        content = scanner.nextLine();
+                    case "4":
+                        handleUpdatePost(projectId);
+                        break;
 
-                        Post post = new Post(projectId, memberService.getCurrentUser().getId(), title, content);
+                    case "5":
+                        handleDeletePost(projectId);
+                        break;
 
-                        postService.createPost(post);
-                        System.out.println("게시물 생성 성공!");
+                    case "6":
+                        handleEnterPost(projectId);
+                        break;
 
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    pause();
-                    break;
+                    case "b":
+                        return;
 
-                case "4": // 게시물 수정
-                    try {
-                        System.out.println("---------- 게시물 수정 ----------");
-                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
-
-                        System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
-                        choicePostId = Long.valueOf(scanner.nextLine());
-
-                        Post myPost = postService.getPost(choicePostId);
-                        showPostDetail(myPost);
-
-                        // 제목 입력 여부
-                        while (true) {
-                            System.out.print("제목을 수정하시겠습니까? (Y/N): ");
-                            String c = scanner.nextLine();
-                            if (c.equals("Y")) {
-                                System.out.print("수정할 제목 입력: ");
-                                title = scanner.nextLine();
-                                break;
-                            } else if (c.equals("N")) {
-                                title = myPost.getTitle();
-                                break;
-                            } else {
-                                System.out.println("잘못된 입력입니다.");
-                            }
-                        }
-
-                        // 내용 입력 여부
-                        while (true) {
-                            System.out.print("내용을 수정하시겠습니까? (Y/N): ");
-                            String c = scanner.nextLine();
-                            if (c.equals("Y")) {
-                                System.out.print("수정할 내용 입력: ");
-                                content = scanner.nextLine();
-                                break;
-                            } else if (c.equals("N")) {
-                                content = myPost.getContent();
-                                break;
-                            } else {
-                                System.out.println("잘못된 입력입니다.");
-                            }
-                        }
-
-                        Post updated = new Post(
-                                myPost.getId(),
-                                memberService.getCurrentUser().getId(),  // 수정: 작성자 ID 포함
-                                title,
-                                content,
-                                myPost.getCreatedAt()
-                        );
-
-                        postService.updatePost(updated);
-                        System.out.println("게시물 수정 성공!");
-
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    pause();
-                    break;
-
-                case "5": // 게시물 삭제
-                    try {
-                        System.out.println("---------- 게시물 삭제 ----------");
-                        showPostList(postService.getMyPostList(projectId, memberService.getCurrentUser().getId()));
-
-                        System.out.print("삭제할 게시물 번호를 입력하세요: ");
-                        choicePostId = Long.valueOf(scanner.nextLine());
-
-                        postService.deletePost(choicePostId, memberService.getCurrentUser().getId());
-                        System.out.println("게시물 삭제 성공!");
-
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    pause();
-                    break;
-
-                case "6": // 게시물 접속
-                    try {
-                        showPostList(postService.getPostList(projectId));
-                        System.out.print("접속할 게시물의 번호를 입력해주세요: ");
-                        choicePostId = Long.valueOf(scanner.nextLine());
-                        showPostDetail(postService.getPostInProject(choicePostId, projectId));
-                        replyController.showReplyMenu(choicePostId);
-
-                    } catch (PostException e) {
-                        printError(e);
-                    }
-                    break;
-
-                case "b":
-                    return;
-
-                default:
-                    System.out.println("잘못된 입력입니다.");
+                    default:
+                        System.out.println("잘못된 입력입니다.");
+                }
+            } catch (PostException e) {
+                printError(e);
             }
+        }
+    }
+
+    private void printMenu(Long projectId) {
+        System.out.println("\n---------- 게시물 기능 ----------");
+
+        System.out.println("현재 로그인: " + (memberService.isLoggedIn() ? memberService.getCurrentUser().getEmail() : "로그인 필요"));
+        System.out.println("현재 접속 중인 프로젝트: " + projectId);
+
+        System.out.println("1. 전체 게시물 보기");
+        System.out.println("2. 내가 작성한 게시물 보기");
+        System.out.println("3. 게시물 작성");
+        System.out.println("4. 게시물 수정");
+        System.out.println("5. 게시물 삭제");
+        System.out.println("6. 게시물 접속");
+        System.out.println("b. 뒤로 가기");
+        System.out.print("메뉴를 선택하세요: ");
+    }
+
+    private void handleViewAllPosts(Long projectId) {
+        List<Post> list = postService.getPostList(projectId);
+        printPostList(list);
+        pause();
+    }
+
+    private void handleViewMyPosts(Long projectId) {
+        Long memberId = memberService.getCurrentUser().getId();
+        List<Post> list = postService.getMyPostList(projectId, memberId);
+        printPostList(list);
+        pause();
+    }
+
+    private void handleCreatePost(Long projectId) {
+        System.out.println("---------- 게시물 작성 ----------");
+        System.out.print("게시물 제목: ");
+        String title = scanner.nextLine();
+        System.out.print("게시물 내용: ");
+        String content = scanner.nextLine();
+
+        PostCreateRequestDto postCreateRequestDto = new PostCreateRequestDto(title, content);
+
+        postService.createPost(projectId, memberService.getCurrentUser().getId(), postCreateRequestDto);
+        System.out.println("게시물 생성 성공!");
+        pause();
+    }
+
+    private void handleUpdatePost(Long projectId) {
+        Long memberId = memberService.getCurrentUser().getId();
+
+        System.out.println("---------- 게시물 수정 ----------");
+
+        List<Post> myPosts = postService.getMyPostList(projectId, memberId);
+        printPostList(myPosts);
+
+        System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
+        Long postId = Long.valueOf(scanner.nextLine());
+
+        Post myPost = postService.getPost(postId);
+        printPostDetail(myPost);
+
+        String newTitle = askEditField("제목", myPost.getTitle());
+        String newContent = askEditField("내용", myPost.getContent());
+
+        Post updated = new Post(
+                myPost.getId(),
+                memberId,
+                newTitle,
+                newContent,
+                myPost.getCreatedAt()
+        );
+
+        postService.updatePost(updated);
+
+        System.out.println("게시물 수정 성공!");
+        pause();
+    }
+
+    private void handleDeletePost(Long projectId) {
+        Long memberId = memberService.getCurrentUser().getId();
+
+        System.out.println("---------- 게시물 삭제 ----------");
+
+        List<Post> myPosts = postService.getMyPostList(projectId, memberId);
+        printPostList(myPosts);
+
+        System.out.print("삭제할 게시물 번호를 입력하세요: ");
+        Long postId = Long.valueOf(scanner.nextLine());
+
+        postService.deletePost(postId, memberId);
+        System.out.println("게시물 삭제 성공!");
+        pause();
+    }
+
+    private void handleEnterPost(Long projectId) {
+        printPostList(postService.getPostList(projectId));
+
+        System.out.print("접속할 게시물의 번호를 입력해주세요: ");
+        Long postId = Long.valueOf(scanner.nextLine());
+
+        Post post = postService.getPostInProject(postId, projectId);
+        printPostDetail(post);
+
+        replyController.showReplyMenu(postId);
+    }
+
+    private String askEditField(String fieldName, String originalValue) {
+        while (true) {
+            System.out.printf("%s을 수정하시겠습니까? (Y/N): ", fieldName);
+            String c = scanner.nextLine();
+
+            if (c.equals("Y")) {
+                System.out.printf("수정할 %s 입력: ", fieldName);
+                return scanner.nextLine();
+            } else if (c.equals("N")) {
+                return originalValue;
+            } else {
+                System.out.println("잘못된 입력입니다.");
+            }
+        }
+    }
+
+    private void printPostDetail(Post post) {
+        System.out.println("---------- 게시물 번호 " + post.getId() + " ----------");
+        System.out.println("게시물 제목: " + post.getTitle());
+        System.out.println("게시물 내용");
+        System.out.println(post.getContent());
+        System.out.println();
+    }
+
+    private void printPostList(List<Post> postList) {
+        System.out.println("---------- 게시물 목록 ----------");
+        for (Post post : postList) {
+            System.out.println(post.getId() + ". " + post.getTitle());
+            System.out.println("게시물 내용: " + post.getContent());
+            System.out.println();
         }
     }
 
@@ -184,22 +205,5 @@ public class PostController {
     private void pause() {
         System.out.print("\n엔터키를 누르면 게시물 기능으로 돌아갑니다.");
         scanner.nextLine();
-    }
-
-    public void showPostDetail(Post post){
-        System.out.println("---------- 게시물 번호 " + post.getId() + " ----------");
-        System.out.println("게시물 제목: " + post.getTitle());
-        System.out.println("게시물 내용");
-        System.out.println(post.getContent());
-        System.out.println();
-    }
-
-    public void showPostList(List<Post> postList){
-        System.out.println("---------- 게시물 목록 ----------");
-        for (Post post : postList){
-            System.out.println(post.getId() + ". " + post.getTitle());
-            System.out.println("게시물 내용: " + post.getContent());
-            System.out.println();
-        }
     }
 }
