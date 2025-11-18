@@ -4,7 +4,6 @@ import src.member.MemberService;
 import java.util.List;
 import java.util.Scanner;
 import src.link.exception.LinkException;
-import src.link.exception.InvalidLinkInputException;
 
 public class LinkController {
 
@@ -36,7 +35,7 @@ public class LinkController {
             String url = null;
 
             switch (choice) {
-                case "1": // 링크 목록 
+                case "1":
                     List<Link> links = linkService.getLinksByProject(projectId);
                     showLinkList(links);
                     System.out.print("\n엔터키를 누르면 링크 메뉴로 돌아갑니다.");
@@ -51,17 +50,12 @@ public class LinkController {
                         System.out.print("링크 URL (https://...): ");
                         url = scanner.nextLine();
 
-                        if (title.trim().isEmpty() || url.trim().isEmpty()) {
-                            throw new InvalidLinkInputException("제목과 URL은 비워둘 수 없습니다.");
-                        }
-                        
                         Link newLink = new Link(projectId, title, url);
                         
-                        if (linkService.createLink(newLink)) {
-                            System.out.println("링크가 성공적으로 작성되었습니다.");
-                        } else {
-                            System.out.println("링크 작성에 실패했습니다.");
-                        }
+                        linkService.createLink(newLink);
+                        
+                        System.out.println("링크가 성공적으로 작성되었습니다."); // [!] 3. try 성공 시 메시지
+                        
                     } catch (LinkException e) {
                         System.out.println("[오류] " + e.getMessage());
                     }
@@ -77,12 +71,8 @@ public class LinkController {
                     
                     try {
                         linkId = Long.parseLong(scanner.nextLine());
+                        
                         Link targetLink = linkService.getLink(linkId);
-
-                        if (targetLink == null) {
-                            System.out.println("오류: 해당 링크를 찾을 수 없습니다.");
-                            break;
-                        }
 
                         String newTitle;
                         while (true) {
@@ -116,25 +106,20 @@ public class LinkController {
                             }
                         }
                         
-                        if (newTitle.trim().isEmpty() || newUrl.trim().isEmpty()) {
-                            throw new InvalidLinkInputException("제목과 URL은 비워둘 수 없습니다.");
-                        }
                         Link updatedLink = new Link(
-                            targetLink.getId(), 
-                            targetLink.getProjectId(), 
-                            newTitle, 
-                            newUrl
-                        );
+                                targetLink.getId(), 
+                                targetLink.getProjectId(), 
+                                newTitle, 
+                                newUrl
+                            );
                         
-                        if (linkService.updateLink(updatedLink, projectId)) {
-                            System.out.println("링크가 성공적으로 수정되었습니다.");
-                        } else {
-                            System.out.println("링크 수정에 실패했습니다.");
-                        }
+                        linkService.updateLink(updatedLink, projectId);
+                        
+                        System.out.println("링크가 성공적으로 수정되었습니다."); // [!] 3. try 성공 시 메시지
 
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
-                    } catch (LinkException e) {
+                    } catch (LinkException e) { // [!] 4. Service가 던진 모든 예외를 잡음
                         System.out.println("[오류] " + e.getMessage());
                     }
                     System.out.print("\n엔터키를 누르면 링크 메뉴로 돌아갑니다.");
@@ -148,12 +133,11 @@ public class LinkController {
 
                     try {
                         linkId = Long.parseLong(scanner.nextLine());
-
-                        if (linkService.deleteLink(linkId, projectId)) {
-                            System.out.println("링크가 성공적으로 삭제되었습니다.");
-                        } else {
-                            System.out.println("링크 삭제에 실패했습니다.");
-                        }
+                        
+                        linkService.deleteLink(linkId, projectId);
+                        
+                        System.out.println("링크가 성공적으로 삭제되었습니다.");
+                        
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
                     } catch (LinkException e) {
