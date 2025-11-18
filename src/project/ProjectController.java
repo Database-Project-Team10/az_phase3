@@ -46,15 +46,20 @@ public class ProjectController {
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
 
+            boolean keepGoing;
             if (memberService.isLoggedIn()) {
-                handleLoggedInMenu(choice);
+                keepGoing = handleLoggedInMenu(choice);
             } else {
-                handleGuestMenu(choice);
+                keepGoing = handleGuestMenu(choice);
+            }
+
+            if (!keepGoing) {
+                return;
             }
         }
     }
 
-    private void handleLoggedInMenu(String choice) {
+    private boolean handleLoggedInMenu(String choice) {
         switch (choice) {
             case "1":
                 handleListProjects();
@@ -77,23 +82,27 @@ public class ProjectController {
                 break;
 
             case "b":
-                return;
+                return false;
 
             default:
                 System.out.println("잘못된 입력입니다.");
         }
+        return true;
     }
 
-    private void handleGuestMenu(String choice) {
+    private boolean handleGuestMenu(String choice) {
         switch (choice) {
             case "1":
                 handleListProjects();
                 break;
+
             case "b":
-                return;
+                return false;
+
             default:
                 System.out.println("잘못된 입력입니다.");
         }
+        return true;
     }
 
     private void handleListProjects() {
