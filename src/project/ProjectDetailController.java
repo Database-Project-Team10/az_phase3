@@ -14,19 +14,40 @@ import java.util.Scanner;
 
 public class ProjectDetailController {
 
-    private final PostController postController =  new PostController();
-    private final LinkController linkController = new LinkController();
-    private final DocumentController documentController = new DocumentController();
-    private final MeetingController meetingController = new MeetingController();
-    private final ProjectTechspecController projectTechspecController = new ProjectTechspecController();
-    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
+    private final PostController postController;
+    private final LinkController linkController;
+    private final DocumentController documentController;
+    private final MeetingController meetingController;
+    private final ProjectTechspecController projectTechspecController;
+    private final ProjectMbtiController projectMbtiController;
 
-    private final ProjectService projectService = new ProjectService();
-    private final MemberService memberService = new MemberService();
+    private final ProjectService projectService;
+    private final MemberService memberService;
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public void showDetailMenu(Long projectId){
+    // ★ 모든 의존성을 외부에서 주입받도록 변경 (DI 적용)
+    public ProjectDetailController(
+            PostController postController,
+            LinkController linkController,
+            DocumentController documentController,
+            MeetingController meetingController,
+            ProjectTechspecController projectTechspecController,
+            ProjectMbtiController projectMbtiController,
+            ProjectService projectService,
+            MemberService memberService
+    ) {
+        this.postController = postController;
+        this.linkController = linkController;
+        this.documentController = documentController;
+        this.meetingController = meetingController;
+        this.projectTechspecController = projectTechspecController;
+        this.projectMbtiController = projectMbtiController;
+        this.projectService = projectService;
+        this.memberService = memberService;
+    }
+
+    public void showDetailMenu(Long projectId) {
         Project currentProject = projectService.getProject(projectId);
 
         while (true) {
@@ -34,7 +55,7 @@ public class ProjectDetailController {
             if (memberService.isLoggedIn()) {
                 System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
                 System.out.println("현재 접속 중인 프로젝트: " + projectId);
-                System.out.println("제목: " +  currentProject.getTitle());
+                System.out.println("제목: " + currentProject.getTitle());
                 System.out.println("설명");
                 System.out.println(currentProject.getDescription());
                 System.out.println("-------------------------------");
@@ -81,7 +102,6 @@ public class ProjectDetailController {
                 default:
                     System.out.println("잘못된 입력입니다.");
             }
-
         }
     }
 
@@ -91,22 +111,25 @@ public class ProjectDetailController {
 
         System.out.print("새 제목 (엔터 시 유지): ");
         String t = scanner.nextLine();
-        if(!t.isEmpty()) newTitle = t;
+        if (!t.isEmpty()) newTitle = t;
 
         System.out.print("새 설명 (엔터 시 유지): ");
         String d = scanner.nextLine();
-        if(!d.isEmpty()) newDesc = d;
+        if (!d.isEmpty()) newDesc = d;
 
-        try{
+        try {
             ProjectUpdateRequestDto projectUpdateRequestDto = new ProjectUpdateRequestDto(
                     newTitle,
                     newDesc
             );
-            projectService.updateProjectInfo(project.getId(), memberService.getCurrentUser().getId(), projectUpdateRequestDto);
+            projectService.updateProjectInfo(project.getId(),
+                    memberService.getCurrentUser().getId(),
+                    projectUpdateRequestDto);
 
             System.out.println("수정 완료!");
 
-            return new Project(project.getId(), newTitle, newDesc, project.getCreatedAt(), project.getModifiedAt());
+            return new Project(project.getId(), newTitle, newDesc,
+                    project.getCreatedAt(), project.getModifiedAt());
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());
         }

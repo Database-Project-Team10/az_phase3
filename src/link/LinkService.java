@@ -9,7 +9,10 @@ import java.util.List;
 
 public class LinkService {
 
-    private final LinkRepository linkRepository = new LinkRepository();
+    private final LinkRepository linkRepository;
+    public LinkService(LinkRepository linkRepository) {
+        this.linkRepository = linkRepository;
+    }
     
     private void validateUrl(String url) {
         if (!url.matches("^https?://.+")) {

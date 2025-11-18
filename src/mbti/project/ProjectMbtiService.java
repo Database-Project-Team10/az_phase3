@@ -10,8 +10,13 @@ import java.util.Map;
 
 public class ProjectMbtiService {
 
-    private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
-    private final MbtiRepository mbtiRepository = new MbtiRepository();
+    private final MbtiRepository mbtiRepository;
+    private final ProjectMbtiRepository projectMbtiRepository;
+
+    public ProjectMbtiService(MbtiRepository mbtiRepository,  ProjectMbtiRepository projectMbtiRepository) {
+        this.mbtiRepository = mbtiRepository;
+        this.projectMbtiRepository = projectMbtiRepository;
+    }
 
     public List<MbtiDimension> getMbtiDimensions() {
         List<MbtiDimension> dimensions = mbtiRepository.findAllMbtiDimensions();

@@ -6,8 +6,13 @@ import java.util.Scanner;
 
 public class MatchingController {
 
-    private final MatchingService matchingService = new MatchingService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final MatchingService matchingService;
+    private final Scanner scanner;
+
+    public MatchingController(MatchingService matchingService, Scanner scanner) {
+        this.matchingService = matchingService;
+        this.scanner = scanner;
+    }
 
     public void showMatchingMenu(Member currentUser) {
         while (true) {

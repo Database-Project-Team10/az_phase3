@@ -4,13 +4,22 @@ import src.member.Member;
 import src.techspec.Techspec;
 import src.techspec.dto.TechspecAddRequestDto;
 import src.techspec.exception.TechspecException;
+import src.techspec.project.ProjectTechspecService;
 
 import java.util.Scanner;
 
 public class MemberTechspecController {
 
-    private final MemberTechspecService memberTechspecService = new MemberTechspecService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final MemberTechspecService memberTechspecService;
+    private final Scanner scanner;
+
+    public MemberTechspecController(
+            MemberTechspecService memberTechspecService,
+            Scanner scanner
+    ) {
+        this.memberTechspecService = memberTechspecService;
+        this.scanner = scanner;
+    }
 
     public void showMemberTechspecMenu(Member currentUser) {
 

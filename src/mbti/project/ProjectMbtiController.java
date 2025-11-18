@@ -13,8 +13,16 @@ import java.util.Scanner;
 
 public class ProjectMbtiController {
 
-    private final ProjectMbtiService projectMbtiService = new ProjectMbtiService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ProjectMbtiService projectMbtiService;
+    private final Scanner scanner;
+
+    public ProjectMbtiController(
+            ProjectMbtiService projectMbtiService,
+            Scanner scanner
+    ) {
+        this.projectMbtiService = projectMbtiService;
+        this.scanner = scanner;
+    }
 
     public void showProjectMbtiMenu(Project currentProject) {
 

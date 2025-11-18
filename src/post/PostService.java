@@ -10,7 +10,11 @@ import java.util.List;
 
 public class PostService {
 
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
 
     /**
      * 프로젝트 내 전체 게시글 조회

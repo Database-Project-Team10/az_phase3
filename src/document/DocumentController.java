@@ -1,18 +1,26 @@
 package src.document;
 
-import src.member.MemberService;
-import java.util.List;
-import java.util.Scanner;
 import src.document.exception.DocumentException;
 import src.document.exception.InvalidDocumentInputException;
+import src.member.MemberService;
+
+import java.util.List;
+import java.util.Scanner;
 
 public class DocumentController {
 
-    private final DocumentService documentService = new DocumentService();
-    private final MemberService memberService = new MemberService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final DocumentService documentService;
+    private final MemberService memberService;
+    private final Scanner scanner;
 
-    public DocumentController() {
+    public DocumentController(
+            DocumentService documentService,
+            MemberService memberService,
+            Scanner scanner
+    ) {
+        this.documentService = documentService;
+        this.memberService = memberService;
+        this.scanner = scanner;
     }
 
     public void showDocumentMenu(Long projectId) {

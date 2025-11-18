@@ -9,9 +9,19 @@ import java.util.Scanner;
 
 public class LinkController {
 
-    private final LinkService linkService = new LinkService();
-    private final MemberService memberService = new MemberService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final LinkService linkService;
+    private final MemberService memberService;
+    private final Scanner scanner;
+
+    public LinkController(
+            LinkService linkService,
+            MemberService memberService,
+            Scanner scanner
+    ) {
+        this.linkService = linkService;
+        this.memberService = memberService;
+        this.scanner = scanner;
+    }
 
     public void showLinkMenu(Long projectId) {
         while (true) {

@@ -12,7 +12,10 @@ import java.util.List;
 
 public class ReplyService {
 
-    private final ReplyRepository replyRepository = new ReplyRepository();
+    private final ReplyRepository replyRepository;
+    public ReplyService(ReplyRepository replyRepository) {
+        this.replyRepository = replyRepository;
+    }
 
     public List<ReplyResponseDto> getReplyList(Long postId){
         if (postId == null){

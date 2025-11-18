@@ -4,6 +4,7 @@ import src.mbti.MbtiDimension;
 import src.mbti.exception.InvalidMbtiException;
 import src.mbti.exception.MbtiException;
 import src.mbti.exception.MbtiNotFoundException;
+import src.mbti.project.ProjectMbtiService;
 import src.member.Member;
 
 import java.util.HashMap;
@@ -13,8 +14,16 @@ import java.util.Scanner;
 
 public class MemberMbtiController {
 
-    private final MemberMbtiService memberMbtiService = new MemberMbtiService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final MemberMbtiService memberMbtiService;
+    private final Scanner scanner;
+
+    public MemberMbtiController(
+            MemberMbtiService memberMbtiService,
+            Scanner scanner
+    ) {
+        this.memberMbtiService = memberMbtiService;
+        this.scanner = scanner;
+    }
 
     public void showMemberMbtiMenu(Member currentUser) {
         System.out.println("---------- 내 MBTI 입력/수정 ----------");

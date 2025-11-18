@@ -1,12 +1,16 @@
 package src.document;
 
-import java.util.List;
 import src.document.exception.DocumentAccessException;
 import src.document.exception.InvalidDocumentInputException;
 
+import java.util.List;
+
 public class DocumentService {
 
-    private final DocumentRepository documentRepository = new DocumentRepository();
+    private final DocumentRepository documentRepository;
+    public DocumentService(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
     
     private void validateLocation(String location) {
         if (!location.matches("^/.+")) {

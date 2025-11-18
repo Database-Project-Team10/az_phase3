@@ -10,8 +10,16 @@ import java.util.Set;
 
 public class ProjectTechspecController {
 
-    private final ProjectTechspecService projectTechspecService = new ProjectTechspecService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final ProjectTechspecService projectTechspecService;
+    private final Scanner scanner;
+
+    public ProjectTechspecController(
+            ProjectTechspecService projectTechspecService,
+            Scanner scanner
+    ) {
+        this.projectTechspecService = projectTechspecService;
+        this.scanner = scanner;
+    }
 
     public void showProjectTechspecs(Project currentProject) {
         System.out.println("\n---------- [" + currentProject.getTitle() + "] 요구 스택 목록 ----------");
