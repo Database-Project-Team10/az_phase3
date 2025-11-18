@@ -2,16 +2,16 @@ package src.meeting;
 
 import java.util.List;
 import java.time.LocalDateTime;
+import src.meeting.dto.MeetingRequestDto;
 import src.meeting.exception.MeetingAccessException;
 import src.meeting.exception.InvalidMeetingInputException;
+import src.meeting.exception.MeetingNotFoundException;
 
 public class MeetingService {
 
     private final MeetingRepository meetingRepository = new MeetingRepository();
     private void validateMeetingTime(LocalDateTime startTime, LocalDateTime endTime) {
-        if (startTime == null && endTime == null) {
-            return; 
-        }
+        if (startTime == null && endTime == null) return;
         
         if (startTime == null || endTime == null) {
             throw new InvalidMeetingInputException("시작 시간과 종료 시간은 함께 비워두거나, 함께 입력해야 합니다.");
@@ -21,9 +21,22 @@ public class MeetingService {
             throw new InvalidMeetingInputException("종료 시간은 시작 시간보다 이후여야 합니다.");
         }
     }
-    public boolean createMeeting(Meeting meeting) {
-        validateMeetingTime(meeting.getStartTime(), meeting.getEndTime()); // [!] 2. 저장 전 검증
-        return meetingRepository.save(meeting);
+    public void createMeeting(Long projectId, MeetingRequestDto requestDto) {
+        if (requestDto.getTitle().trim().isEmpty()) {
+            throw new InvalidMeetingInputException("회의록 제목은 비워둘 수 없습니다.");
+        }
+        
+        validateMeetingTime(requestDto.getStartTime(), requestDto.getEndTime());
+        
+        Meeting meeting = new Meeting(
+            projectId, 
+            requestDto.getTitle(), 
+            requestDto.getDescription(), 
+            requestDto.getStartTime(), 
+            requestDto.getEndTime()
+        );
+        
+        meetingRepository.save(meeting);
     }
 
     public List<Meeting> getMeetingsByProject(Long projectId) {
@@ -31,28 +44,51 @@ public class MeetingService {
     }
     
     public Meeting getMeeting(Long meetingId) {
-        return meetingRepository.findById(meetingId);
-    }
-
-    public boolean updateMeeting(Meeting updatedMeeting, Long expectedProjectId) {
-        Meeting targetMeeting = meetingRepository.findById(updatedMeeting.getId());
-
-        if (targetMeeting == null || !targetMeeting.getProjectId().equals(expectedProjectId)) {
-            throw new MeetingAccessException("수정 권한이 없거나 유효하지 않은 회의록 ID입니다.");
+        Meeting meeting = meetingRepository.findById(meetingId);
+        if (meeting == null) {
+            throw new MeetingNotFoundException();
         }
-
-        validateMeetingTime(updatedMeeting.getStartTime(), updatedMeeting.getEndTime());
-        
-        return meetingRepository.update(updatedMeeting);
+        return meeting;
     }
 
-    public boolean deleteMeeting(Long meetingId, Long expectedProjectId) {
+    public void updateMeeting(Long meetingId, Long projectId, MeetingRequestDto requestDto) {
+        if (requestDto.getTitle().trim().isEmpty()) {
+            throw new InvalidMeetingInputException("회의록 제목은 비워둘 수 없습니다.");
+        }
+        
         Meeting targetMeeting = meetingRepository.findById(meetingId);
+        if (targetMeeting == null) {
+            throw new MeetingNotFoundException();
+        }
 
-        if (targetMeeting == null || !targetMeeting.getProjectId().equals(expectedProjectId)) {
-            throw new MeetingAccessException("삭제 권한이 없거나 유효하지 않은 회의록 ID입니다.");
+        if (!targetMeeting.getProjectId().equals(projectId)) {
+            throw new MeetingAccessException("해당 회의록은 이 프로젝트에 속하지 않아 수정할 수 없습니다.");
+        }
+
+        validateMeetingTime(requestDto.getStartTime(), requestDto.getEndTime());
+        
+        Meeting meeting = new Meeting(
+            meetingId,
+            projectId,
+            requestDto.getTitle(),
+            requestDto.getDescription(),
+            requestDto.getStartTime(),
+            requestDto.getEndTime()
+        );
+
+        meetingRepository.update(meeting);
+    }
+
+    public void deleteMeeting(Long meetingId, Long expectedProjectId) {
+        Meeting targetMeeting = meetingRepository.findById(meetingId);
+        if (targetMeeting == null) {
+            throw new MeetingNotFoundException();
+        }
+
+        if (!targetMeeting.getProjectId().equals(expectedProjectId)) {
+            throw new MeetingAccessException("해당 회의록은 이 프로젝트에 속하지 않아 삭제할 수 없습니다.");
         }
         
-        return meetingRepository.delete(meetingId);
+        meetingRepository.delete(meetingId);
     }
 }

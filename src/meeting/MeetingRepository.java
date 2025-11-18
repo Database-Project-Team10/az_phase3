@@ -13,19 +13,23 @@ import src.utils.Azconnection;
 
 public class MeetingRepository {
 
-    public boolean save(Meeting meeting) {
+	public Meeting save(Meeting meeting) {
         String sql = "INSERT INTO Meeting (project_id, title, description, start_time, end_time) VALUES (?, ?, ?, ?, ?)";
+        String[] generatedColumns = {"id"};
+
         try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
 
             pstmt.setLong(1, meeting.getProjectId());
             pstmt.setString(2, meeting.getTitle());
             pstmt.setString(3, meeting.getDescription());
+
             if (meeting.getStartTime() != null) {
                 pstmt.setTimestamp(4, Timestamp.valueOf(meeting.getStartTime()));
             } else {
                 pstmt.setNull(4, Types.TIMESTAMP);
             }
+            
             if (meeting.getEndTime() != null) {
                 pstmt.setTimestamp(5, Timestamp.valueOf(meeting.getEndTime()));
             } else {
@@ -33,12 +37,31 @@ public class MeetingRepository {
             }
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+
+            if (affectedRows == 0) {
+                throw new SQLException("회의록 저장 실패: 영향받은 행이 없습니다.");
+            }
+            
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Long id = generatedKeys.getLong(1);
+                    return new Meeting(
+                            id,
+                            meeting.getProjectId(),
+                            meeting.getTitle(),
+                            meeting.getDescription(),
+                            meeting.getStartTime(),
+                            meeting.getEndTime()
+                    );
+                } else {
+                    throw new SQLException("회의록 저장 실패: ID를 가져올 수 없습니다.");
+                }
+            }
 
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생 (Meeting): " + e.getMessage());
+            return null;
         }
-        return false;
     }
 
     public List<Meeting> findByProjectId(Long projectId) {
