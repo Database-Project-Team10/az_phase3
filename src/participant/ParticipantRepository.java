@@ -57,7 +57,7 @@ public class ParticipantRepository {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("DB 업데이트 중 오류 발생: " + e.getMessage());
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
         }
 
         return false;

@@ -4,8 +4,11 @@ import src.mbti.member.MemberMbtiRepository;
 import src.mbti.project.ProjectMbtiRepository;
 import src.member.Member;
 import src.participant.ParticipantRepository;
+import src.project.exception.ProjectDescriptionInvalidException;
+import src.project.exception.ProjectNotFoundException;
+import src.project.exception.ProjectTitleInvalidException;
+import src.project.exception.UnauthorizedProjectAccessException;
 import src.techspec.TechspecRepository;
-import src.techspec.member.MemberTechspecRepository;
 import src.techspec.project.ProjectTechspecRepository;
 import src.utils.Azconnection;
 
@@ -25,6 +28,7 @@ public class ProjectService {
     private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
 
     public List<Project> getProjectList(int cnt) {
+
         return projectRepository.findProjects(cnt);
     }
 
@@ -33,7 +37,11 @@ public class ProjectService {
     }
 
     public Project getProjectDetail(Long projectId) {
-        return projectRepository.findById(projectId);
+        Project project = projectRepository.findById(projectId);
+        if  (project == null) {
+            throw new ProjectNotFoundException();
+        }
+        return project;
     }
 
     // Controller가 호출하는 검증 메서드
@@ -41,8 +49,15 @@ public class ProjectService {
         return projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
     }
 
-    // 입력값을 파라미터로 받아서 처리
     public Project createProject(Member currentMember, String title, String description, Set<String> techNames, Map<Long, String> mbtiMap) {
+        if (title == null || title.isBlank()) {
+            throw new ProjectTitleInvalidException("프로젝트 제목은 비어 있을 수 없습니다.");
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new ProjectDescriptionInvalidException("프로젝트 설명은 비어 있을 수 없습니다.");
+        }
+
         Connection conn = null;
         try {
             conn = Azconnection.getConnection();
@@ -86,13 +101,28 @@ public class ProjectService {
         return null;
     }
 
-    public boolean updateProjectInfo(Long projectId, String newTitle, String newDescription) {
+    public boolean updateProjectInfo(Long projectId, String newTitle, String newDescription, Long memberId) {
+        if (projectRepository.findById(projectId) == null) {
+            throw new ProjectNotFoundException();
+        }
+        if (!participantRepository.exists(projectId, memberId)) {
+            throw new UnauthorizedProjectAccessException("해당 프로젝트에 대한 수정 권한이 없습니다.");
+        }
         Project newProject = new Project(newTitle, newDescription);
         return projectRepository.updateProject(projectId, newProject);
     }
 
-    public boolean deleteProject(Long projectId) {
-        return projectRepository.deleteProject(projectId);
+    public void deleteProject(Long projectId, Long memberId) {
+        Project project = projectRepository.findById(projectId);
+        if (project == null) {
+            throw new ProjectNotFoundException();
+        }
+
+        if (!participantRepository.exists(projectId, memberId)) {
+            throw new UnauthorizedProjectAccessException("해당 프로젝트에 대한 삭제 권한이 없습니다.");
+        }
+
+        projectRepository.deleteProject(projectId);
     }
 }
 

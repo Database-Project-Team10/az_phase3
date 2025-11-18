@@ -6,6 +6,7 @@ import src.mbti.project.ProjectMbtiController;
 import src.meeting.MeetingController;
 import src.member.MemberService;
 import src.post.PostController;
+import src.project.exception.ProjectException;
 import src.techspec.project.ProjectTechspecController;
 
 import java.util.Scanner;
@@ -90,12 +91,14 @@ public class ProjectDetailController {
         String d = scanner.nextLine();
         if(!d.isEmpty()) newDesc = d;
 
-        if(projectService.updateProjectInfo(project.getId(), newTitle, newDesc)) {
-            System.out.println("수정 완료");
+
+        try{
+            projectService.updateProjectInfo(project.getId(), newTitle, newDesc, memberService.getCurrentUser().getId());
             project.setTitle(newTitle);
             project.setDescription(newDesc);
-        } else {
-            System.out.println("수정 실패");
+            System.out.println("수정 완료");
+        } catch (ProjectException e) {
+            System.out.println("[오류]: " + e.getMessage());
         }
     }
 }
