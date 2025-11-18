@@ -36,7 +36,7 @@ public class ProjectService {
         return projectRepository.findProjectsByMemberId(currentMember.getId());
     }
 
-    public Project getProjectDetail(Long projectId) {
+    public Project getProject(Long projectId) {
         Project project = projectRepository.findById(projectId);
         if  (project == null) {
             throw new ProjectNotFoundException();

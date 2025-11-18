@@ -26,7 +26,7 @@ public class ProjectDetailController {
     private final Scanner scanner = new Scanner(System.in);
 
     public void showDetailMenu(Long projectId){
-        Project currentProject = projectService.getProjectDetail(projectId);
+        Project currentProject = projectService.getProject(projectId);
 
         while (true) {
             System.out.println("\n---------- 프로젝트 상세 ----------");
