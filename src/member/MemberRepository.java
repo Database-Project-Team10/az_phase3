@@ -1,5 +1,6 @@
 package src.member;
 
+import src.member.dto.MemberInfoDto;
 import src.utils.Azconnection;
 
 import java.sql.*;

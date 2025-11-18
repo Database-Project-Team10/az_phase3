@@ -1,6 +1,7 @@
 package src.member;
 
 import src.mbti.member.MemberMbtiController;
+import src.member.dto.MemberInfoDto;
 import src.techspec.member.MemberTechspecController;
 import src.matching.MatchingController;
 
