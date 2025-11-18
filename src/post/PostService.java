@@ -1,5 +1,6 @@
 package src.post;
 
+import src.post.dto.PostRequestDto;
 import src.post.exception.InvalidPostException;
 import src.post.exception.PostNotFoundException;
 import src.post.exception.UnauthorizedPostAccessException;
@@ -36,7 +37,7 @@ public class PostService {
     /**
      * 게시글 생성
      */
-    public void createPost(Long projectId, Long memberId, PostCreateRequestDto requestDto) {
+    public void createPost(Long projectId, Long memberId, PostRequestDto requestDto) {
 
         if (projectId == null) {
             throw new InvalidPostException("프로젝트 ID가 필요합니다.");

@@ -1,10 +1,10 @@
-package src.post;
+package src.post.dto;
 
-public class PostCreateRequestDto {
+public class PostRequestDto {
     String title;
     String content;
 
-    public PostCreateRequestDto(String title, String content) {
+    public PostRequestDto(String title, String content) {
         this.title = title;
         this.content = content;
     }

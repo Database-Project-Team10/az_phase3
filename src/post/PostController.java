@@ -1,6 +1,7 @@
 package src.post;
 
 import src.member.MemberService;
+import src.post.dto.PostRequestDto;
 import src.post.exception.PostException;
 import src.reply.ReplyController;
 
@@ -99,9 +100,9 @@ public class PostController {
         System.out.print("게시물 내용: ");
         String content = scanner.nextLine();
 
-        PostCreateRequestDto postCreateRequestDto = new PostCreateRequestDto(title, content);
+        PostRequestDto postRequestDto = new PostRequestDto(title, content);
 
-        postService.createPost(projectId, memberService.getCurrentUser().getId(), postCreateRequestDto);
+        postService.createPost(projectId, memberService.getCurrentUser().getId(), postRequestDto);
         System.out.println("게시물 생성 성공!");
         pause();
     }
