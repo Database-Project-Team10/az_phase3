@@ -1,4 +1,4 @@
-package src.reply;
+package src.reply.dto;
 
 public class ReplyResponseDto {
     Long id;

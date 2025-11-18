@@ -74,10 +74,13 @@ public class PostService {
      * 프로젝트 내부 게시글 단건 조회
      */
     public Post getPostInProject(Long projectId, Long postId) {
-        Post post = postRepository.findByIdAndProjectId(projectId, postId);
-
+        Post post = postRepository.findById(postId);
         if (post == null) {
             throw new PostNotFoundException();
+        }
+
+        if (!post.getProjectId().equals(projectId)) {
+            throw new  PostNotInProjectException();
         }
 
         return post;

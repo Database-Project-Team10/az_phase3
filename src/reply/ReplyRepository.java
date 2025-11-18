@@ -1,12 +1,9 @@
 package src.reply;
 
-import src.post.Post;
+import src.reply.dto.ReplyResponseDto;
 import src.utils.Azconnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +49,11 @@ public class ReplyRepository {
                 while (rs.next()) {
                     Reply reply = new Reply(
                             rs.getLong("id"),
+                            rs.getLong("post_id"),
                             rs.getLong("member_id"),
                             rs.getString("content"),
-                            rs.getObject("created_at", LocalDateTime.class)
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("modified_at", LocalDateTime.class)
                     );
                     replyList.add(reply);
                 }
@@ -76,6 +75,7 @@ public class ReplyRepository {
                 if (rs.next()) {
                     return new Reply(
                             rs.getLong("id"),
+                            rs.getLong("post_id"),
                             rs.getLong("member_id"),
                             rs.getString("content"),
                             rs.getObject("created_at", LocalDateTime.class),
@@ -89,24 +89,49 @@ public class ReplyRepository {
         return null;
     }
 
-    public boolean save(Reply reply){
-        String sql = "INSERT INTO reply (post_id, member_id, content, created_at, modified_at) VALUES (?, ?, ?, ?, ?)";
+    public Reply save(Reply reply) {
+        String sql = "INSERT INTO reply (post_id, member_id, content, created_at, modified_at) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        String[] generatedColumns = {"id"};
+
         try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
 
             pstmt.setLong(1, reply.getPostId());
             pstmt.setLong(2, reply.getMemberId());
             pstmt.setString(3, reply.getContent());
-            pstmt.setObject(4, reply.getCreatedAt());
-            pstmt.setObject(5, reply.getModifiedAt());
+
+            pstmt.setTimestamp(4, Timestamp.valueOf(reply.getCreatedAt()));
+            pstmt.setTimestamp(5, Timestamp.valueOf(reply.getModifiedAt()));
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows != 0;
+
+            if (affectedRows == 0) {
+                throw new SQLException("댓글 저장 실패: 영향받은 행이 없습니다.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    Long id = generatedKeys.getLong(1);
+
+                    return new Reply(
+                            id,
+                            reply.getPostId(),
+                            reply.getMemberId(),
+                            reply.getContent(),
+                            reply.getCreatedAt(),
+                            reply.getModifiedAt()
+                    );
+                } else {
+                    throw new SQLException("댓글 저장 실패: ID를 가져올 수 없습니다.");
+                }
+            }
 
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+            return null;
         }
-        return false;
     }
 
     public boolean update(Reply reply){

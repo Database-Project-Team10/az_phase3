@@ -97,7 +97,7 @@ public class PostRepository {
         return null;
     }
 
-    public Post findByIdAndProjectId(Long postId, Long projectId){
+    public Post findByIdAndProjectId(Long projectId, Long postId){
         String sql = "SELECT * FROM post WHERE id=? AND project_id=?";
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
