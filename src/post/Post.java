@@ -3,14 +3,14 @@ package src.post;
 import java.time.LocalDateTime;
 
 public class Post {
-    Long id;
-    Long projectId;
-    Long memberId;
+    private final Long id;
+    private final Long projectId;
+    private final Long memberId;
 
-    String title;
-    String content;
-    LocalDateTime createdAt;
-    LocalDateTime modifiedAt;
+    private final String title;
+    private final String content;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
 
     public Post(Long id, Long projectId, Long memberId, String title, String content, LocalDateTime createdAt,  LocalDateTime modifiedAt) {
         this.id = id;
@@ -22,8 +22,9 @@ public class Post {
         this.modifiedAt = modifiedAt;
     }
 
-    public Post(Long id, Long memberId, String title, String content, LocalDateTime createdAt){
+    public Post(Long id, Long projectId, Long memberId, String title, String content, LocalDateTime createdAt){
         this.id = id;
+        this.projectId = projectId;
         this.memberId = memberId;
         this.title = title;
         this.content = content;
@@ -32,6 +33,7 @@ public class Post {
     }
 
     public Post(Long projectId, Long memberId, String title, String content) {
+        this.id = null;
         this.projectId = projectId;
         this.memberId = memberId;
         this.title = title;

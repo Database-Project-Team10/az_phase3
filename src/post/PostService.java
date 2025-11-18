@@ -3,6 +3,7 @@ package src.post;
 import src.post.dto.PostRequestDto;
 import src.post.exception.InvalidPostException;
 import src.post.exception.PostNotFoundException;
+import src.post.exception.PostNotInProjectException;
 import src.post.exception.UnauthorizedPostAccessException;
 
 import java.util.List;
@@ -85,26 +86,32 @@ public class PostService {
     /**
      * 게시글 수정
      */
-    public void updatePost(Post updatedPost) {
+    public void updatePost(Long projectId, Long postId, Long memberId, PostRequestDto requestDto) {
 
-        Post original = postRepository.findById(updatedPost.getId());
+        Post original = postRepository.findById(postId);
         if (original == null) {
             throw new PostNotFoundException();
         }
 
+        if (!original.getProjectId().equals(projectId)) {
+            throw new PostNotInProjectException();
+        }
+
         // 작성자 본인만 수정 가능
-        if (!original.getMemberId().equals(updatedPost.getMemberId())) {
+        if (!original.getMemberId().equals(memberId)) {
             throw new UnauthorizedPostAccessException();
         }
 
-        if (updatedPost.getTitle() == null || updatedPost.getTitle().trim().isEmpty()) {
+        if (requestDto.getTitle() == null || requestDto.getTitle().trim().isEmpty()) {
             throw new InvalidPostException("게시글 제목은 필수입니다.");
         }
-        if (updatedPost.getContent() == null || updatedPost.getContent().trim().isEmpty()) {
+        if (requestDto.getContent() == null || requestDto.getContent().trim().isEmpty()) {
             throw new InvalidPostException("게시글 내용은 필수입니다.");
         }
 
-        postRepository.update(updatedPost);
+        Post post = new Post(original.getId(), projectId, memberId, requestDto.getTitle(), requestDto.getContent(), original.getCreatedAt());
+
+        postRepository.update(post);
     }
 
     /**

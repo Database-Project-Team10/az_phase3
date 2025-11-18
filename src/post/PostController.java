@@ -124,15 +124,9 @@ public class PostController {
         String newTitle = askEditField("제목", myPost.getTitle());
         String newContent = askEditField("내용", myPost.getContent());
 
-        Post updated = new Post(
-                myPost.getId(),
-                memberId,
-                newTitle,
-                newContent,
-                myPost.getCreatedAt()
-        );
+        PostRequestDto postRequestDto = new PostRequestDto(newTitle, newContent);
 
-        postService.updatePost(updated);
+        postService.updatePost(projectId, myPost.getId(), memberId, postRequestDto);
 
         System.out.println("게시물 수정 성공!");
         pause();
