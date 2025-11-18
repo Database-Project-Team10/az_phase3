@@ -2,6 +2,7 @@ package src.project;
 
 import src.member.MemberService;
 import src.participant.ParticipantService;
+import src.participant.exception.ParticipantException;
 import src.post.PostController;
 import src.project.dto.ProjectCreateRequestDto;
 import src.project.exception.ProjectException;
@@ -162,12 +163,11 @@ public class ProjectController {
         Long projectId = scanner.nextLong();
         scanner.nextLine();
 
-        boolean success = participantService.joinProject(projectId, memberService.getCurrentUser().getId());
-
-        if (success) {
+        try {
+            participantService.joinProject(projectId, memberService.getCurrentUser().getId());
             System.out.println("프로젝트 참여 성공!");
-        } else {
-            System.out.println("프로젝트 참여 실패!");
+        } catch (ParticipantException e) {
+            System.out.println("[오류]: " +  e.getMessage());
         }
 
         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");

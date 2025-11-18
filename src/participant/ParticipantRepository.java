@@ -17,7 +17,6 @@ public class ParticipantRepository {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("[Debug] Repository: 회원 번호(" + memberId + ")가 프로젝트 번호 (" + projectId + ")에 참여 완료");
                 return true; // 1개 이상의 행이 변경되었으면 성공
             }
 
