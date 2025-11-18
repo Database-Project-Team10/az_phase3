@@ -38,7 +38,7 @@ public class MemberTechspecService {
             Long techspecId = techspec.getId();
             // 스택이 없으면 생성
             if (techspec == null) {
-                techspecId = techspecRepository.createTechspecAndGetId(conn, addTechspecRequestDto.getName());
+                techspecId = techspecRepository.createTechspec(conn, addTechspecRequestDto.getName());
             }
 
             if (memberTechspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId) == null) {

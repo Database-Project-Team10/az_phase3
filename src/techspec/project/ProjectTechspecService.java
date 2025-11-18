@@ -35,7 +35,7 @@ public class ProjectTechspecService {
             Techspec techspec = techspecRepository.findTechspecIdByName(techName);
             Long techspecId = techspec.getId();
             if (techspec == null) {
-                techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+                techspecId = techspecRepository.createTechspec(conn, techName);
             }
 
             boolean inserted = projectTechspecRepository.addProjectTechspec(

@@ -78,7 +78,7 @@ public class ProjectService {
                     Techspec techspec = techspecRepository.findTechspecIdByName(techName);
                     Long techspecId = techspec.getId();
                     if (techspec == null) {
-                        techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+                        techspecId = techspecRepository.createTechspec(conn, techName);
                     }
                     projectTechspecRepository.addProjectTechspec(conn, newProjectId, techspecId);
                 }

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class TechspecRepository {
 
-    public Long createTechspecAndGetId(Connection conn, String techName) throws SQLException {
+    public Long createTechspec(Connection conn, String techName) throws SQLException {
         String sql = "INSERT INTO Techspec (name) VALUES (UPPER(?))";
         // [!] ProjectRepository에서 썼던 방식과 동일하게, 생성된 ID를 반환받습니다.
         String[] generatedColumns = {"id"};
