@@ -17,13 +17,16 @@ public class LinkService {
         }
     }
     
-    public void createLink(Link link) {
-        if (link.getTitle().trim().isEmpty() || link.getUrl().trim().isEmpty()) {
+    public Link createLink(Long projectId, LinkRequestDto requestDto) {
+
+        if (requestDto.getTitle().trim().isEmpty() || requestDto.getUrl().trim().isEmpty()) {
             throw new InvalidLinkInputException("제목과 URL은 비워둘 수 없습니다.");
         }
-        
-        validateUrl(link.getUrl());
-        linkRepository.save(link);
+
+        validateUrl(requestDto.getUrl());
+
+        Link link = new Link(projectId, requestDto.getTitle(), requestDto.getUrl());
+        return linkRepository.save(link);
     }
     
     public List<Link> getLinksByProject(Long projectId) {

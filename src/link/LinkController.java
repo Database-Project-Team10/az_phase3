@@ -78,7 +78,7 @@ public class LinkController {
     }
 
     private void handleCreateLink(Long projectId) {
-        System.out.println("---------- 링크 작성 ----------");
+        System.out.println("---------- 링크 등록 ----------");
 
         try {
             System.out.print("링크 제목: ");
@@ -87,9 +87,9 @@ public class LinkController {
             System.out.print("링크 URL (https://...): ");
             String url = scanner.nextLine();
 
-            Link newLink = new Link(projectId, title, url);
+            LinkRequestDto linkRequestDto = new LinkRequestDto(title, url);
 
-            linkService.createLink(newLink);
+            linkService.createLink(projectId, linkRequestDto);
 
             System.out.println("링크가 성공적으로 작성되었습니다.");
 
@@ -129,7 +129,7 @@ public class LinkController {
 
     private String promptTitleUpdate(Link link) {
         while (true) {
-            System.out.print("제목을 수정하시겠습니까? (Y/N, 현재: " + link.getTitle() + "): ");
+            System.out.print("제목을 수정하시겠습니까? (Y/N): ");
             String c = scanner.nextLine();
 
             if (c.equalsIgnoreCase("Y")) {
@@ -145,7 +145,7 @@ public class LinkController {
 
     private String promptUrlUpdate(Link link) {
         while (true) {
-            System.out.print("URL을 수정하시겠습니까? (Y/N, 현재: " + link.getUrl() + "): ");
+            System.out.print("URL을 수정하시겠습니까? (Y/N): ");
             String c = scanner.nextLine();
 
             if (c.equalsIgnoreCase("Y")) {

@@ -1,36 +1,53 @@
 package src.link;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import src.utils.Azconnection;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import src.utils.Azconnection;
 
 public class LinkRepository {
 
     
      //(C) Create: 새로운 Link 레코드를 DB에 저장합니다.
-     
-    public boolean save(Link link) {
-        String sql = "INSERT INTO Link (project_id, title, url) VALUES (?, ?, ?)";
-        try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+     public Link save(Link link) {
+         String sql = "INSERT INTO link (project_id, title, url) VALUES (?, ?, ?)";
 
-            pstmt.setLong(1, link.getProjectId());
-            pstmt.setString(2, link.getTitle());
-            pstmt.setString(3, link.getUrl());
+         String[] generatedColumns = {"id"};
 
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+         try (Connection conn = Azconnection.getConnection();
+              PreparedStatement pstmt = conn.prepareStatement(sql, generatedColumns)) {
 
-        } catch (SQLException e) {
-            System.err.println("DB 저장 중 오류 발생 (Link): " + e.getMessage());
-        }
-        return false;
-    }
+             pstmt.setLong(1, link.getProjectId());
+             pstmt.setString(2, link.getTitle());
+             pstmt.setString(3, link.getUrl());
+
+             int affectedRows = pstmt.executeUpdate();
+
+             if (affectedRows == 0) {
+                 throw new SQLException("링크 저장 실패: 영향받은 행이 없습니다.");
+             }
+
+             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                 if (generatedKeys.next()) {
+                     Long id = generatedKeys.getLong(1);
+
+                     return new Link(
+                             id,
+                             link.getProjectId(),
+                             link.getTitle(),
+                             link.getUrl()
+                     );
+                 } else {
+                     throw new SQLException("링크 저장 실패: ID를 가져올 수 없습니다.");
+                 }
+             }
+
+         } catch (SQLException e) {
+             System.err.println("DB 저장 중 오류 발생 (Link): " + e.getMessage());
+             return null;
+         }
+     }
 
     
      // (R) Read: 특정 프로젝트 ID에 속한 모든 링크를 조회합니다.
