@@ -3,11 +3,11 @@ package src.project;
 import java.time.LocalDateTime;
 
 public class Project {
-    Long id;
-    String title;
-    String description;
-    LocalDateTime createdAt;
-    LocalDateTime modifiedAt;
+    private final Long id;
+    private final String title;
+    private final String description;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
 
     public Project(Long id, String title, String description, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
@@ -18,6 +18,7 @@ public class Project {
     }
 
     public Project(String title, String description) {
+        this.id = null;
         this.title = title;
         this.description = description;
         this.createdAt = LocalDateTime.now();
@@ -42,14 +43,6 @@ public class Project {
 
     public LocalDateTime getModifiedAt() {
         return modifiedAt;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
 }

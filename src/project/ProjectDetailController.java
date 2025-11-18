@@ -94,8 +94,6 @@ public class ProjectDetailController {
 
         try{
             projectService.updateProjectInfo(project.getId(), newTitle, newDesc, memberService.getCurrentUser().getId());
-            project.setTitle(newTitle);
-            project.setDescription(newDesc);
             System.out.println("수정 완료");
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());

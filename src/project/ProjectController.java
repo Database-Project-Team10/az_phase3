@@ -3,6 +3,7 @@ package src.project;
 import src.member.MemberService;
 import src.participant.ParticipantService;
 import src.post.PostController;
+import src.project.dto.ProjectCreateRequestDto;
 import src.project.exception.ProjectException;
 import src.techspec.project.ProjectTechspecController;
 import src.mbti.project.ProjectMbtiController;
@@ -119,14 +120,16 @@ public class ProjectController {
         Set<String> techSpecs = projectTechspecController.inputTechSpecs();
         Map<Long, String> mbtiMap = projectMbtiController.inputMbti();
 
+        ProjectCreateRequestDto projectCreateRequestDto = new ProjectCreateRequestDto(
+                memberService.getCurrentUser().getId(),
+                title,
+                description,
+                techSpecs,
+                mbtiMap
+        );
+
         try {
-            Project newProject = projectService.createProject(
-                    memberService.getCurrentUser(),
-                    title,
-                    description,
-                    techSpecs,
-                    mbtiMap
-            );
+            Project newProject = projectService.createProject(projectCreateRequestDto);
 
             if (newProject != null) {
                 // 성공 메시지는 Service 내부에서 출력

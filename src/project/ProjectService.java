@@ -4,6 +4,7 @@ import src.mbti.member.MemberMbtiRepository;
 import src.mbti.project.ProjectMbtiRepository;
 import src.member.Member;
 import src.participant.ParticipantRepository;
+import src.project.dto.ProjectCreateRequestDto;
 import src.project.exception.ProjectDescriptionInvalidException;
 import src.project.exception.ProjectNotFoundException;
 import src.project.exception.ProjectTitleInvalidException;
@@ -16,8 +17,6 @@ import src.utils.Azconnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ProjectService {
 
@@ -50,12 +49,12 @@ public class ProjectService {
         return projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
     }
 
-    public Project createProject(Member currentMember, String title, String description, Set<String> techNames, Map<Long, String> mbtiMap) {
-        if (title == null || title.isBlank()) {
+    public Project createProject(ProjectCreateRequestDto requestDto) {
+        if (requestDto.getTitle() == null || requestDto.getTitle().isBlank()) {
             throw new ProjectTitleInvalidException("프로젝트 제목은 비어 있을 수 없습니다.");
         }
 
-        if (description == null || description.isBlank()) {
+        if (requestDto.getDescription() == null || requestDto.getDescription().isBlank()) {
             throw new ProjectDescriptionInvalidException("프로젝트 설명은 비어 있을 수 없습니다.");
         }
 
@@ -65,34 +64,33 @@ public class ProjectService {
             conn.setAutoCommit(false); // 트랜잭션 시작
 
             // 1. Project 생성
-            Project newProject = new Project(title, description);
-            long newProjectId = projectRepository.save(conn, newProject);
+            Project newProject = projectRepository.save(conn, new Project(requestDto.getTitle(), requestDto.getDescription()));
 
             // 2. Participant 추가
-            participantRepository.saveLeader(conn, currentMember.getId(), newProjectId);
+            participantRepository.saveLeader(conn, requestDto.getMemberId(), newProject.getId());
 
             // 3. 스택 저장
-            if (!techNames.isEmpty()) {
+            if (!requestDto.getTechSpecs().isEmpty()) {
                 //System.out.println("\n[DB 저장 시작 - 스택]");
-                for (String techName : techNames) {
+                for (String techName : requestDto.getTechSpecs()) {
                     Techspec techspec = techspecRepository.findTechspecIdByName(techName);
                     Long techspecId = techspec.getId();
                     if (techspec == null) {
                         techspecId = techspecRepository.createTechspec(conn, techName);
                     }
-                    projectTechspecRepository.addProjectTechspec(conn, newProjectId, techspecId);
+                    projectTechspecRepository.addProjectTechspec(conn, newProject.getId(), techspecId);
                 }
             }
 
             // 4. MBTI 저장
-            if (!mbtiMap.isEmpty()) {
+            if (!requestDto.getMbtiMap().isEmpty()) {
                 //System.out.println("[DB 저장 시작 - MBTI]");
-                projectMbtiRepository.saveProjectMbti(conn, newProjectId, mbtiMap);
+                projectMbtiRepository.saveProjectMbti(conn, newProject.getId(), requestDto.getMbtiMap());
             }
 
             conn.commit();
-            System.out.println("\n'" + title + "' 프로젝트 생성 및 설정이 완료되었습니다.");
-            return projectRepository.findProjectById(conn, newProjectId);
+            System.out.println("\n'" + newProject.getTitle() + "' 프로젝트 생성 및 설정이 완료되었습니다.");
+            return projectRepository.findProjectById(conn, newProject.getId());
 
         } catch (SQLException e) {
             System.err.println("프로젝트 생성 중 오류 발생: " + e.getMessage());
