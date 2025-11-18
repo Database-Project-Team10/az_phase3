@@ -39,23 +39,26 @@ public class LinkService {
         if (updatedLink.getTitle().trim().isEmpty() || updatedLink.getUrl().trim().isEmpty()) {
             throw new InvalidLinkInputException("제목과 URL은 비워둘 수 없습니다.");
         }
-
         Link targetLink = linkRepository.findById(updatedLink.getId());
+        if (targetLink == null) {
+            throw new LinkNotFoundException("수정할 링크(ID: " + updatedLink.getId() + ")를 찾을 수 없습니다.");
+        }
         
-        if (targetLink == null || !targetLink.getProjectId().equals(expectedProjectId)) {
-            throw new LinkAccessException("수정 권한이 없거나 유효하지 않은 링크 ID입니다.");
+        if (!targetLink.getProjectId().equals(expectedProjectId)) {
+            throw new LinkAccessException("해당 링크는 이 프로젝트에 속하지 않아 수정할 수 없습니다.");
         }
         
         validateUrl(updatedLink.getUrl()); 
-        
         linkRepository.update(updatedLink);
     }
 
     public void deleteLink(Long linkId, Long expectedProjectId) {
         Link targetLink = linkRepository.findById(linkId);
-
-        if (targetLink == null || !targetLink.getProjectId().equals(expectedProjectId)) {
-            throw new LinkAccessException("삭제 권한이 없거나 유효하지 않은 링크 ID입니다.");
+        if (targetLink == null) {
+            throw new LinkNotFoundException("삭제할 링크(ID: " + linkId + ")를 찾을 수 없습니다.");
+        }
+        if (!targetLink.getProjectId().equals(expectedProjectId)) {
+            throw new LinkAccessException("해당 링크는 이 프로젝트에 속하지 않아 삭제할 수 없습니다.");
         }
         
         linkRepository.delete(linkId);

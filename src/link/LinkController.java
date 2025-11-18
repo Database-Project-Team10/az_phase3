@@ -99,7 +99,7 @@ public class LinkController {
                                 newUrl = scanner.nextLine();
                                 break;
                             } else if (choice.equalsIgnoreCase("N")) {
-                                newUrl = targetLink.getUrl(); // 기존 URL 유지
+                                newUrl = targetLink.getUrl();
                                 break;
                             } else {
                                 System.out.println("잘못된 입력입니다.");
@@ -115,11 +115,11 @@ public class LinkController {
                         
                         linkService.updateLink(updatedLink, projectId);
                         
-                        System.out.println("링크가 성공적으로 수정되었습니다."); // [!] 3. try 성공 시 메시지
+                        System.out.println("링크가 성공적으로 수정되었습니다.");
 
                     } catch (NumberFormatException e) {
                         System.out.println("오류: 유효한 ID 번호를 입력하세요.");
-                    } catch (LinkException e) { // [!] 4. Service가 던진 모든 예외를 잡음
+                    } catch (LinkException e) {
                         System.out.println("[오류] " + e.getMessage());
                     }
                     System.out.print("\n엔터키를 누르면 링크 메뉴로 돌아갑니다.");
