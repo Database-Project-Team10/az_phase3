@@ -44,9 +44,12 @@ public class ProjectService {
         return project;
     }
 
-    // Controller가 호출하는 검증 메서드
     public Project getMyProjectById(Member currentUser, Long projectId) {
-        return projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
+        Project project = projectRepository.findMyProjectByIdAndMemberId(currentUser.getId(), projectId);
+        if  (project == null) {
+            throw new ProjectNotFoundException();
+        }
+        return project;
     }
 
     public Project createProject(ProjectCreateRequestDto requestDto) {

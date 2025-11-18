@@ -198,16 +198,11 @@ public class ProjectController {
         scanner.nextLine();
 
         try {
-            Project project = projectService.getMyProjectById(memberService.getCurrentUser(), projectId);
-            if (project == null) {
-                System.out.println("잘못된 프로젝트 ID이거나 권한이 없습니다.");
-                return;
-            }
-
-            projectDetailController.showDetailMenu(projectId);
+            Project myProject = projectService.getMyProjectById(memberService.getCurrentUser(), projectId);
+            projectDetailController.showDetailMenu(myProject.getId());
 
         } catch (ProjectNotFoundException e) {
-            System.out.println("[오류] 프로젝트를 찾을 수 없습니다.");
+            System.out.println("[오류] 참여 중인 프로젝트에만 접속할 수 있습니다.");
         }
 
         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
