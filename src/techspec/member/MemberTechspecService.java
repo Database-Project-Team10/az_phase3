@@ -15,8 +15,12 @@ import java.util.List;
 
 public class MemberTechspecService {
 
-    private final MemberTechspecRepository memberTechspecRepository = new MemberTechspecRepository();
-    private final TechspecRepository techspecRepository = new TechspecRepository();
+    private final TechspecRepository techspecRepository;
+    private final MemberTechspecRepository memberTechspecRepository;
+    public MemberTechspecService(TechspecRepository techspecRepository,  MemberTechspecRepository memberTechspecRepository) {
+        this.techspecRepository = techspecRepository;
+        this.memberTechspecRepository = memberTechspecRepository;
+    }
 
     public List<Techspec> getMyTechspecs(Member currentUser) {
         return memberTechspecRepository.findTechspecsByMemberId(currentUser.getId());

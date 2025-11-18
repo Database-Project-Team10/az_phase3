@@ -14,8 +14,12 @@ import java.util.List;
 
 public class ProjectTechspecService {
 
-    private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
-    private final TechspecRepository techspecRepository = new TechspecRepository();
+    private final TechspecRepository techspecRepository;
+    private final ProjectTechspecRepository projectTechspecRepository;
+    public  ProjectTechspecService(TechspecRepository techspecRepository,  ProjectTechspecRepository projectTechspecRepository) {
+        this.techspecRepository = techspecRepository;
+        this.projectTechspecRepository = projectTechspecRepository;
+    }
 
     public List<Techspec> getProjectTechspecs(Project currentProject) {
         return projectTechspecRepository.findTechspecsByProjectId(currentProject.getId());

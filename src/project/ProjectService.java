@@ -21,11 +21,25 @@ import java.util.List;
 
 public class ProjectService {
 
-    private final ProjectRepository projectRepository =  new ProjectRepository();
-    private final ParticipantRepository participantRepository = new ParticipantRepository();
-    private final TechspecRepository techspecRepository = new TechspecRepository();
-    private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
-    private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
+    private final ProjectRepository projectRepository;
+    private final ParticipantRepository participantRepository;
+    private final TechspecRepository techspecRepository;
+    private final ProjectTechspecRepository projectTechspecRepository;
+    private final ProjectMbtiRepository projectMbtiRepository;
+
+    public ProjectService(
+            ProjectRepository projectRepository,
+            ParticipantRepository participantRepository,
+            TechspecRepository techspecRepository,
+            ProjectTechspecRepository projectTechspecRepository,
+            ProjectMbtiRepository projectMbtiRepository
+    ) {
+        this.projectRepository = projectRepository;
+        this.participantRepository = participantRepository;
+        this.techspecRepository = techspecRepository;
+        this.projectTechspecRepository = projectTechspecRepository;
+        this.projectMbtiRepository = projectMbtiRepository;
+    }
 
     public List<Project> getProjectList(int cnt) {
 

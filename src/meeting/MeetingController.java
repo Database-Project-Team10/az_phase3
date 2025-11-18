@@ -1,5 +1,6 @@
 package src.meeting;
 
+import src.meeting.exception.InvalidMeetingInputException;
 import src.meeting.dto.MeetingRequestDto;
 import src.meeting.exception.MeetingException;
 import src.member.MemberService;
@@ -12,13 +13,22 @@ import java.util.Scanner;
 
 public class MeetingController {
 
-    private final MeetingService meetingService = new MeetingService();
-    private final MemberService memberService = new MemberService();
-    private final Scanner scanner = new Scanner(System.in);
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final MeetingService meetingService;
+    private final MemberService memberService;
+    private final Scanner scanner;
+    private final DateTimeFormatter formatter;
 
-    public MeetingController() {
+    public MeetingController(
+            MeetingService meetingService,
+            MemberService memberService,
+            Scanner scanner
+    ) {
+        this.meetingService = meetingService;
+        this.memberService = memberService;
+        this.scanner = scanner;
+        this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     }
+
 
     public void showMeetingMenu(Long projectId) {
     	while (true) {

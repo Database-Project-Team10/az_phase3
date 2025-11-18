@@ -10,10 +10,22 @@ import java.util.Scanner;
 
 public class PostController {
 
-    private final ReplyController replyController = new ReplyController();
-    private final MemberService memberService = new MemberService();
-    private final Scanner scanner = new Scanner(System.in);
-    private final PostService postService = new PostService();
+    private final ReplyController replyController;
+    private final MemberService memberService;
+    private final Scanner scanner;
+    private final PostService postService;
+
+    public PostController(
+            ReplyController replyController,
+            MemberService memberService,
+            Scanner scanner,
+            PostService postService
+    ) {
+        this.replyController = replyController;
+        this.memberService = memberService;
+        this.scanner = scanner;
+        this.postService = postService;
+    }
 
     public void showPostMenu(Long projectId) {
         while (true) {

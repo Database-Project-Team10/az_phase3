@@ -9,7 +9,11 @@ import src.meeting.exception.MeetingNotFoundException;
 
 public class MeetingService {
 
-    private final MeetingRepository meetingRepository = new MeetingRepository();
+    private final MeetingRepository meetingRepository;
+    public MeetingService(MeetingRepository meetingRepository) {
+        this.meetingRepository = meetingRepository;
+    }
+
     private void validateMeetingTime(LocalDateTime startTime, LocalDateTime endTime) {
         if (startTime == null && endTime == null) return;
         

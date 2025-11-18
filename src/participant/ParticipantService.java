@@ -5,8 +5,15 @@ import src.project.ProjectService;
 import src.project.exception.ProjectNotFoundException;
 
 public class ParticipantService {
-    private final ParticipantRepository participantRepository = new ParticipantRepository();
-    private final ProjectService projectService = new ProjectService();
+    private final ParticipantRepository participantRepository;
+    private final ProjectService projectService;
+
+    public ParticipantService(ParticipantRepository participantRepository,
+                              ProjectService projectService) {
+        this.participantRepository = participantRepository;
+        this.projectService = projectService;
+    }
+
 
     public void joinProject(Long projectId, Long memberId){
 

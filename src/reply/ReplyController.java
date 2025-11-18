@@ -9,9 +9,19 @@ import java.util.Scanner;
 
 public class ReplyController {
 
-    private final MemberService memberService = new MemberService();
-    private final ReplyService replyService = new ReplyService();
-    private final Scanner scanner = new Scanner(System.in);
+    private final MemberService memberService;
+    private final ReplyService replyService;
+    private final Scanner scanner;
+
+    public ReplyController(
+            MemberService memberService,
+            ReplyService replyService,
+            Scanner scanner
+    ) {
+        this.memberService = memberService;
+        this.replyService = replyService;
+        this.scanner = scanner;
+    }
 
     public void showReplyMenu(Long postId) {
         while (true) {

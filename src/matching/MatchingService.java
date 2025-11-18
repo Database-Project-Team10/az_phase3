@@ -3,7 +3,11 @@ package src.matching;
 import java.util.List;
 
 public class MatchingService {
-    private final MatchingRepository matchingRepository = new MatchingRepository();
+
+    private final MatchingRepository matchingRepository;
+    public MatchingService(MatchingRepository matchingRepository) {
+        this.matchingRepository = matchingRepository;
+    }
 
     public List<MatchedProject> getMbtiMatches(Long memberId) {
         return matchingRepository.findMbtiMatches(memberId);

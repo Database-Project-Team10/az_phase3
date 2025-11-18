@@ -5,9 +5,15 @@ import src.document.dto.DocumentRequestDto;
 import src.document.exception.DocumentAccessException;
 import src.document.exception.DocumentNotFoundException;
 import src.document.exception.InvalidDocumentInputException;
+
+import java.util.List;
+
 public class DocumentService {
 
-    private final DocumentRepository documentRepository = new DocumentRepository();
+    private final DocumentRepository documentRepository;
+    public DocumentService(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
     
     private void validateLocation(String location) {
         if (!location.matches("^/.+")) {

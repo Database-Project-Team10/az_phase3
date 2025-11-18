@@ -17,20 +17,36 @@ import java.util.Set;
 
 public class ProjectController {
 
-    private final MemberService memberService = new MemberService();
-    private final ProjectService projectService = new ProjectService();
-    private final ParticipantService participantService = new ParticipantService();
-    private final ProjectDetailController projectDetailController = new ProjectDetailController();
+    private final MemberService memberService;
+    private final ProjectService projectService;
+    private final ParticipantService participantService;
+    private final ProjectDetailController projectDetailController;
 
-    private final ProjectMbtiController projectMbtiController = new ProjectMbtiController();
-    private final ProjectTechspecController projectTechspecController = new ProjectTechspecController();
+    private final ProjectMbtiController projectMbtiController;
+    private final ProjectTechspecController projectTechspecController;
 
     private final Scanner scanner = new Scanner(System.in);
+
+    // ★ DI 적용: 필요한 모든 객체를 외부에서 주입받음
+    public ProjectController(
+        MemberService memberService,
+        ProjectService projectService,
+        ParticipantService participantService,
+        ProjectDetailController projectDetailController,
+        ProjectMbtiController projectMbtiController,
+        ProjectTechspecController projectTechspecController) {
+
+        this.memberService = memberService;
+        this.projectService = projectService;
+        this.participantService = participantService;
+        this.projectDetailController = projectDetailController;
+        this.projectMbtiController = projectMbtiController;
+        this.projectTechspecController = projectTechspecController;
+    }
 
     public void showProjectMenu() {
         while (true) {
             System.out.println("\n---------- 프로젝트 기능 ----------");
-
             if (memberService.isLoggedIn()) {
                 System.out.println("현재 로그인: " + memberService.getCurrentUser().getEmail());
                 System.out.println("1. 프로젝트 목록 보기");

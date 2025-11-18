@@ -14,11 +14,24 @@ import java.util.Scanner;
 
 public class MemberController {
 
-    private final MemberService memberService = new MemberService();
-    private final MemberTechspecController memberTechspecController = new MemberTechspecController();
-    private final MemberMbtiController memberMbtiController = new MemberMbtiController();
-    private final MatchingController matchingController = new MatchingController();
+    private final MemberService memberService;
+    private final MemberTechspecController memberTechspecController;
+    private final MemberMbtiController memberMbtiController;
+    private final MatchingController matchingController;
+
     private final Scanner scanner = new Scanner(System.in);
+
+    // ★ DI 적용: 필요한 모든 객체를 외부에서 주입받음
+    public MemberController(MemberService memberService,
+                            MemberTechspecController memberTechspecController,
+                            MemberMbtiController memberMbtiController,
+                            MatchingController matchingController) {
+
+        this.memberService = memberService;
+        this.memberTechspecController = memberTechspecController;
+        this.memberMbtiController = memberMbtiController;
+        this.matchingController = matchingController;
+    }
 
     public void showMemberMenu() {
 

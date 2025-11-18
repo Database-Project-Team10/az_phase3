@@ -7,8 +7,12 @@ import src.member.exception.*;
 
 public class MemberService {
 
-    private final MemberRepository memberRepository = new MemberRepository();
-    private static Member loggedInUser = null;
+    private final MemberRepository memberRepository;
+    private Member loggedInUser;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     /**
      * 회원가입
@@ -53,13 +57,13 @@ public class MemberService {
      */
     public void editPassword(PasswordUpdateRequestDto passwordUpdateRequestDto) {
 
+        if (!isLoggedIn()) {
+            throw new UnauthorizedException();
+        }
+
         Long currentMemberId = loggedInUser.getId();
         if (memberRepository.findById(currentMemberId) == null){
             throw new MemberNotFoundException();
-        }
-
-        if (!isLoggedIn()) {
-            throw new UnauthorizedException();
         }
 
         if (!passwordUpdateRequestDto.getNewPassword().equals(passwordUpdateRequestDto.getConfirmNewPassword())) {
@@ -110,6 +114,9 @@ public class MemberService {
     }
 
     public MemberInfoResponseDto getAllInfo() {
-        return memberRepository.getAllInfoById(getCurrentUser().getId());
+        if (!isLoggedIn()) {
+            throw new UnauthorizedException();
+        }
+        return memberRepository.getAllInfoById(loggedInUser.getId());
     }
 }

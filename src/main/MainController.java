@@ -6,19 +6,20 @@ import src.project.ProjectController;
 import java.util.Scanner;
 
 public class MainController {
+
     private final MemberController memberController;
     private final ProjectController projectController;
-    private final Scanner sc;
+    private final Scanner sc = new Scanner(System.in);
 
-    // 2. 생성자에서 필요한 객체들을 초기화합니다.
-    public MainController() {
-        this.memberController = new MemberController();
-        this.projectController = new ProjectController();
-        this.sc = new Scanner(System.in);
+    // DI 방식: 외부에서 의존성을 주입받는다
+    public MainController(MemberController memberController,
+                          ProjectController projectController) {
+        this.memberController = memberController;
+        this.projectController = projectController;
     }
 
     /**
-     * 메인 메뉴 로직을 실행하는 메서드
+     * 메인 메뉴 로직 실행
      */
     public void run() {
         while (true) {
