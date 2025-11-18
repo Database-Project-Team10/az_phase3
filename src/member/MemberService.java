@@ -1,7 +1,7 @@
 package src.member;
 
-import src.member.dto.MemberInfoDto;
-import src.member.dto.UpdatePasswordRequestDto;
+import src.member.dto.MemberInfoResponseDto;
+import src.member.dto.PasswordUpdateRequestDto;
 import src.member.exception.*;
 
 public class MemberService {
@@ -50,7 +50,7 @@ public class MemberService {
     /**
      * 비밀번호 변경
      */
-    public void editPassword(UpdatePasswordRequestDto updatePasswordRequestDto) {
+    public void editPassword(PasswordUpdateRequestDto passwordUpdateRequestDto) {
 
         Long currentMemberId = loggedInUser.getId();
         if (memberRepository.findById(currentMemberId) == null){
@@ -61,11 +61,11 @@ public class MemberService {
             throw new UnauthorizedException();
         }
 
-        if (!updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getConfirmNewPassword())) {
+        if (!passwordUpdateRequestDto.getNewPassword().equals(passwordUpdateRequestDto.getConfirmNewPassword())) {
             throw new PasswordMismatchException();
         }
 
-        memberRepository.updatePassword(currentMemberId, updatePasswordRequestDto.getNewPassword());
+        memberRepository.updatePassword(currentMemberId, passwordUpdateRequestDto.getNewPassword());
     }
 
     /**
@@ -108,7 +108,7 @@ public class MemberService {
         return loggedInUser;
     }
 
-    public MemberInfoDto getAllInfo() {
+    public MemberInfoResponseDto getAllInfo() {
         return memberRepository.getAllInfoById(getCurrentUser().getId());
     }
 }

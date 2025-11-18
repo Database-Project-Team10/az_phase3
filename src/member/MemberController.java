@@ -1,8 +1,8 @@
 package src.member;
 
 import src.mbti.member.MemberMbtiController;
-import src.member.dto.MemberInfoDto;
-import src.member.dto.UpdatePasswordRequestDto;
+import src.member.dto.MemberInfoResponseDto;
+import src.member.dto.PasswordUpdateRequestDto;
 import src.techspec.member.MemberTechspecController;
 import src.matching.MatchingController;
 
@@ -79,13 +79,13 @@ public class MemberController {
                 System.out.print("새 비밀번호 확인: ");
                 String confirmPassword = scanner.nextLine();
 
-                UpdatePasswordRequestDto updatePasswordRequestDto = new UpdatePasswordRequestDto(
+                PasswordUpdateRequestDto passwordUpdateRequestDto = new PasswordUpdateRequestDto(
                         newPassword,
                         confirmPassword
                 );
 
                 try {
-                    memberService.editPassword(updatePasswordRequestDto);
+                    memberService.editPassword(passwordUpdateRequestDto);
                     System.out.println("비밀번호 변경 성공!");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
@@ -105,8 +105,8 @@ public class MemberController {
                 break;
 
             case "6":
-                MemberInfoDto memberInfoDto = memberService.getAllInfo();
-                System.out.println(memberInfoDto.toString());
+                MemberInfoResponseDto memberInfoResponseDto = memberService.getAllInfo();
+                System.out.println(memberInfoResponseDto.toString());
                 break;
 
             case "7":
@@ -154,6 +154,7 @@ public class MemberController {
                 LocalDate birthDate = LocalDate.parse(birthStr, formatter);
 
                 Member member = new Member(newEmail, newPassword, newName, birthDate);
+
 
                 try {
                     memberService.signUp(member, confirmPassword);

@@ -2,7 +2,7 @@ package src.member.dto;
 
 import java.time.LocalDate;
 
-public class MemberInfoDto {
+public class MemberInfoResponseDto {
     Long id;
     String name;
     String email;
@@ -11,7 +11,7 @@ public class MemberInfoDto {
     String techspecs;
     String projectAndRole;
 
-    public MemberInfoDto(Long id, String name, String email, LocalDate birthDate, String mbti, String techspecs, String projectAndRole) {
+    public MemberInfoResponseDto(Long id, String name, String email, LocalDate birthDate, String mbti, String techspecs, String projectAndRole) {
         this.id = id;
         this.name = name;
         this.email = email;

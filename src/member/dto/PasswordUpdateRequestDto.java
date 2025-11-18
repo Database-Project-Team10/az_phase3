@@ -1,10 +1,10 @@
 package src.member.dto;
 
-public class UpdatePasswordRequestDto {
+public class PasswordUpdateRequestDto {
     String newPassword;
     String confirmNewPassword;
 
-    public UpdatePasswordRequestDto(String newPassword, String confirmNewPassword) {
+    public PasswordUpdateRequestDto(String newPassword, String confirmNewPassword) {
         this.newPassword = newPassword;
         this.confirmNewPassword = confirmNewPassword;
     }

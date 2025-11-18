@@ -1,13 +1,13 @@
 package src.techspec.dto;
 
-public class AddTechspecRequestDto {
+public class TechspecAddRequestDto {
     private final String name;
 
     public String getName() {
         return name;
     }
 
-    public AddTechspecRequestDto(String name) {
+    public TechspecAddRequestDto(String name) {
         this.name = name;
     }
 }

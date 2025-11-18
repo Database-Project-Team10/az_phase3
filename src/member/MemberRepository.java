@@ -1,6 +1,6 @@
 package src.member;
 
-import src.member.dto.MemberInfoDto;
+import src.member.dto.MemberInfoResponseDto;
 import src.utils.Azconnection;
 
 import java.sql.*;
@@ -133,7 +133,7 @@ public class MemberRepository {
         return false; // 업데이트 실패
     }
 
-    public MemberInfoDto getAllInfoById(Long id){
+    public MemberInfoResponseDto getAllInfoById(Long id){
         String sql = "SELECT\n" +
                 "    m.id,\n" +
                 "    m.name,\n" +
@@ -181,7 +181,7 @@ public class MemberRepository {
                 // 결과가 있다면 (rs.next())
                 if (rs.next()) {
                     // 찾은 정보로 Member 객체를 생성하여 반환
-                    return new MemberInfoDto(
+                    return new MemberInfoResponseDto(
                             rs.getLong(1),
                             rs.getString(2),
                             rs.getString(3),
