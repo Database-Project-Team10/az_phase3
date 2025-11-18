@@ -32,8 +32,9 @@ public class ProjectTechspecService {
             conn = Azconnection.getConnection();
             conn.setAutoCommit(false);
 
-            Long techspecId = techspecRepository.findTechspecIdByName(techName);
-            if (techspecId == null) {
+            Techspec techspec = techspecRepository.findTechspecIdByName(techName);
+            Long techspecId = techspec.getId();
+            if (techspec == null) {
                 techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
             }
 

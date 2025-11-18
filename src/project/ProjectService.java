@@ -8,6 +8,7 @@ import src.project.exception.ProjectDescriptionInvalidException;
 import src.project.exception.ProjectNotFoundException;
 import src.project.exception.ProjectTitleInvalidException;
 import src.project.exception.UnauthorizedProjectAccessException;
+import src.techspec.Techspec;
 import src.techspec.TechspecRepository;
 import src.techspec.project.ProjectTechspecRepository;
 import src.utils.Azconnection;
@@ -74,8 +75,9 @@ public class ProjectService {
             if (!techNames.isEmpty()) {
                 //System.out.println("\n[DB 저장 시작 - 스택]");
                 for (String techName : techNames) {
-                    Long techspecId = techspecRepository.findTechspecIdByName(techName);
-                    if (techspecId == null) {
+                    Techspec techspec = techspecRepository.findTechspecIdByName(techName);
+                    Long techspecId = techspec.getId();
+                    if (techspec == null) {
                         techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
                     }
                     projectTechspecRepository.addProjectTechspec(conn, newProjectId, techspecId);

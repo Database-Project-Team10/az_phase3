@@ -3,6 +3,7 @@ package src.techspec.member;
 import src.member.Member;
 import src.techspec.Techspec;
 import src.techspec.TechspecRepository;
+import src.techspec.dto.AddTechspecRequestDto;
 import src.techspec.exception.TechspecAlreadyExistsException;
 import src.techspec.exception.TechspecInvalidException;
 import src.techspec.exception.TechspecNotFoundException;
@@ -21,9 +22,9 @@ public class MemberTechspecService {
         return memberTechspecRepository.findTechspecsByMemberId(currentUser.getId());
     }
 
-    public void addTechspec(Member currentUser, String techName) {
+    public void addTechspec(Member currentUser, AddTechspecRequestDto addTechspecRequestDto) {
 
-        if (techName == null || techName.isBlank()) {
+        if (addTechspecRequestDto.getName() == null || addTechspecRequestDto.getName().isBlank()) {
             throw new TechspecInvalidException("스택 이름은 비어 있을 수 없습니다.");
         }
 
@@ -33,18 +34,14 @@ public class MemberTechspecService {
             conn = Azconnection.getConnection();
             conn.setAutoCommit(false);
 
-            Long techspecId = techspecRepository.findTechspecIdByName(techName);
-
+            Techspec techspec = techspecRepository.findTechspecIdByName(addTechspecRequestDto.getName());
+            Long techspecId = techspec.getId();
             // 스택이 없으면 생성
-            if (techspecId == null) {
-                techspecId = techspecRepository.createTechspecAndGetId(conn, techName);
+            if (techspec == null) {
+                techspecId = techspecRepository.createTechspecAndGetId(conn, addTechspecRequestDto.getName());
             }
 
-            boolean success = memberTechspecRepository.addMemberTechspec(
-                    conn, currentUser.getId(), techspecId
-            );
-
-            if (!success) {
+            if (memberTechspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId) == null) {
                 throw new RuntimeException("스택 추가 실패");
             }
 

@@ -39,7 +39,7 @@ public class MemberTechspecRepository {
         return myTechs;
     }
 
-    public boolean addMemberTechspec(Connection conn, Long memberId, Long techspecId) throws SQLException {
+    public MemberTechspec addMemberTechspec(Connection conn, Long memberId, Long techspecId) throws SQLException {
         String sql = "INSERT INTO MemberTechspec (member_id, techspec_id) VALUES (?, ?)";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -47,10 +47,15 @@ public class MemberTechspecRepository {
             pstmt.setLong(1, memberId);
             pstmt.setLong(2, techspecId);
 
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new MemberTechspec(memberId, techspecId);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
         }
+        return null;
     }
 
     public boolean deleteMemberTechspec(Long memberId, Long techspecId) {

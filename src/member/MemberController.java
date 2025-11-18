@@ -59,6 +59,7 @@ public class MemberController {
      * 로그인 상태 메뉴
      */
     private void handleLoggedInMenu(String choice) {
+        Member currentUser = memberService.getCurrentUser();
         switch (choice) {
             case "1":
                 try {
@@ -92,15 +93,15 @@ public class MemberController {
                 break;
 
             case "3":
-                memberMbtiController.showMemberMbtiMenu(memberService.getCurrentUser());
+                memberMbtiController.showMemberMbtiMenu(currentUser);
                 break;
 
             case "4":
-                memberTechspecController.showMemberTechspecMenu(memberService.getCurrentUser());
+                memberTechspecController.showMemberTechspecMenu(currentUser);
                 break;
 
             case "5":
-                matchingController.showMatchingMenu(memberService.getCurrentUser());
+                matchingController.showMatchingMenu(currentUser);
                 break;
 
             case "6":

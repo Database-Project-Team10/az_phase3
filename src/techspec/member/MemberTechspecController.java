@@ -2,6 +2,7 @@ package src.techspec.member;
 
 import src.member.Member;
 import src.techspec.Techspec;
+import src.techspec.dto.AddTechspecRequestDto;
 import src.techspec.exception.TechspecException;
 
 import java.util.Scanner;
@@ -31,9 +32,10 @@ public class MemberTechspecController {
 
                     case "2":
                         System.out.print("추가할 기술 스택 이름 (예: Java, Git): ");
-                        String techNameToAdd = scanner.nextLine();
-                        memberTechspecService.addTechspec(currentUser, techNameToAdd);
-                        System.out.println("'" + techNameToAdd + "' 스택이 성공적으로 추가되었습니다.");
+                        String techName = scanner.nextLine();
+                        AddTechspecRequestDto addTechspecRequestDto = new AddTechspecRequestDto(techName);
+                        memberTechspecService.addTechspec(currentUser, addTechspecRequestDto);
+                        System.out.println("'" + addTechspecRequestDto.getName() + "' 스택이 성공적으로 추가되었습니다.");
                         break;
 
                     case "3":
@@ -71,6 +73,5 @@ public class MemberTechspecController {
         for (Techspec tech : memberTechspecService.getMyTechspecs(currentUser)) {
             System.out.println(tech.getId() + ". " + tech.getName());
         }
-        System.out.println();
     }
 }

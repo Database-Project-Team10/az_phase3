@@ -28,8 +28,8 @@ public class TechspecRepository {
         }
     }
 
-    public Long findTechspecIdByName(String techName) {
-        String sql = "SELECT id FROM Techspec WHERE UPPER(name) = UPPER(?)";
+    public Techspec findTechspecIdByName(String techName) {
+        String sql = "SELECT * FROM Techspec WHERE UPPER(name) = UPPER(?)";
 
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -38,7 +38,10 @@ public class TechspecRepository {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getLong("id");
+                    return new Techspec(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                    );
                 }
             }
         } catch (SQLException e) {
