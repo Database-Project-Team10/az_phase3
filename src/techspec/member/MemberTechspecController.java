@@ -5,7 +5,7 @@ import src.techspec.Techspec;
 import src.techspec.dto.TechspecAddRequestDto;
 import src.techspec.exception.TechspecException;
 import src.techspec.project.ProjectTechspecService;
-
+import src.utils.InputUtil;
 import java.util.Scanner;
 
 public class MemberTechspecController {
@@ -40,8 +40,8 @@ public class MemberTechspecController {
                         break;
 
                     case "2":
-                        System.out.print("추가할 기술 스택 이름 (예: Java, Git): ");
-                        String techName = scanner.nextLine();
+                        String techName = InputUtil.getInput(scanner, "추가할 기술 스택 이름 (예: Java, Git)");
+
                         TechspecAddRequestDto techspecAddRequestDto = new TechspecAddRequestDto(techName);
                         memberTechspecService.addTechspec(currentUser, techspecAddRequestDto);
                         System.out.println("'" + techspecAddRequestDto.getName() + "' 스택이 성공적으로 추가되었습니다.");
@@ -50,15 +50,8 @@ public class MemberTechspecController {
                     case "3":
                         showMyTechspecs(currentUser);
                         System.out.println("----------------------------------------");
-                        System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
-                        String idInput = scanner.nextLine();
+                        Long idToDelete = InputUtil.getLong(scanner, "삭제할 기술 스택의 번호(ID)");
 
-                        if ("b".equalsIgnoreCase(idInput)) {
-                            System.out.println("삭제를 취소했습니다.");
-                            break;
-                        }
-
-                        Long idToDelete = Long.parseLong(idInput);
                         memberTechspecService.removeTechspec(currentUser, idToDelete);
                         System.out.println("삭제 성공!");
                         break;
@@ -69,10 +62,12 @@ public class MemberTechspecController {
                     default:
                         System.out.println("잘못된 입력입니다.");
                 }
+            } catch (InputUtil.CancelException e) {
+                System.out.println("\n[!] 작업이 취소되었습니다."); // 'q' 입력 시 메시지
             } catch (TechspecException e) {
                 System.out.println("[오류]: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                System.out.println("[오류]: 숫자를 입력해주세요.");
+            } catch (Exception e) {
+                System.out.println("[오류]: " + e.getMessage());
             }
         }
     }

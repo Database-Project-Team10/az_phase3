@@ -9,6 +9,7 @@ import src.project.exception.ProjectException;
 import src.techspec.project.ProjectTechspecController;
 import src.mbti.project.ProjectMbtiController;
 import src.project.exception.ProjectNotFoundException;
+import src.utils.InputUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -123,117 +124,113 @@ public class ProjectController {
     }
 
     private void handleListProjects() {
-        System.out.print("보고 싶은 프로젝트 개수를 입력하세요.(최신순): ");
-        int cnt = scanner.nextInt();
-        scanner.nextLine();
+        try {
+            String input = InputUtil.getInput(scanner, "보고 싶은 프로젝트 개수를 입력하세요(최신순)");
+            int cnt = Integer.parseInt(input);
 
-        List<Project> list = projectService.getProjectList(cnt);
-        showProjectList(list);
+            List<Project> list = projectService.getProjectList(cnt);
+            showProjectList(list);
 
-        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
-        scanner.nextLine();
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 목록 조회가 취소되었습니다.");
+        } catch (NumberFormatException e) {
+            System.out.println("[오류] 숫자를 입력해주세요.");
+        }
+
+        pause();
     }
 
     private void handleCreateProject() {
         System.out.println("---------- 프로젝트 생성 ----------");
 
-        System.out.print("프로젝트 제목: ");
-        String title = scanner.nextLine();
-
-        System.out.print("프로젝트 설명: ");
-        String description = scanner.nextLine();
-
-        Set<String> techSpecs = projectTechspecController.inputTechSpecs();
-        Map<Long, String> mbtiMap = projectMbtiController.inputMbti();
-
-        ProjectCreateRequestDto projectCreateRequestDto = new ProjectCreateRequestDto(
-                memberService.getCurrentUser().getId(),
-                title,
-                description,
-                techSpecs,
-                mbtiMap
-        );
-
         try {
+            String title = InputUtil.getInput(scanner, "프로젝트 제목");
+            String description = InputUtil.getInput(scanner, "프로젝트 설명");
+
+            Set<String> techSpecs = projectTechspecController.inputTechSpecs();
+            Map<Long, String> mbtiMap = projectMbtiController.inputMbti();
+
+            ProjectCreateRequestDto projectCreateRequestDto = new ProjectCreateRequestDto(
+                    memberService.getCurrentUser().getId(),
+                    title,
+                    description,
+                    techSpecs,
+                    mbtiMap
+            );
+
             Project newProject = projectService.createProject(projectCreateRequestDto);
 
             if (newProject != null) {
-                // 성공 메시지는 Service 내부에서 출력
             } else {
                 System.out.println("프로젝트 생성에 실패했습니다.");
             }
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 프로젝트 생성이 취소되었습니다.");
         } catch (ProjectException e) {
             System.out.println("[오류] " + e.getMessage());
-
         } catch (Exception e) {
             System.out.println("[오류] " + e.getMessage());
         }
 
-        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
-        scanner.nextLine();
+        pause();
     }
 
     private void handleJoinProject() {
-        System.out.print("참여하고 싶은 프로젝트 ID를 입력하세요: ");
-        Long projectId = scanner.nextLong();
-        scanner.nextLine();
-
         try {
+            Long projectId = InputUtil.getLong(scanner, "참여하고 싶은 프로젝트 ID");
+
             participantService.joinProject(projectId, memberService.getCurrentUser().getId());
             System.out.println("프로젝트 참여 성공!");
-        } catch (ParticipantException e) {
-            System.out.println("[오류]: " +  e.getMessage());
-        } catch (ProjectException e) {
-            System.out.println("[오류]: " +  e.getMessage());
+
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 프로젝트 참여가 취소되었습니다.");
+        } catch (ParticipantException | ProjectException e) {
+            System.out.println("[오류]: " + e.getMessage());
         }
 
-        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
-        scanner.nextLine();
+        pause();
     }
 
     private void handleDeleteProject() {
         showProjectList(projectService.getMyLeaderProjectList(memberService.getCurrentUser()));
 
-        System.out.print("삭제할 프로젝트의 ID를 입력해주세요: ");
-        Long projectId = scanner.nextLong();
-        scanner.nextLine();
-
-        System.out.print("정말 삭제하시겠습니까? (Y/N): ");
-        String confirm = scanner.nextLine();
-
-        if (!"Y".equalsIgnoreCase(confirm)) {
-            System.out.println("삭제 취소");
-            return;
-        }
-
         try {
+            Long projectId = InputUtil.getLong(scanner, "삭제할 프로젝트의 ID");
+            String confirm = InputUtil.getInput(scanner, "정말 삭제하시겠습니까? (Y/N)");
+
+            if (!"Y".equalsIgnoreCase(confirm)) {
+                System.out.println("삭제 취소");
+                return;
+            }
+
             projectService.deleteProject(projectId, memberService.getCurrentUser().getId());
+
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 프로젝트 삭제가 취소되었습니다.");
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());
         }
 
-        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
-        scanner.nextLine();
+        pause();
     }
 
     private void handleMyProjectDetail() {
         showProjectList(projectService.getMyProjectList(memberService.getCurrentUser()));
 
-        System.out.print("접속할 프로젝트 ID 입력: ");
-        Long projectId = scanner.nextLong();
-        scanner.nextLine();
-
         try {
+            Long projectId = InputUtil.getLong(scanner, "접속할 프로젝트 ID");
+
             Project myProject = projectService.getMyProjectById(memberService.getCurrentUser(), projectId);
             projectDetailController.showDetailMenu(myProject.getId());
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 접속이 취소되었습니다.");
         } catch (ProjectNotFoundException e) {
             System.out.println("[오류] 참여 중인 프로젝트에만 접속할 수 있습니다.");
         }
 
-        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
-        scanner.nextLine();
+        pause();
     }
 
     private void showProjectList(List<Project> projectList) {
@@ -245,5 +242,9 @@ public class ProjectController {
         for (Project p : projectList) {
             System.out.println(p.getId() + ". " + p.getTitle());
         }
+    }
+    private void pause() {
+        System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
+        scanner.nextLine();
     }
 }

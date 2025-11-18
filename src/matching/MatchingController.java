@@ -22,11 +22,12 @@ public class MatchingController {
             System.out.println("2. TechSpec 기반 추천 (기술 스택이 맞는 팀)");
             System.out.println("3. 종합 추천 (MBTI + Tech 가중치)");
             System.out.println("b. 뒤로 가기");
-            System.out.print("선택: ");
-
+            System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
+
             List<MatchedProject> results = null;
 
+            // [!] try-catch 블록 제거 (단순 메뉴 선택이니까요)
             switch (choice) {
                 case "1":
                     System.out.println("\n[MBTI 기반 추천 결과 (상위 10개)]");
@@ -47,7 +48,6 @@ public class MatchingController {
                     continue; // 다시 루프 시작
             }
 
-            // 결과 출력 공통 로직
             if (results != null) {
                 if (results.isEmpty()) {
                     System.out.println("조건에 맞는 프로젝트를 찾지 못했습니다.");
@@ -63,6 +63,8 @@ public class MatchingController {
                 System.out.println("\n(엔터키를 누르면 매칭 메뉴로 돌아갑니다)");
                 scanner.nextLine();
             }
+
+
         }
     }
 }

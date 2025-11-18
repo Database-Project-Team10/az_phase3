@@ -4,6 +4,7 @@ import src.member.MemberService;
 import src.post.dto.PostRequestDto;
 import src.post.exception.PostException;
 import src.reply.ReplyController;
+import src.utils.InputUtil;
 
 import java.util.List;
 import java.util.Scanner;
@@ -107,15 +108,19 @@ public class PostController {
 
     private void handleCreatePost(Long projectId) {
         System.out.println("---------- 게시물 작성 ----------");
-        System.out.print("게시물 제목: ");
-        String title = scanner.nextLine();
-        System.out.print("게시물 내용: ");
-        String content = scanner.nextLine();
+        try {
+            String title = InputUtil.getInput(scanner, "게시물 제목");
+            String content = InputUtil.getInput(scanner, "게시물 내용");
 
-        PostRequestDto postRequestDto = new PostRequestDto(title, content);
+            PostRequestDto postRequestDto = new PostRequestDto(title, content);
 
-        postService.createPost(projectId, memberService.getCurrentUser().getId(), postRequestDto);
-        System.out.println("게시물 생성 성공!");
+            postService.createPost(projectId, memberService.getCurrentUser().getId(), postRequestDto);
+            System.out.println("게시물 생성 성공!");
+
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 게시물 작성이 취소되었습니다.");
+        }
+
         pause();
     }
 
@@ -124,23 +129,26 @@ public class PostController {
 
         System.out.println("---------- 게시물 수정 ----------");
 
-        List<Post> myPosts = postService.getMyPostList(projectId, memberId);
-        printPostList(myPosts);
+        try {
+            List<Post> myPosts = postService.getMyPostList(projectId, memberId);
+            printPostList(myPosts);
 
-        System.out.print("수정하고 싶은 게시물 번호를 입력하세요: ");
-        Long postId = Long.valueOf(scanner.nextLine());
+            Long postId = InputUtil.getLong(scanner, "수정하고 싶은 게시물 번호");
 
-        Post myPost = postService.getPost(postId);
-        printPostDetail(myPost);
+            Post myPost = postService.getPost(postId);
+            printPostDetail(myPost);
 
-        String newTitle = askEditField("제목", myPost.getTitle());
-        String newContent = askEditField("내용", myPost.getContent());
+            String newTitle = askEditField("제목", myPost.getTitle());
+            String newContent = askEditField("내용", myPost.getContent());
 
-        PostRequestDto postRequestDto = new PostRequestDto(newTitle, newContent);
+            PostRequestDto postRequestDto = new PostRequestDto(newTitle, newContent);
 
-        postService.updatePost(projectId, myPost.getId(), memberId, postRequestDto);
+            postService.updatePost(projectId, myPost.getId(), memberId, postRequestDto);
+            System.out.println("게시물 수정 성공!");
 
-        System.out.println("게시물 수정 성공!");
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 게시물 수정이 취소되었습니다.");
+        }
         pause();
     }
 
@@ -148,38 +156,44 @@ public class PostController {
         Long memberId = memberService.getCurrentUser().getId();
 
         System.out.println("---------- 게시물 삭제 ----------");
+        try {
+            List<Post> myPosts = postService.getMyPostList(projectId, memberId);
+            printPostList(myPosts);
 
-        List<Post> myPosts = postService.getMyPostList(projectId, memberId);
-        printPostList(myPosts);
+            Long postId = InputUtil.getLong(scanner, "삭제할 게시물 번호");
 
-        System.out.print("삭제할 게시물 번호를 입력하세요: ");
-        Long postId = Long.valueOf(scanner.nextLine());
+            postService.deletePost(postId, memberId);
+            System.out.println("게시물 삭제 성공!");
 
-        postService.deletePost(postId, memberId);
-        System.out.println("게시물 삭제 성공!");
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 게시물 삭제가 취소되었습니다.");
+        }
         pause();
     }
 
     private void handleEnterPost(Long projectId) {
-        printPostList(postService.getPostList(projectId));
+        try {
+            printPostList(postService.getPostList(projectId));
 
-        System.out.print("접속할 게시물의 번호를 입력해주세요: ");
-        Long postId = Long.valueOf(scanner.nextLine());
+            Long postId = InputUtil.getLong(scanner, "접속할 게시물의 번호");
 
-        Post post = postService.getPostInProject(projectId, postId);
-        printPostDetail(post);
+            Post post = postService.getPostInProject(projectId, postId);
+            printPostDetail(post);
 
-        replyController.showReplyMenu(postId);
+            replyController.showReplyMenu(postId);
+
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 게시물 접속이 취소되었습니다.");
+        }
     }
 
     private String askEditField(String fieldName, String originalValue) {
         while (true) {
-            System.out.printf("%s을 수정하시겠습니까? (Y/N): ", fieldName);
-            String c = scanner.nextLine();
+            String prompt = String.format("%s을 수정하시겠습니까? (Y/N)", fieldName);
+            String c = InputUtil.getInput(scanner, prompt);
 
             if (c.equals("Y")) {
-                System.out.printf("수정할 %s 입력: ", fieldName);
-                return scanner.nextLine();
+                return InputUtil.getInput(scanner, "수정할 " + fieldName + " 입력");
             } else if (c.equals("N")) {
                 return originalValue;
             } else {
