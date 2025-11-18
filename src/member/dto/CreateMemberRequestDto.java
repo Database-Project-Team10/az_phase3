@@ -11,7 +11,6 @@ public class CreateMemberRequestDto {
     private final String confirmPassword;
     private final String name;
     private final LocalDate birthDate;
-    private final LocalDateTime createdAt;
 
     public CreateMemberRequestDto(String email, String password, String confirmPassword, String name, LocalDate birthDate) {
         this.email = email;
@@ -19,7 +18,6 @@ public class CreateMemberRequestDto {
         this.confirmPassword = confirmPassword;
         this.name = name;
         this.birthDate = birthDate;
-        this.createdAt = LocalDateTime.now();
     }
 
     public String getEmail() {
@@ -42,9 +40,6 @@ public class CreateMemberRequestDto {
         return birthDate;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 
     public Member toEntity() {
         return new Member(
@@ -52,7 +47,7 @@ public class CreateMemberRequestDto {
                 this.password,
                 this.name,
                 this.birthDate,
-                this.createdAt
+                LocalDateTime.now()
         );
     }
 }
