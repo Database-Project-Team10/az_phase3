@@ -68,7 +68,7 @@ public class ProjectDetailController {
                     meetingController.showMeetingMenu(projectId);
                     break;
                 case "5":
-                    updateProjectInfoUI(currentProject);
+                    currentProject = updateProjectInfoUI(currentProject);
                     break;
                 case "6":
                     projectTechspecController.showProjectTechspecMenu(currentProject);
@@ -85,7 +85,7 @@ public class ProjectDetailController {
         }
     }
 
-    private void updateProjectInfoUI(Project project) {
+    private Project updateProjectInfoUI(Project project) {
         String newTitle = project.getTitle();
         String newDesc = project.getDescription();
 
@@ -103,9 +103,13 @@ public class ProjectDetailController {
                     newDesc
             );
             projectService.updateProjectInfo(project.getId(), memberService.getCurrentUser().getId(), projectUpdateRequestDto);
+
             System.out.println("수정 완료!");
+
+            return new Project(project.getId(), newTitle, newDesc, project.getCreatedAt(), project.getModifiedAt());
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());
         }
+        return project;
     }
 }

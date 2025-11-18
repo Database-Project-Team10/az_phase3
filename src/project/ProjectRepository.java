@@ -99,6 +99,40 @@ public class ProjectRepository {
         return projectList;
     }
 
+    public List<Project> findLeaderProjectsByMemberId(Long memberId) {
+        List<Project> projectList = new ArrayList<>();
+
+        String sql = "SELECT p.id, p.title, p.description, p.created_at, p.updated_at " +
+                "FROM project p " +
+                "JOIN participant pa ON p.id = pa.project_id " +
+                "WHERE pa.member_id = ? " +
+                "AND pa.role = 'LEADER' " +
+                "ORDER BY p.updated_at DESC";
+
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, memberId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Project project = new Project(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getObject("created_at", LocalDateTime.class),
+                            rs.getObject("updated_at", LocalDateTime.class)
+                    );
+                    projectList.add(project);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+        return projectList;
+    }
+
+
     public Project save(Connection conn, Project project) throws SQLException {
         String sql = "INSERT INTO project (title, description, created_at, updated_at) VALUES (?, ?, ?, ?)";
         String[] generatedColumns = {"id"};
@@ -196,8 +230,8 @@ public class ProjectRepository {
         try (Connection conn = Azconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setLong(1, projectId);  // 1번째 ? (p.id)
-            pstmt.setLong(2, memberId);   // 2번째 ? (pa.member_id)
+            pstmt.setLong(1, projectId);
+            pstmt.setLong(2, memberId);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {

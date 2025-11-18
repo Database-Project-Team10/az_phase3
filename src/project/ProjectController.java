@@ -168,6 +168,8 @@ public class ProjectController {
             System.out.println("프로젝트 참여 성공!");
         } catch (ParticipantException e) {
             System.out.println("[오류]: " +  e.getMessage());
+        } catch (ProjectException e) {
+            System.out.println("[오류]: " +  e.getMessage());
         }
 
         System.out.print("\n엔터키를 누르면 프로젝트 기능으로 돌아갑니다.");
@@ -175,7 +177,7 @@ public class ProjectController {
     }
 
     private void handleDeleteProject() {
-        showProjectList(projectService.getMyProjectList(memberService.getCurrentUser()));
+        showProjectList(projectService.getMyLeaderProjectList(memberService.getCurrentUser()));
 
         System.out.print("삭제할 프로젝트의 ID를 입력해주세요: ");
         Long projectId = scanner.nextLong();

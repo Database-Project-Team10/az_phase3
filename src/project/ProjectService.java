@@ -25,7 +25,6 @@ public class ProjectService {
     private final ParticipantRepository participantRepository = new ParticipantRepository();
     private final TechspecRepository techspecRepository = new TechspecRepository();
     private final ProjectTechspecRepository projectTechspecRepository = new ProjectTechspecRepository();
-    private final MemberMbtiRepository memberMbtiRepository = new MemberMbtiRepository();
     private final ProjectMbtiRepository projectMbtiRepository = new ProjectMbtiRepository();
 
     public List<Project> getProjectList(int cnt) {
@@ -35,6 +34,10 @@ public class ProjectService {
 
     public List<Project> getMyProjectList(Member currentMember) {
         return projectRepository.findProjectsByMemberId(currentMember.getId());
+    }
+
+    public List<Project> getMyLeaderProjectList(Member currentMember) {
+        return projectRepository.findLeaderProjectsByMemberId(currentMember.getId());
     }
 
     public Project getProject(Long projectId) {
@@ -128,7 +131,7 @@ public class ProjectService {
             throw new ProjectNotFoundException();
         }
 
-        if (!participantRepository.exists(projectId, memberId)) {
+        if (!participantRepository.isLeader(projectId, memberId)) {
             throw new UnauthorizedProjectAccessException("해당 프로젝트에 대한 삭제 권한이 없습니다.");
         }
 

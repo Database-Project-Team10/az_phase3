@@ -62,4 +62,23 @@ public class ParticipantRepository {
         return false;
     }
 
+    public boolean isLeader(Long projectId, Long memberId){
+        String sql = "SELECT * FROM participant WHERE project_id = ? AND member_id = ? AND role = 'LEADER'";
+        try (Connection conn = Azconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, projectId);
+            pstmt.setLong(2, memberId);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("DB 조회 중 오류 발생: " + e.getMessage());
+        }
+
+        return false;
+    }
+
 }
