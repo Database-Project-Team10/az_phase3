@@ -1,12 +1,12 @@
 package src.member;
 
+import src.matching.MatchingController;
 import src.mbti.member.MemberMbtiController;
+import src.member.dto.CreateMemberRequestDto;
 import src.member.dto.MemberInfoResponseDto;
 import src.member.dto.PasswordUpdateRequestDto;
+import src.member.exception.MemberException;
 import src.techspec.member.MemberTechspecController;
-import src.matching.MatchingController;
-
-import src.member.exception.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -153,11 +153,16 @@ public class MemberController {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate birthDate = LocalDate.parse(birthStr, formatter);
 
-                Member member = new Member(newEmail, newPassword, newName, birthDate);
-
+                CreateMemberRequestDto createMemberRequestDto = new CreateMemberRequestDto(
+                        newEmail,
+                        newPassword,
+                        confirmPassword ,
+                        newName,
+                        birthDate
+                );
 
                 try {
-                    memberService.signUp(member, confirmPassword);
+                    Member member = memberService.signUp(createMemberRequestDto);
                     System.out.println("'" + member.getEmail() + "'님, 회원가입이 완료되었습니다!");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());

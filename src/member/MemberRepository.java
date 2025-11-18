@@ -69,24 +69,44 @@ public class MemberRepository {
         return null;
     }
 
-    public boolean save(Member member){
-        String sql = "INSERT INTO member (email, password, name, birth_date, created_at) VALUES (?, ?, ?, ? ,?)";
+    public Member save(Member member){
+        String sql = "INSERT INTO member (email, password, name, birth_date, created_at) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = Azconnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, new String[]{"id"})) {
+
             pstmt.setString(1, member.getEmail());
             pstmt.setString(2, member.getPassword());
             pstmt.setString(3, member.getName());
-            pstmt.setObject(4, member.getBirthDate());
-            pstmt.setObject(5, member.getCreatedAt());
+            pstmt.setDate(4, java.sql.Date.valueOf(member.getBirthDate()));
+            pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(member.getCreatedAt()));
 
             int affectedRows = pstmt.executeUpdate();
-            return affectedRows != 0;
+            if (affectedRows == 0) {
+                throw new SQLException("회원 저장 실패: 영향받은 행이 없음");
+            }
+
+            // 생성된 ID 조회
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return new Member(
+                            rs.getLong(1),
+                            member.getEmail(),
+                            member.getPassword(),
+                            member.getName(),
+                            member.getBirthDate(),
+                            member.getCreatedAt()
+                    );
+                } else {
+                    throw new SQLException("회원 저장 실패: ID 조회 불가");
+                }
+            }
 
         } catch (SQLException e) {
             System.err.println("DB 저장 중 오류 발생: " + e.getMessage());
+            return null;
         }
-        return false;
     }
 
     public boolean updatePassword(Long id, String newPassword) {

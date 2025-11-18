@@ -1,5 +1,6 @@
 package src.member;
 
+import src.member.dto.CreateMemberRequestDto;
 import src.member.dto.MemberInfoResponseDto;
 import src.member.dto.PasswordUpdateRequestDto;
 import src.member.exception.*;
@@ -12,21 +13,21 @@ public class MemberService {
     /**
      * 회원가입
      */
-    public void signUp(Member member, String confirmPassword) {
+    public Member signUp(CreateMemberRequestDto createMemberRequestDto) {
 
         if (isLoggedIn()) {
             throw new UnauthorizedException();
         }
 
-        if (memberRepository.findByEmail(member.getEmail()) != null) {
+        if (memberRepository.findByEmail(createMemberRequestDto.getEmail()) != null) {
             throw new DuplicateEmailException();
         }
 
-        if (!member.getPassword().equals(confirmPassword)) {
+        if (!createMemberRequestDto.getPassword().equals(createMemberRequestDto.getConfirmPassword())) {
             throw new PasswordMismatchException();
         }
 
-        memberRepository.save(member);
+        return memberRepository.save(createMemberRequestDto.toEntity());
     }
 
     /**

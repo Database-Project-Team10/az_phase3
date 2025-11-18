@@ -1,37 +1,25 @@
-package src.member;
+package src.member.dto;
+
+import src.member.Member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Member {
-
-    private final Long id;
+public class CreateMemberRequestDto {
     private final String email;
     private final String password;
+    private final String confirmPassword;
     private final String name;
     private final LocalDate birthDate;
     private final LocalDateTime createdAt;
 
-    public Member(Long id, String email, String password, String name, LocalDate birthDate,  LocalDateTime createdAt) {
-        this.id = id;
+    public CreateMemberRequestDto(String email, String password, String confirmPassword, String name, LocalDate birthDate) {
         this.email = email;
         this.password = password;
+        this.confirmPassword = confirmPassword;
         this.name = name;
         this.birthDate = birthDate;
-        this.createdAt = createdAt;
-    }
-
-    public Member(String email, String password, String name, LocalDate birthDate,  LocalDateTime createdAt) {
-        this.id = null;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.birthDate = birthDate;
-        this.createdAt = createdAt;
-    }
-
-    public Long getId() {
-        return id;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getEmail() {
@@ -40,6 +28,10 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
     }
 
     public String getName() {
@@ -52,5 +44,15 @@ public class Member {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Member toEntity() {
+        return new Member(
+                this.email,
+                this.password,
+                this.name,
+                this.birthDate,
+                this.createdAt
+        );
     }
 }
