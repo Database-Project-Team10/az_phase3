@@ -2,6 +2,7 @@ package src.member;
 
 import src.mbti.member.MemberMbtiController;
 import src.member.dto.MemberInfoDto;
+import src.member.dto.UpdatePasswordRequestDto;
 import src.techspec.member.MemberTechspecController;
 import src.matching.MatchingController;
 
@@ -77,8 +78,13 @@ public class MemberController {
                 System.out.print("새 비밀번호 확인: ");
                 String confirmPassword = scanner.nextLine();
 
+                UpdatePasswordRequestDto updatePasswordRequestDto = new UpdatePasswordRequestDto(
+                        newPassword,
+                        confirmPassword
+                );
+
                 try {
-                    memberService.editPassword(newPassword, confirmPassword);
+                    memberService.editPassword(updatePasswordRequestDto);
                     System.out.println("비밀번호 변경 성공!");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());

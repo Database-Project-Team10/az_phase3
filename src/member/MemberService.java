@@ -1,6 +1,7 @@
 package src.member;
 
 import src.member.dto.MemberInfoDto;
+import src.member.dto.UpdatePasswordRequestDto;
 import src.member.exception.*;
 
 public class MemberService {
@@ -49,17 +50,22 @@ public class MemberService {
     /**
      * 비밀번호 변경
      */
-    public void editPassword(String newPassword, String confirmPassword) {
+    public void editPassword(UpdatePasswordRequestDto updatePasswordRequestDto) {
+
+        Long currentMemberId = loggedInUser.getId();
+        if (memberRepository.findById(currentMemberId) == null){
+            throw new MemberNotFoundException();
+        }
 
         if (!isLoggedIn()) {
             throw new UnauthorizedException();
         }
 
-        if (!newPassword.equals(confirmPassword)) {
+        if (!updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getConfirmNewPassword())) {
             throw new PasswordMismatchException();
         }
 
-        memberRepository.updatePassword(loggedInUser.getEmail(), newPassword);
+        memberRepository.updatePassword(currentMemberId, updatePasswordRequestDto.getNewPassword());
     }
 
     /**
