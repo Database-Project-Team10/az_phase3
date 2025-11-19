@@ -39,10 +39,13 @@ public class MemberTechspecService {
             conn.setAutoCommit(false);
 
             Techspec techspec = techspecRepository.findTechspecIdByName(techspecAddRequestDto.getName());
-            Long techspecId = techspec.getId();
+            Long techspecId = null;
             // 스택이 없으면 생성
             if (techspec == null) {
                 techspecId = techspecRepository.createTechspec(conn, techspecAddRequestDto.getName());
+            }
+            else {
+                techspecId = techspec.getId();
             }
 
             if (memberTechspecRepository.addMemberTechspec(conn, currentUser.getId(), techspecId) == null) {

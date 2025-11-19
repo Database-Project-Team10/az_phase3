@@ -37,9 +37,12 @@ public class ProjectTechspecService {
             conn.setAutoCommit(false);
 
             Techspec techspec = techspecRepository.findTechspecIdByName(techName);
-            Long techspecId = techspec.getId();
+            Long techspecId = null;
             if (techspec == null) {
                 techspecId = techspecRepository.createTechspec(conn, techName);
+            }
+            else {
+                techspecId = techspec.getId();
             }
 
             boolean inserted = projectTechspecRepository.addProjectTechspec(

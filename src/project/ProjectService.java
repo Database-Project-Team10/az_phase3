@@ -95,9 +95,12 @@ public class ProjectService {
                 //System.out.println("\n[DB 저장 시작 - 스택]");
                 for (String techName : requestDto.getTechSpecs()) {
                     Techspec techspec = techspecRepository.findTechspecIdByName(techName);
-                    Long techspecId = techspec.getId();
+                    Long techspecId = null;
                     if (techspec == null) {
                         techspecId = techspecRepository.createTechspec(conn, techName);
+                    }
+                    else {
+                        techspecId = techspec.getId();
                     }
                     projectTechspecRepository.addProjectTechspec(conn, newProject.getId(), techspecId);
                 }
