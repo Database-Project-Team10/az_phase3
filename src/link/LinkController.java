@@ -3,6 +3,7 @@ package src.link;
 import src.link.dto.LinkRequestDto;
 import src.link.exception.LinkException;
 import src.member.MemberService;
+import src.utils.InputUtil;
 
 import java.util.List;
 import java.util.Scanner;
@@ -91,11 +92,8 @@ public class LinkController {
         System.out.println("---------- 링크 등록 ----------");
 
         try {
-            System.out.print("링크 제목: ");
-            String title = scanner.nextLine();
-
-            System.out.print("링크 URL (https://...): ");
-            String url = scanner.nextLine();
+            String title = InputUtil.getInput(scanner, "링크 제목");
+            String url = InputUtil.getInput(scanner, "링크 URL (https://...)");
 
             LinkRequestDto linkRequestDto = new LinkRequestDto(title, url);
 
@@ -103,6 +101,8 @@ public class LinkController {
 
             System.out.println("링크가 성공적으로 작성되었습니다.");
 
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 링크 등록이 취소되었습니다.");
         } catch (LinkException e) {
             printError(e);
         }
@@ -112,11 +112,11 @@ public class LinkController {
 
     private void handleUpdateLink(Long projectId) {
         System.out.println("---------- 링크 수정 ----------");
-        showLinkList(linkService.getLinksByProject(projectId));
 
         try {
-            System.out.print("수정할 링크의 번호를 입력하세요: ");
-            Long linkId = Long.parseLong(scanner.nextLine());
+            showLinkList(linkService.getLinksByProject(projectId));
+
+            Long linkId = InputUtil.getLong(scanner, "수정할 링크의 번호");
 
             Link targetLink = linkService.getLink(linkId);
 
@@ -130,6 +130,8 @@ public class LinkController {
 
         } catch (NumberFormatException e) {
             System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 링크 수정이 취소되었습니다.");
         } catch (LinkException e) {
             printError(e);
         }
@@ -139,12 +141,10 @@ public class LinkController {
 
     private String promptTitleUpdate(Link link) {
         while (true) {
-            System.out.print("제목을 수정하시겠습니까? (Y/N): ");
-            String c = scanner.nextLine();
+            String c = InputUtil.getInput(scanner, "제목을 수정하시겠습니까? (Y/N)");
 
             if (c.equalsIgnoreCase("Y")) {
-                System.out.print("수정할 제목 입력: ");
-                return scanner.nextLine();
+                return InputUtil.getInput(scanner, "수정할 제목 입력");
             } else if (c.equalsIgnoreCase("N")) {
                 return link.getTitle();
             } else {
@@ -155,12 +155,10 @@ public class LinkController {
 
     private String promptUrlUpdate(Link link) {
         while (true) {
-            System.out.print("URL을 수정하시겠습니까? (Y/N): ");
-            String c = scanner.nextLine();
+            String c = InputUtil.getInput(scanner, "URL을 수정하시겠습니까? (Y/N)");
 
             if (c.equalsIgnoreCase("Y")) {
-                System.out.print("수정할 URL 입력: ");
-                return scanner.nextLine();
+                return InputUtil.getInput(scanner, "수정할 URL 입력");
             } else if (c.equalsIgnoreCase("N")) {
                 return link.getUrl();
             } else {
@@ -173,19 +171,21 @@ public class LinkController {
     private void handleDeleteLink(Long projectId) {
         System.out.println("---------- 링크 삭제 ----------");
 
-        showLinkList(linkService.getLinksByProject(projectId));
 
         try {
-            System.out.print("삭제할 링크의 ID 번호를 입력하세요: ");
-            Long linkId = Long.parseLong(scanner.nextLine());
+            showLinkList(linkService.getLinksByProject(projectId));
 
+            Long linkId = InputUtil.getLong(scanner, "삭제할 링크의 ID 번호");
             linkService.deleteLink(linkId, projectId);
 
             System.out.println("링크가 성공적으로 삭제되었습니다.");
 
         } catch (NumberFormatException e) {
             System.out.println("오류: 유효한 ID 번호를 입력하세요.");
-        } catch (LinkException e) {
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 링크 삭제가 취소되었습니다.");
+        }
+        catch (LinkException e) {
             printError(e);
         }
 

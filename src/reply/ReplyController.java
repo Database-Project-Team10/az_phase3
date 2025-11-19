@@ -3,6 +3,7 @@ package src.reply;
 import src.member.MemberService;
 import src.reply.dto.ReplyRequestDto;
 import src.reply.dto.ReplyResponseDto;
+import src.utils.InputUtil;
 
 import java.util.List;
 import java.util.Scanner;
@@ -103,16 +104,18 @@ public class ReplyController {
     }
 
     private void handleCreateReply(Long postId) {
+        System.out.println("---------- 댓글 작성 ----------");
+
         try {
-            System.out.println("---------- 댓글 작성 ----------");
-            System.out.print("댓글 내용: ");
-            String content = scanner.nextLine();
+            String content = InputUtil.getInput(scanner, "댓글 내용");
 
             ReplyRequestDto replyRequestDto = new ReplyRequestDto(content);
 
             replyService.createReply(postId, memberService.getCurrentUser().getId(), replyRequestDto);
             System.out.println("댓글 생성 성공!");
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 댓글 작성이 취소되었습니다.");
         } catch (Exception e) {
             printError(e);
         }
@@ -120,25 +123,27 @@ public class ReplyController {
     }
 
     private void handleUpdateReply(Long postId) {
+        System.out.println("---------- 댓글 수정 ----------");
+
         try {
-            System.out.println("---------- 댓글 수정 ----------");
             showMyReplyList(replyService.getMyReplyList(
                     postId,
                     memberService.getCurrentUser().getId()
             ));
 
-            System.out.print("수정할 댓글 ID를 입력하세요: ");
-            Long choiceReplyId = Long.valueOf(scanner.nextLine());
+            Long choiceReplyId = InputUtil.getLong(scanner, "수정할 댓글 ID");
 
             Reply myReply = replyService.getReply(choiceReplyId);
 
-            System.out.print("수정할 내용 입력: ");
-            String content = scanner.nextLine();
+            String content = InputUtil.getInput(scanner, "수정할 내용 입력");
+
             ReplyRequestDto replyRequestDto = new ReplyRequestDto(content);
 
             replyService.updateReply(postId, myReply.getId(), memberService.getCurrentUser().getId(), replyRequestDto);
             System.out.println("댓글 수정 성공!");
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 댓글 수정이 취소되었습니다.");
         } catch (Exception e) {
             printError(e);
         }
@@ -146,19 +151,21 @@ public class ReplyController {
     }
 
     private void handleDeleteReply(Long postId) {
+        System.out.println("---------- 댓글 삭제 ----------");
+
         try {
-            System.out.println("---------- 댓글 삭제 ----------");
             showMyReplyList(replyService.getMyReplyList(
                     postId,
                     memberService.getCurrentUser().getId()
             ));
 
-            System.out.print("삭제할 댓글 ID를 입력하세요: ");
-            Long choiceReplyId = Long.valueOf(scanner.nextLine());
+            Long choiceReplyId = InputUtil.getLong(scanner, "삭제할 댓글 ID");
 
             replyService.deleteReply(choiceReplyId, memberService.getCurrentUser().getId());
             System.out.println("댓글 삭제 성공!");
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 댓글 삭제가 취소되었습니다.");
         } catch (Exception e) {
             printError(e);
         }

@@ -5,6 +5,7 @@ import src.mbti.exception.InvalidMbtiException;
 import src.mbti.exception.MbtiException;
 import src.mbti.exception.MbtiNotFoundException;
 import src.mbti.project.ProjectMbtiService;
+import src.utils.InputUtil;
 import src.member.Member;
 
 import java.util.HashMap;
@@ -31,6 +32,10 @@ public class MemberMbtiController {
         try {
             // 1. 차원 불러오기
             List<MbtiDimension> dimensions = memberMbtiService.getMbtiDimensions();
+            if (dimensions == null || dimensions.isEmpty()) {
+                System.out.println("오류: MBTI 데이터를 불러올 수 없습니다.");
+                return;
+            }
             printCurrentMbti(currentUser, dimensions);
 
             // 2. 사용자 입력 받기
@@ -40,10 +45,12 @@ public class MemberMbtiController {
             memberMbtiService.saveMyMbti(currentUser.getId(), newMbtiMap);
             System.out.println("MBTI 정보가 성공적으로 저장되었습니다.");
 
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 입력이 취소되었습니다.");
         } catch (MbtiException e) {
-            System.out.println("MBTI 처리 중 오류가 발생했습니다: " + e.getMessage());
+            System.out.println("[오류]: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+            System.out.println("[오류]:알 수 없는 오류가 발생했습니다.");
         }
     }
 
@@ -64,13 +71,12 @@ public class MemberMbtiController {
         for (MbtiDimension dim : dimensions) {
             String input;
 
+            String prompt = String.format("%d. %s (%s/%s)",
+                    dim.getId(), dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+
             while (true) {
-                System.out.printf("%d. %s (%s/%s): ",
-                        dim.getId(), dim.getDimensionType(), dim.getOption1(), dim.getOption2());
+                input = InputUtil.getInput(scanner, prompt).toUpperCase();
 
-                input = scanner.nextLine().toUpperCase();
-
-                // Controller는 단순 유효범위 확인만 담당
                 if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
                     newMbtiMap.put(dim.getId(), input);
                     break;

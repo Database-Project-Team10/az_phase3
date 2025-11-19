@@ -5,6 +5,7 @@ import src.mbti.exception.InvalidMbtiException;
 import src.mbti.exception.MbtiException;
 import src.mbti.exception.MbtiNotFoundException;
 import src.project.Project;
+import src.utils.InputUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,9 @@ public class ProjectMbtiController {
                     default:
                         System.out.println("잘못된 입력입니다.");
                 }
-            } catch (MbtiException e) {
+            } catch (InputUtil.CancelException e) {
+                System.out.println("\n[!] 작업이 취소되었습니다."); // 수정 메뉴에서의 취소 처리
+            }catch (MbtiException e) {
                 System.out.println("MBTI 처리 중 오류가 발생했습니다: " + e.getMessage());
             } catch (Exception e) {
                 System.out.println("알 수 없는 오류가 발생했습니다.");
@@ -75,13 +78,12 @@ public class ProjectMbtiController {
         Map<Long, String> newMbtiMap = new HashMap<>();
 
         for (MbtiDimension dim : dimensions) {
-            String input;
 
             while (true) {
-                System.out.printf("%d. %s (%s/%s): ",
+                String prompt = String.format("%d. %s (%s/%s)",
                         dim.getId(), dim.getDimensionType(), dim.getOption1(), dim.getOption2());
 
-                input = scanner.nextLine().toUpperCase();
+                String input = InputUtil.getInput(scanner, prompt).toUpperCase();
 
                 if (input.equals(dim.getOption1()) || input.equals(dim.getOption2())) {
                     newMbtiMap.put(dim.getId(), input);

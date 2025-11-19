@@ -4,6 +4,7 @@ import src.meeting.exception.InvalidMeetingInputException;
 import src.meeting.dto.MeetingRequestDto;
 import src.meeting.exception.MeetingException;
 import src.member.MemberService;
+import src.utils.InputUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -96,10 +97,8 @@ public class MeetingController {
         System.out.println("---------- 회의록 작성 ----------");
         
         try {
-            System.out.print("회의록 제목: ");
-            String title = scanner.nextLine();
-            System.out.print("회의록 내용: ");
-            String description = scanner.nextLine();
+            String title = InputUtil.getInput(scanner, "회의록 제목");
+            String description = InputUtil.getInput(scanner, "회의록 내용");
 
             LocalDateTime startTime = parseDateTime("회의 시작 시간 (YYYY-MM-DD HH:MM): ");
             LocalDateTime endTime = parseDateTime("회의 종료 시간 (YYYY-MM-DD HH:MM): ");
@@ -110,6 +109,8 @@ public class MeetingController {
             
             System.out.println("회의록이 성공적으로 작성되었습니다.");
 
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 회의록 작성이 취소되었습니다.");
         } catch (MeetingException e) {
             printError(e);
         }
@@ -129,8 +130,7 @@ public class MeetingController {
         }
         
         try {
-            System.out.print("수정할 회의록의 번호를 입력하세요: ");
-            Long meetingId = Long.parseLong(scanner.nextLine());
+            Long meetingId = InputUtil.getLong(scanner, "수정할 회의록의 번호");
             
             Meeting targetMeeting = meetingService.getMeeting(meetingId);
 
@@ -145,7 +145,9 @@ public class MeetingController {
             
             System.out.println("회의록이 성공적으로 수정되었습니다.");
 
-        } catch (NumberFormatException e) {
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 회의록 수정이 취소되었습니다.");
+        }catch (NumberFormatException e) {
             System.out.println("오류: 유효한 ID 번호를 입력하세요.");
         } catch (MeetingException e) {
             printError(e);
@@ -212,26 +214,19 @@ public class MeetingController {
         try {
             List<Meeting> meetings = meetingService.getMeetingsByProject(projectId);
             showMeetingList(meetings);
-        } catch (MeetingException e) {
-            printError(e);
-            pause();
-            return;
-        }
 
-        try {
-            System.out.print("삭제할 회의록의 ID 번호를 입력하세요: ");
-            Long meetingId = Long.parseLong(scanner.nextLine());
-            
+            Long meetingId = InputUtil.getLong(scanner, "삭제할 회의록의 ID 번호");
+
             meetingService.deleteMeeting(meetingId, projectId);
-            
             System.out.println("회의록이 성공적으로 삭제되었습니다.");
-
-        } catch (NumberFormatException e) {
-            System.out.println("오류: 유효한 ID 번호를 입력하세요.");
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 회의록 삭제가 취소되었습니다.");
         } catch (MeetingException e) {
             printError(e);
         }
+
         pause();
+
     }
 
     private void printError(Exception e) {
@@ -262,15 +257,14 @@ public class MeetingController {
 
     private LocalDateTime parseDateTime(String prompt) {
         while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine();
-            
-            if (input.trim().isEmpty()) {
-                 return null;
-            }
-            
             try {
+                String input = InputUtil.getInput(scanner, prompt);
+
+                if (input.trim().isEmpty()) {
+                    return null;
+                }
                 return LocalDateTime.parse(input, formatter);
+
             } catch (DateTimeParseException e) {
                 System.out.println("오류: 날짜 형식이 잘못되었습니다. (YYYY-MM-DD HH:MM)");
             }

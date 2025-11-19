@@ -9,6 +9,7 @@ import src.post.PostController;
 import src.project.dto.ProjectUpdateRequestDto;
 import src.project.exception.ProjectException;
 import src.techspec.project.ProjectTechspecController;
+import src.utils.InputUtil;
 
 import java.util.Scanner;
 
@@ -75,47 +76,49 @@ public class ProjectDetailController {
 
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
-            switch (choice) {
-                case "1":
-                    postController.showPostMenu(projectId);
-                    break;
-                case "2":
-                    documentController.showDocumentMenu(projectId);
-                    break;
-                case "3":
-                    linkController.showLinkMenu(projectId);
-                    break;
-                case "4":
-                    meetingController.showMeetingMenu(projectId);
-                    break;
-                case "5":
-                    currentProject = updateProjectInfoUI(currentProject);
-                    break;
-                case "6":
-                    projectTechspecController.showProjectTechspecMenu(currentProject);
-                    return;
-                case "7":
-                    projectMbtiController.showProjectMbtiMenu(currentProject);
-                    break;
-                case "b":
-                    return;
-                default:
-                    System.out.println("잘못된 입력입니다.");
+            try {
+                switch (choice) {
+                    case "1":
+                        postController.showPostMenu(projectId);
+                        break;
+                    case "2":
+                        documentController.showDocumentMenu(projectId);
+                        break;
+                    case "3":
+                        linkController.showLinkMenu(projectId);
+                        break;
+                    case "4":
+                        meetingController.showMeetingMenu(projectId);
+                        break;
+                    case "5":
+                        currentProject = updateProjectInfoUI(currentProject);
+                        break;
+                    case "6":
+                        projectTechspecController.showProjectTechspecMenu(currentProject);
+                        //return;
+                        break;
+                    case "7":
+                        projectMbtiController.showProjectMbtiMenu(currentProject);
+                        break;
+                    case "b":
+                        return;
+                    default:
+                        System.out.println("잘못된 입력입니다.");
+                }
+            } catch (InputUtil.CancelException e) {
+                System.out.println("\n[!] 작업이 취소되었습니다.");
+            } catch (Exception e) {
+                System.out.println("[오류] " + e.getMessage());
             }
         }
     }
 
     private Project updateProjectInfoUI(Project project) {
-        String newTitle = project.getTitle();
-        String newDesc = project.getDescription();
+        String t = InputUtil.getInput(scanner, "새 제목 (엔터 시 유지)");
+        String newTitle = t.isEmpty() ? project.getTitle() : t;
 
-        System.out.print("새 제목 (엔터 시 유지): ");
-        String t = scanner.nextLine();
-        if (!t.isEmpty()) newTitle = t;
-
-        System.out.print("새 설명 (엔터 시 유지): ");
-        String d = scanner.nextLine();
-        if (!d.isEmpty()) newDesc = d;
+        String d = InputUtil.getInput(scanner, "새 설명 (엔터 시 유지)");
+        String newDesc = d.isEmpty() ? project.getDescription() : d;
 
         try {
             ProjectUpdateRequestDto projectUpdateRequestDto = new ProjectUpdateRequestDto(
@@ -130,9 +133,11 @@ public class ProjectDetailController {
 
             return new Project(project.getId(), newTitle, newDesc,
                     project.getCreatedAt(), project.getModifiedAt());
+
         } catch (ProjectException e) {
             System.out.println("[오류]: " + e.getMessage());
         }
         return project;
     }
+
 }

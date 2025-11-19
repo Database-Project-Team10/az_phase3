@@ -7,6 +7,7 @@ import src.member.dto.MemberInfoResponseDto;
 import src.member.dto.PasswordUpdateRequestDto;
 import src.member.exception.MemberException;
 import src.techspec.member.MemberTechspecController;
+import src.utils.InputUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -84,22 +85,19 @@ public class MemberController {
                 break;
 
             case "2":
-                System.out.println("----- 비밀번호 수정 -----");
-                System.out.println("현재 이메일: " + memberService.getCurrentUser().getEmail());
-
-                System.out.print("새 비밀번호: ");
-                String newPassword = scanner.nextLine();
-                System.out.print("새 비밀번호 확인: ");
-                String confirmPassword = scanner.nextLine();
-
-                PasswordUpdateRequestDto passwordUpdateRequestDto = new PasswordUpdateRequestDto(
-                        newPassword,
-                        confirmPassword
-                );
-
                 try {
-                    memberService.editPassword(passwordUpdateRequestDto);
+                    System.out.println("----- 비밀번호 수정 -----");
+                    System.out.println("현재 이메일: " + memberService.getCurrentUser().getEmail());
+
+                    String newPassword = InputUtil.getInput(scanner, "새 비밀번호");
+                    String confirmPassword = InputUtil.getInput(scanner, "새 비밀번호 확인");
+
+                    PasswordUpdateRequestDto requestDto = new PasswordUpdateRequestDto(newPassword, confirmPassword);
+                    memberService.editPassword(requestDto);
                     System.out.println("비밀번호 변경 성공!");
+
+                } catch (InputUtil.CancelException e) {
+                    System.out.println("\n[!] 비밀번호 변경이 취소되었습니다.");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
                 }
@@ -123,12 +121,14 @@ public class MemberController {
                 break;
 
             case "7":
-                System.out.print("정말로 탈퇴하시겠습니까? (Y/N) ");
-                String input = scanner.nextLine();
-
                 try {
+                    String input = InputUtil.getInput(scanner, "정말로 탈퇴하시겠습니까? (Y/N)");
+
                     memberService.deleteMember(input);
                     System.out.println("탈퇴가 완료되었습니다.");
+
+                } catch (InputUtil.CancelException e) {
+                    System.out.println("\n[!] 회원 탈퇴가 취소되었습니다.");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
                 }
@@ -147,52 +147,44 @@ public class MemberController {
         switch (choice) {
 
             case "1":
-                System.out.println("---------- 회원 가입 ----------");
-                System.out.print("사용할 이메일: ");
-                String newEmail = scanner.nextLine();
-
-                System.out.print("사용할 비밀번호: ");
-                String newPassword = scanner.nextLine();
-
-                System.out.print("비밀번호 확인: ");
-                String confirmPassword = scanner.nextLine();
-
-                System.out.print("이름: ");
-                String newName = scanner.nextLine();
-
-                System.out.print("생년월일(YYYY-MM-DD): ");
-                String birthStr = scanner.nextLine();
-
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate birthDate = LocalDate.parse(birthStr, formatter);
-
-                CreateMemberRequestDto createMemberRequestDto = new CreateMemberRequestDto(
-                        newEmail,
-                        newPassword,
-                        confirmPassword ,
-                        newName,
-                        birthDate
-                );
-
                 try {
+                    System.out.println("---------- 회원 가입 ----------");
+                    String newEmail = InputUtil.getInput(scanner, "사용할 이메일");
+                    String newPassword = InputUtil.getInput(scanner, "사용할 비밀번호");
+                    String confirmPassword = InputUtil.getInput(scanner, "비밀번호 확인");
+                    String newName = InputUtil.getInput(scanner, "이름");
+                    String birthStr = InputUtil.getInput(scanner, "생년월일(YYYY-MM-DD)");
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate birthDate = LocalDate.parse(birthStr, formatter);
+
+                    CreateMemberRequestDto createMemberRequestDto = new CreateMemberRequestDto(
+                            newEmail, newPassword, confirmPassword, newName, birthDate
+                    );
+
                     Member member = memberService.signUp(createMemberRequestDto);
                     System.out.println("'" + member.getEmail() + "'님, 회원가입이 완료되었습니다!");
+
+                } catch (InputUtil.CancelException e) {
+                    System.out.println("\n[!] 회원가입이 취소되었습니다.");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("[오류] 잘못된 입력 형식입니다.");
                 }
                 break;
 
             case "2":
-                System.out.println("---------- 로그인 ----------");
-                System.out.print("이메일: ");
-                String email = scanner.nextLine();
-
-                System.out.print("비밀번호: ");
-                String password = scanner.nextLine();
-
                 try {
+                    System.out.println("---------- 로그인 ----------");
+                    String email = InputUtil.getInput(scanner, "이메일");
+                    String password = InputUtil.getInput(scanner, "비밀번호");
+
                     memberService.login(email, password);
                     System.out.println("로그인 성공! '" + email + "'님, 환영합니다.");
+
+                } catch (InputUtil.CancelException e) {
+                    System.out.println("\n[!] 로그인이 취소되었습니다.");
                 } catch (MemberException e) {
                     System.out.println("[오류] " + e.getMessage());
                 }

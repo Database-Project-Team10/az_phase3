@@ -3,6 +3,7 @@ package src.techspec.project;
 import src.techspec.Techspec;
 import src.techspec.exception.TechspecException;
 import src.project.Project;
+import src.utils.InputUtil;
 
 import java.util.Scanner;
 import java.util.HashSet;
@@ -38,27 +39,30 @@ public class ProjectTechspecController {
             System.out.print("메뉴를 선택하세요: ");
             String choice = scanner.nextLine();
 
-            switch (choice) {
-                case "1":
-                    showProjectTechspecs(currentProject);
-                    break;
-                case "2":
-                    addTechspecUI(currentProject);
-                    break;
-                case "3":
-                    removeTechspecUI(currentProject);
-                    break;
-                case "b":
-                    return;
-                default:
-                    System.out.println("잘못된 입력입니다.");
+            try {
+                switch (choice) {
+                    case "1":
+                        showProjectTechspecs(currentProject);
+                        break;
+                    case "2":
+                        addTechspecUI(currentProject);
+                        break;
+                    case "3":
+                        removeTechspecUI(currentProject);
+                        break;
+                    case "b":
+                        return;
+                    default:
+                        System.out.println("잘못된 입력입니다.");
+                }
+            } catch (InputUtil.CancelException e) {
+                System.out.println("\n[!] 작업이 취소되었습니다.");
             }
         }
     }
 
     private void addTechspecUI(Project currentProject) {
-        System.out.print("추가할 기술 스택 이름 (예: Java, Git): ");
-        String techName = scanner.nextLine();
+        String techName = InputUtil.getInput(scanner, "추가할 기술 스택 이름 (예: Java, Git)");
 
         try {
             projectTechspecService.addTechspecToProject(currentProject, techName);
@@ -71,17 +75,11 @@ public class ProjectTechspecController {
     private void removeTechspecUI(Project currentProject) {
         showProjectTechspecs(currentProject);
 
-        System.out.print("삭제할 기술 스택의 번호(ID)를 입력하세요 (취소: b): ");
-        String input = scanner.nextLine();
-
-        if ("b".equalsIgnoreCase(input)) return;
+        Long techId = InputUtil.getLong(scanner, "삭제할 기술 스택의 번호(ID)");
 
         try {
-            Long techId = Long.parseLong(input);
             projectTechspecService.removeTechspecFromProject(currentProject, techId);
             System.out.println("스택이 성공적으로 삭제되었습니다.");
-        } catch (NumberFormatException e) {
-            System.out.println("[오류]: 숫자를 입력해야 합니다.");
         } catch (TechspecException e) {
             System.out.println("[오류]: " + e.getMessage());
         }

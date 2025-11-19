@@ -5,6 +5,7 @@ import src.document.exception.InvalidDocumentInputException;
 import src.document.dto.DocumentRequestDto;
 import src.document.exception.DocumentException;
 import src.member.MemberService;
+import src.utils.InputUtil;
 
 import java.util.List;
 import java.util.Scanner;
@@ -92,11 +93,8 @@ public class DocumentController {
         System.out.println("---------- 문서 등록 ----------");
 
         try {
-            System.out.print("문서 제목: ");
-            String title = scanner.nextLine();
-
-            System.out.print("문서 위치 (e.g., /docs/file.pdf): ");
-            String location = scanner.nextLine();
+            String title = InputUtil.getInput(scanner, "문서 제목");
+            String location = InputUtil.getInput(scanner, "문서 위치 (e.g., /docs/file.pdf)");
 
             DocumentRequestDto requestDto = new DocumentRequestDto(title, location);
 
@@ -104,6 +102,8 @@ public class DocumentController {
 
             System.out.println("문서가 성공적으로 작성되었습니다.");
 
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 문서 등록이 취소되었습니다.");
         } catch (DocumentException e) {
             printError(e);
         }
@@ -112,11 +112,11 @@ public class DocumentController {
 
     private void handleUpdateDocument(Long projectId) {
         System.out.println("---------- 문서 수정 ----------");
-        showDocumentList(documentService.getDocumentsByProject(projectId));
 
         try {
-            System.out.print("수정할 문서의 번호를 입력하세요: ");
-            Long documentId = Long.parseLong(scanner.nextLine());
+            showDocumentList(documentService.getDocumentsByProject(projectId));
+
+            Long documentId = InputUtil.getLong(scanner, "수정할 문서의 번호");
 
             Document targetDocument = documentService.getDocument(documentId);
 
@@ -128,6 +128,8 @@ public class DocumentController {
             documentService.updateDocument(targetDocument.getId(), projectId, requestDto);
             System.out.println("문서가 성공적으로 수정되었습니다.");
 
+        }catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 문서 수정이 취소되었습니다.");
         } catch (NumberFormatException e) {
             System.out.println("오류: 유효한 ID 번호를 입력하세요.");
         } catch (DocumentException e) {
@@ -138,12 +140,10 @@ public class DocumentController {
 
     private String promptTitleUpdate(Document document) {
         while (true) {
-            System.out.print("제목을 수정하시겠습니까? (Y/N): ");
-            String c = scanner.nextLine();
+            String c = InputUtil.getInput(scanner, "제목을 수정하시겠습니까? (Y/N)");
 
             if (c.equalsIgnoreCase("Y")) {
-                System.out.print("수정할 제목 입력: ");
-                return scanner.nextLine();
+                return InputUtil.getInput(scanner, "수정할 제목 입력");
             } else if (c.equalsIgnoreCase("N")) {
                 return document.getTitle();
             } else {
@@ -154,12 +154,10 @@ public class DocumentController {
 
     private String promptLocationUpdate(Document document) {
         while (true) {
-            System.out.print("위치를 수정하시겠습니까? (Y/N): ");
-            String c = scanner.nextLine();
+            String c = InputUtil.getInput(scanner, "위치를 수정하시겠습니까? (Y/N)");
 
             if (c.equalsIgnoreCase("Y")) {
-                System.out.print("수정할 위치 입력: ");
-                return scanner.nextLine();
+                return InputUtil.getInput(scanner, "수정할 위치 입력");
             } else if (c.equalsIgnoreCase("N")) {
                 return document.getLocation();
             } else {
@@ -170,16 +168,17 @@ public class DocumentController {
 
     private void handleDeleteDocument(Long projectId) {
         System.out.println("---------- 문서 삭제 ----------");
-        showDocumentList(documentService.getDocumentsByProject(projectId));
 
         try {
-            System.out.print("삭제할 문서의 ID 번호를 입력하세요: ");
-            Long documentId = Long.parseLong(scanner.nextLine());
+            showDocumentList(documentService.getDocumentsByProject(projectId));
+            Long documentId = InputUtil.getLong(scanner, "삭제할 문서의 ID 번호");
 
             documentService.deleteDocument(documentId, projectId);
             System.out.println("문서가 성공적으로 삭제되었습니다.");
 
-        } catch (NumberFormatException e) {
+        } catch (InputUtil.CancelException e) {
+            System.out.println("\n[!] 문서 삭제가 취소되었습니다.");
+        }catch (NumberFormatException e) {
             System.out.println("오류: 유효한 ID 번호를 입력하세요.");
         } catch (DocumentException e) {
             printError(e);
